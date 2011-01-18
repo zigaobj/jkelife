@@ -1,0 +1,16 @@
+<html>
+<body>
+<pre>
+<h1>µVision3 Build Log</h1>
+<h2>Project:</h2>
+D:\program\SI443X\Si4431Mst_H110116\Si4431Mst.uv2
+Project File Date:  01/16/2011
+
+<h2>Output:</h2>
+compiling Si4431Api.c...
+Source\src\Si4431Api.c(170): warning:  #550-D: variable "s2" was set but never used
+Source\src\Si4431Api.c(436): error:  #20: identifier "length" is undefined
+Source\src\Si4431Api.c(431): warning:  #177-D: variable "reg" was declared but never referenced
+Source\src\Si4431Api.c(431): warning:  #550-D: variable "TxHeader" was set but never used
+Source\src\Si4431Api.c(493): warning:  #177-D: variable "reg" was declared but never referenced
+Source\src\Si4431Api.c - 1 Error(s), 4 Warning(s).
