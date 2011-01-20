@@ -8,6 +8,9 @@
 #include "Si4431Api.h"
 #include "Si4431App.h"
 #include "Global.h"
+#include "GloVar.h"
+#include "UsartCom.h"
+
 //#include "24L01App.h"
 //#include <time.h>
 #include <stdlib.h>
@@ -126,18 +129,17 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 			break;
 		}			
 	}
-	pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01 * loopi);	//指向空的从模块地址空间
+	pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	
 //	strACN[5] = loopi;		//组网编号
 	//为新连接的从模块设置组网新地址，保存到空的接收地址列表
 	pRxAdr_Tab->pRxAdrTabCnt[0] = MOD1_RXADR[1];
 	pRxAdr_Tab->pRxAdrTabCnt[1] = MOD1_RXADR[2];
 	pRxAdr_Tab->pRxAdrTabCnt[2] = MOD1_RXADR[3];
-	pRxAdr_Tab->pRxAdrTabCnt[3] = MOD1_RXADR[4];
 	pRxAdr_Tab->pRxAdrTabCnt[4] = loopi;	//根据组网顺序添加的字段
 
 
-	for(loopj = 0 ;loopj < TX_ADR_WIDTH_24L01 ; loopj++){
+	for(loopj = 0 ;loopj < TX_ADR_WIDTH ; loopj++){
 		OrgSlvAdd[loopj]	= * (pNewAdr+loopj);	//原来的从模块的Rx地址
 //		pRxAdr_Tab->pRxAdrTabCnt[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
 //		strACN[loopj + 7] = * (pNewAdr+loopj);	//从模块的Rx地址
@@ -164,8 +166,7 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 	strNTA[11] = MOD1_RXADR[1];
 	strNTA[12] = MOD1_RXADR[2];
 	strNTA[13] = MOD1_RXADR[3];
-	strNTA[14] = MOD1_RXADR[4];
-	strNTA[15] = loopi;	//根据组网顺序添加的字段
+	strNTA[14] = loopi;	//根据组网顺序添加的字段
 
  	NET_LED_TURN();	//有模块组网成功
 	CmdApply(strNTA ,32);		//将命令存到待处理缓冲区
@@ -209,7 +210,7 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 		}	
 		*/
 /*	if(RXADRTABLEN > pRxAdr_Tab->RxAdrTabCnt){	//超过RXADRTABLEN个地址不在存储
-		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01*pRxAdr_Tab->RxAdrTabCnt);	//指向下一个空的从模块地址空间
+		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH*pRxAdr_Tab->RxAdrTabCnt);	//指向下一个空的从模块地址空间
   	}	*/
 
   }
@@ -226,8 +227,8 @@ uint8_t HeartBeat(uint8_t * pHeartBeatAdr)
 	RUN_LED_TURN();	//新收到数据IR灯跳转一次
 	if(0 != pRxAdr_Tab->RxAdrTabCnt){	//无从模块组网则不用检查心跳包地址
 		for(TmpTabCnt = 0; TmpTabCnt < RXADRTABLEN; TmpTabCnt++){	//遍历从模块地址
-			pTmpTab = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01 * TmpTabCnt);
-			CmpFlag = Buffercmp(pTmpTab , pHeartBeatAdr , TX_ADR_WIDTH_24L01);
+			pTmpTab = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * TmpTabCnt);
+			CmpFlag = Buffercmp(pTmpTab , pHeartBeatAdr , TX_ADR_WIDTH);
 			if(1 == CmpFlag){	//检查到地址
 				pRxAdr_Tab->HeartBeatSta[TmpTabCnt]++;	//心跳计数+1	
 				return 1;				
@@ -307,7 +308,7 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 
 	for(loopi = 1 ; loopi < RXADRTABLEN ;loopi++){	//寻找从模块地址空间
 		if(0x10 == pRxAdr_Tab->TabFlag[loopi]){	//找到存有从模块地址的空间				
-			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01 * loopi);	//指向从模块地址空间
+			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向从模块地址空间
 			SetSPI1_TXMode(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			strSYN[5] = 0x00FF & (TIM3->CNT)>>8;	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
 			strSYN[6] = 0x00FF & TIM3->CNT;	
@@ -329,7 +330,7 @@ void SPI2_CMDCNT(uint8_t stacnt)
 	if(1 == stacnt){	//从模块转为握手模式
 	//	SetSPI2_TXMode(NetConnectRxAdr);		//设置SPI2连接的24L01为发射模式，且设置其发射地址为广播地址
 		
-		for(strindex=0;strindex<TX_ADR_WIDTH_24L01;strindex++){
+		for(strindex=0;strindex<TX_ADR_WIDTH;strindex++){
 			strCNT[5+strindex] = MOD2_TXADR[strindex];	
 		}
 		nRF24L01_SPI2_TxPacket(strCNT);
@@ -348,7 +349,7 @@ void Broadcast(uint8_t * TxStr)
 {u8 Loopi;
 	for(Loopi = 1 ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
 		if(0x10 == pRxAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
-			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01 * Loopi);	//指向从模块地址空间
+			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
 			SetSPI1_TXMode(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			nRF24L01_SPI1_TxPacket(TxStr);
 		//	pRxAdr_Tab->TabIndex = Loopi;
@@ -428,7 +429,7 @@ void DataReceive(void)
 	  if(0x10 == pRxAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
 	    RxPnCnt++;
 		
-		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH_24L01 * Loopi);	//指向从模块地址空间
+		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
 		SetSPI2_RXMode(RxPnCnt , pRxAdr_Tab->pRxAdrTabCnt);	//设置SPI2接收通道地址为各从模块地址
 		
 		pRxAdr_Tab->RxAdrIndex++;
