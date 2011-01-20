@@ -1,0 +1,17 @@
+.\Release\init.o: Source\src\Init.c
+.\Release\init.o: .\Libraries_V3.3.0\CMSIS\CM3\DeviceSupport\ST\STM32F10x\stm32f10x.h
+.\Release\init.o: .\Libraries_V3.3.0\CMSIS\CM3\CoreSupport\core_cm3.h
+.\Release\init.o: C:\Keil\ARM\RV31\INC\stdint.h
+.\Release\init.o: .\Libraries_V3.3.0\CMSIS\CM3\DeviceSupport\ST\STM32F10x\system_stm32f10x.h
+.\Release\init.o: .\Source\inc\stm32f10x_conf.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_exti.h
+.\Release\init.o: .\Libraries_V3.3.0\CMSIS\CM3\DeviceSupport\ST\STM32F10x\stm32f10x.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_flash.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_gpio.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_rcc.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_spi.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_tim.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\stm32f10x_usart.h
+.\Release\init.o: .\Libraries_V3.3.0\STM32F10x_StdPeriph_Driver\inc\misc.h
+.\Release\init.o: .\Source\inc\Global.h
+.\Release\init.o: .\Source\inc\Init.h

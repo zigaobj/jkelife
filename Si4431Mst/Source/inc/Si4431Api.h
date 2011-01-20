@@ -10,7 +10,7 @@
 #define	REG_WRITE		0x80
 
 #define TXHEADERLEN	 32
-
+#define TXHEADERRATE (TXHEADERLEN/8)
 //sbit RF_NSEL_PIN = P0^7;
 
 //sbit SCLK = P3^4;

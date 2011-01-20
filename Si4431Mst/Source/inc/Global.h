@@ -58,7 +58,7 @@ STA_STANDBY			//待机状态
 typedef	struct _RUN_TIME_TYPE_
 {
 	uint32_t Second;			//单位为1秒，所以换算为毫秒要*1000
-//	uint16_t TenthMilliSecond;	//单位为0.1毫秒，100us，所以换算为毫秒要*10
+//	u16 TenthMilliSecond;	//单位为0.1毫秒，100us，所以换算为毫秒要*10
 	uint32_t MilliSecond;		//单位为毫秒
 }RUN_TIME_TYPE;
 
@@ -67,21 +67,21 @@ typedef uint32_t timems_t;	//定义记录毫秒类型的变量类型
 extern volatile RUN_TIME_TYPE GlobalRunTime;	//记录系统上电后的运行时间
 extern volatile timems_t StartTimeMs1,EndTimeMs1,StartTimeMs2,EndTimeMs2,StartTimeMs3,EndTimeMs3;
 
-extern uint8_t SPI1_TxBuf[BufferSize];
-extern uint8_t SPI2_TxBuf[BufferSize];
-extern uint8_t SPI1_RxBuf[BufferSize]; 
-extern uint8_t SPI2_RxBuf[BufferSize];
+extern u8 SPI1_TxBuf[BufferSize];
+extern u8 SPI2_TxBuf[BufferSize];
+extern u8 SPI1_RxBuf[BufferSize]; 
+extern u8 SPI2_RxBuf[BufferSize];
 
-extern uint8_t TxNoReply[] ;
-extern uint8_t RxNotMatch[];
-extern uint8_t RxMatch[];
+extern u8 TxNoReply[] ;
+extern u8 RxNotMatch[];
+extern u8 RxMatch[];
 
-extern uint8_t StrError[] ;
-extern uint8_t TestStr[] ;
-extern uint8_t TestWord[];
+extern u8 StrError[] ;
+extern u8 TestStr[] ;
+extern u8 TestWord[];
 
-extern uint8_t MSGRP_OK[];
-extern uint8_t MSGRP_ERR[];
+extern u8 MSGRP_OK[];
+extern u8 MSGRP_ERR[];
 
 
 extern volatile TestStatus TransferStatus1 , TransferStatus2;
@@ -98,10 +98,10 @@ void DelayUs(__IO uint32_t usTime);
 void DelayCom(u16 nCount);
 //#define	_MsfInsrt(T, S)		MsgInsrt(T, S, sizeof(S))
 
-TestStatus Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength);
-uint16_t Hash(uint8_t *pStr, uint8_t len);
-void MsgInsrt(uint8_t *pTarget, uint8_t *pSource, uint16_t MsgLen);
-uint16_t MyStrLen(uint8_t str[]);
+TestStatus Buffercmp(u8* pBuffer1, u8* pBuffer2, u16 BufferLength);
+u16 Hash(u8 *pStr, u8 len);
+void MsgInsrt(u8 *pTarget, u8 *pSource, u16 MsgLen);
+u16 MyStrLen(u8 str[]);
 
 timems_t ReadRunTime(void);
 timems_t CheckTimeInterval(timems_t StartTime,timems_t EndTime);
