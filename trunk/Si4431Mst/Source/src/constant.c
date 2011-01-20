@@ -1,4 +1,4 @@
-
+#include "stm32f10x.h"
 #include "Global.h"
 
 u8 const baud[8][12] =	

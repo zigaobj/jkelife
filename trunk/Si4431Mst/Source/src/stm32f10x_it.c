@@ -21,7 +21,7 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
-
+#include "stm32f10x.h"
 #include "Global.h"
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{

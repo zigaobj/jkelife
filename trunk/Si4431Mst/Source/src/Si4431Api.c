@@ -344,6 +344,7 @@ void Si4431TX_Init(void)
 {                   
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//寄存器软复位
  	
+	while ( GPIO_ReadOutputDataBit(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
 	SPI1_Read(InterruptStatus1);	//清中断
 	SPI1_Read(InterruptStatus2);
@@ -431,20 +432,21 @@ void Si4431TX_IdleMod(void)
 
 //=============================================================================================
 //说明:Si4431发射模块设置发射模式
-//输入:pTxHeader发射地址首地址；
+//输入:pTxHeader发射地址首地址；HeaderLen地址长度，，高位对齐
 //输出:void
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
-void Si4431TX_TransmitMod(u8 * pTxHeader )
+void Si4431TX_TransmitMod(u8 * pTxHeader)
 {
-	u8 iLoop,reg,TxHeader;	
+	u8 iLoop,lLoop,reg,TxHeaderAdr;	
 	Si4431TX_IdleMod();        
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
-	TxHeader = TransmitHeader3;			//发送帧头
-  for(iLoop=0; iLoop < TXHEADERLEN; iLoop++){	
-		SPI1_RWReg((REG_WRITE | HeaderEnable3),pTxHeader[iLoop]);		
+	TxHeaderAdr = TransmitHeader3;			//发送帧头
+  
+	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		//设置发送地址头	
+		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		
 	}
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //中断使能包发送
