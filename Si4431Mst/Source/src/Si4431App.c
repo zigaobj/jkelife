@@ -69,7 +69,7 @@ void RandomDelayUs(void)
 //	for(i=0; i<10; i++)
 	k = rand()%(RANDMAX - RANDMIN + 1) + RANDMIN ;	//随机数，范围从RANDMIN~RANDMAX
 //	printf("%dn", rand()%100);
-	DelayUs(k);
+	DelayUs_Soft(k);
 #ifdef DEBUGJK
 //	Usart_SendByte(USART1 , k);
 #endif
@@ -380,9 +380,11 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 
 			SetSPI1_TXMode(pCmdBuf->pCmd_Body->part.Adr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			
-			nRF24L01_SPI1_TxPacket(pCmdBuf->pCmd_Body->all);	//向从节点发送命令
+			Si4431TX_TxPacket(pCmdBuf->pCmd_Body->all , sizeof(pCmdBuf->pCmd_Body->all));	//向从节点发送命令
 			StartTimeMs2 = ReadRunTime();
-			while(!(SPI1Sta & MASK_TX_STA)){	//等待TX_DS或MAX_RT中断
+			
+			//再次Si4431发送程序不检查发送是否成功
+/*			while(!(SPI1Sta & MASK_TX_STA)){	//等待TX_DS或MAX_RT中断
 				EndTimeMs2 = ReadRunTime();
 				if( 100 < CheckTimeInterval(StartTimeMs2 , EndTimeMs2)){	//组网超时
 					break;
@@ -410,6 +412,7 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 			else{
 				Usart_SendString_End(USART1 ,"SPI1_TX_ER\r\n");	
 			}
+			*/
 		}			
 	}
 }	
@@ -444,7 +447,7 @@ void DataReceive(void)
 	Tempi = (0xFF >> (7 - RxPnCnt)) & 0xFE;	//转化为24L01接收通道设置格式
  if(STA_NETCONNECT == WorkSta1){
 	Tempi |= 0x01	;	//联网状态下，打开通道1 	 
- 	SetSPI2_RXMode(RX_P1_24L01,NetConnectRxAdr);
+ 	Si4431RX_ReceiveMod(NetConnectRxAdr);
  }	
 	if(RxPnCnt >= 5){
 	  SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, Tempi);      //  频道1-5自动ACK应答允许	

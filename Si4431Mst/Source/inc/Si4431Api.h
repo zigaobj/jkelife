@@ -137,6 +137,7 @@ typedef union STYPE
      char S8[2];
 } STYPE;
 
+/*
 #define		DeviceType 								 0x00
 #define		DeviceVersion								 0x01
 #define  DeviceStatus 								 0x02
@@ -251,10 +252,10 @@ typedef union STYPE
 #define  TXFIFOControl2 							 0x7D    
 #define  RXFIFOControl 							 0x7E                               
 #define  FIFOAccess								 0x7F
+*/
 
 
 
-/*
 //register name and addresses for Si4432 revV2
 typedef enum _RF_REG_MAP					
 {
@@ -393,25 +394,23 @@ typedef enum _RF_REG_MAP
   FIFOAccess							= 0x7F, 
 } RF_REG_MAP;
 
-*/
 
-void si4432_init(void);
-//extern void SpiRfWriteAddressData(u8 address, u8 d);
-void send_init(void);
-void send_data(unsigned char *seddat,unsigned char leng);
-void recv_init(void);
-void recv_data(void);
-void send_uart(unsigned char * sedata,unsigned char seleng);
 
-extern u8   sendlength;
-extern u8   rlength;
+extern void Si4431TX_Init(void);
+extern void Si4431TX_IdleMod(void);
+extern void Si4431TX_TransmitMod(u8 * pTxHeader);
+extern void Si4431TX_ReceiveMod(u8 * pRxCheckHeader);
+extern u8 Si4431TX_BusyCheck(void);
+extern void Si4431TX_TxPacket(unsigned char * packet, unsigned char length);
+extern void Si4431RX_Init(void);
+extern void Si4431RX_IdleMod(void);
+extern void Si4431RX_TransmitMod(u8 * pTxHeader);
+extern void Si4431RX_ReceiveMod(u8 * pRxCheckHeader);
+extern u8 Si4431RX_BusyCheck(void);
+extern void Si4431RX_TxPacket(unsigned char * packet, unsigned char length);
 
-extern u8   uart_sendlength;
-extern u8   uart_receivelength;
 
-extern u8   const baud[8][12];
-extern u8   const freq[4][5];
-extern u8   const power[4];
+
 
 #endif
 
