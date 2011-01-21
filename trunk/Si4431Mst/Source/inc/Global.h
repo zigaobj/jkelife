@@ -96,6 +96,9 @@ extern volatile SysWorkStatus WorkStaPre2;
 
 void DelayUs(__IO uint32_t usTime);
 void DelayCom(u16 nCount);
+void DelayUs_Soft(u16 time);
+void DelayMs_Soft(u16 time);
+
 //#define	_MsfInsrt(T, S)		MsgInsrt(T, S, sizeof(S))
 
 TestStatus Buffercmp(u8* pBuffer1, u8* pBuffer2, u16 BufferLength);

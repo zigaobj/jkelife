@@ -11,7 +11,7 @@
 //*功能：Si4431的SPI写时序
 //****************************************************************************************************/
 
-u8 SPI1_RW(u8 Data)
+static u8 SPI1_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI1 , Data);
 	// Wait for SPI1 data reception 
@@ -21,7 +21,7 @@ u8 SPI1_RW(u8 Data)
 }
 
 //u8 SpiRfWriteAddressData(u8 address, u8 data)
-u8 SPI1_RWReg(u8 Reg, u8 Data)
+static u8 SPI1_RWReg(u8 Reg, u8 Data)
 {
 	u8 status;
 	SPI1_CSN_L;			//NSS拉低		// CSN low, init SPI transaction                  
@@ -31,7 +31,7 @@ u8 SPI1_RWReg(u8 Reg, u8 Data)
 	return(status);            // return nRF24L01 status uchar
 }
 
-u8 SPI1_Read(u8 Reg)
+static u8 SPI1_Read(u8 Reg)
 {
 	u8 Reg_val;
 	SPI1_CSN_L;			//NSS拉低
@@ -40,20 +40,8 @@ u8 SPI1_Read(u8 Reg)
 	SPI1_CSN_H;			//NSS拉高，关闭SPI
 	return(Reg_val);        // return register value
 }
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  +
-  + FUNCTION NAME:  unsigned short SpiReadWriteWord(unsigned short spi_in)
-  +
-  + DESCRIPTION:    sends and read 16 length data through the SPI port
-  +
-  +	INPUT:			data 
-  +
-  + RETURN:         received word
-  +
-  + NOTES:          it controls the nSEL pin
-  +
-  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-u16 SPI1_RWWord(u16 Reg)
+
+static u16 SPI1_RWWord(u16 Reg)
 {
 	u16 temp16;
 	SPI1_CSN_L;			//NSS拉低	// Set CSN low, init SPI tranaction = 0;						
@@ -71,7 +59,7 @@ u16 SPI1_RWWord(u16 Reg)
 //*功能：Si4431的SPI写时序
 //****************************************************************************************************/
 
-u8 SPI2_RW(u8 Data)
+static u8 SPI2_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI2 , Data);
 	// Wait for SPI1 data reception 
@@ -81,7 +69,7 @@ u8 SPI2_RW(u8 Data)
 }
 
 //u8 SpiRfWriteAddressData(u8 address, u8 data)
-u8 SPI2_RWReg(u8 Reg, u8 Data)
+static u8 SPI2_RWReg(u8 Reg, u8 Data)
 {
 	u8 status;
 	SPI2_CSN_L;			//NSS拉低		// CSN low, init SPI transaction                  
@@ -91,7 +79,7 @@ u8 SPI2_RWReg(u8 Reg, u8 Data)
 	return(status);            // return nRF24L01 status uchar
 }
 
-u8 SPI2_Read(u8 Reg)
+static u8 SPI2_Read(u8 Reg)
 {
 	u8 Reg_val;
 	SPI2_CSN_L;			//NSS拉低
@@ -113,7 +101,7 @@ u8 SPI2_Read(u8 Reg)
   + NOTES:          it controls the nSEL pin
   +
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-u16 SPI2_RWWord(u16 Reg)
+static u16 SPI2_RWWord(u16 Reg)
 {
 	u16 temp16;
 	SPI2_CSN_L;			//NSS拉低	// Set CSN low, init SPI tranaction = 0;						
@@ -225,7 +213,7 @@ void Si4431TX_IdleMod(void)
 
 //=============================================================================================
 //说明:Si4431发射模块设置发射模式
-//输入:pTxHeader发射地址首地址；HeaderLen地址长度，，高位对齐
+//输入:pTxHeader发射地址首地址；
 //输出:void
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
@@ -238,7 +226,7 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
 	TxHeaderAdr = TransmitHeader3;			//发送帧头
   
-	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		//设置发送地址头	
+	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		//设置发送地址头，高位对齐	
 		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		
 	}
 
@@ -249,15 +237,20 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 
 //=============================================================================================
 //说明:Si4431发射模块设置接收模式
-//输入:void
+//输入:pRxCheckHeader接收校对地址头	
 //输出:void
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
-void Si4431TX_ReceiveMod(void)
-{
+void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
+{	u8 iLoop,RxCheckHeaderAdr;
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
+	
+	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
+		SPI1_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
+	}
   
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
  	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
@@ -433,15 +426,20 @@ void Si4431RX_TransmitMod(u8 * pTxHeader)
 
 //=============================================================================================
 //说明:Si4431接收模块设置接收模式
-//输入:void
+//输入:pRxCheckHeader接收校对地址头	
 //输出:void
 //调用:SPI2_RWReg();SPI2_Read();
-//修改:2011-01-20			KEN			初定
+//修改:2011-01-21			KEN			初定
 //=============================================================================================
-void Si4431RX_ReceiveMod(void)
-{
+void Si4431RX_ReceiveMod(u8 * pRxCheckHeader)
+{	u8 iLoop,RxCheckHeaderAdr;
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
+	
+	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
+		SPI2_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
+	}
   
 	SPI2_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
  	SPI2_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
