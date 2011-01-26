@@ -120,10 +120,10 @@ extern CMD_BUF_TypeDef * pCmdBuf;	//指向命理处理缓冲区
 typedef enum {TXSTATUS = 0, RXSTATUS = !TXSTATUS} STA24L01;
 typedef struct	_RxAdrTab_TypeDef
 {
-	uint8_t	RxAdrTabCnt;	//记录已使用的地址空间个数
-	uint8_t * pRxAdrTabCnt;	//指向空的接收地址表格空间。
-	uint8_t TabIndex;		//标志发送地址
-	uint8_t TabFlag[RXADRTABLEN];	//记录地址空间使用情况索引,0x00:未使用或断开连接了，0x01:正常组网，从TabFlag[1]开始记录 
+	uint8_t	RxAdrTabCnt;							//记录已使用的地址空间个数
+	uint8_t * pRxAdrTabCnt;						//指向空的接收地址表格空间。
+	uint8_t LoopRxAdrIndex;						//轮询接收地址
+	uint8_t TabFlag[RXADRTABLEN];			//记录地址空间使用情况索引,0x00:未使用或断开连接了，0x01:正常组网，从TabFlag[1]开始记录 
 	uint8_t HeartBeatSta[RXADRTABLEN];		//从HeartBeatSta[1]开始保存从模块心跳包个数，监听连接状态
 //	uint8_t RxPnSequence[RXADRTABLEN];		//接收通道次序
 	uint8_t RxAdrIndex;		//接收模块地址计数
