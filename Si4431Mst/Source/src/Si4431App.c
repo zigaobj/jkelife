@@ -309,10 +309,10 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 	for(loopi = 1 ; loopi < RXADRTABLEN ;loopi++){	//寻找从模块地址空间
 		if(0x10 == pRxAdr_Tab->TabFlag[loopi]){	//找到存有从模块地址的空间				
 			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向从模块地址空间
-			SetSPI1_TXMode(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			strSYN[5] = 0x00FF & (TIM3->CNT)>>8;	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
 			strSYN[6] = 0x00FF & TIM3->CNT;	
-			nRF24L01_SPI1_TxPacket(strSYN);	//发送同步命令
+			Si4431TX_TxPacket(strSYN);	//发送同步命令
 		}			
 	}
 		WorkStaPre1 = STA_SYNCHRONIZE;
@@ -352,7 +352,7 @@ void Broadcast(uint8_t * TxStr)
 			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
 			SetSPI1_TXMode(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			nRF24L01_SPI1_TxPacket(TxStr);
-		//	pRxAdr_Tab->TabIndex = Loopi;
+		//	pRxAdr_Tab->LoopRxAdrIndex = Loopi;
 		//	TempSta = 1;
 			break;
 		}			
@@ -418,56 +418,32 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 }	
 }
 
-//*********************************************************************************************************
-//*功能：数据接收阶段，轮流更换Rx_P2~P5接收通道的地址
-//*参数: 
-//*********************************************************************************************************/
+//=============================================================================================
+//说明:Si4431数据接收阶段，轮流更换接收通道的地址
+//输入:void
+//输出:void
+//调用:Si4431RX_ReceiveMod;SPI2_Read();
+//修改:2011-01-26			KEN			初定
+//=============================================================================================
 void DataReceive(void)
-{uint8_t Loopi,Tempi,RxPnCnt = 1;	
+{uint8_t iLoop,Tempi,RxPnCnt = 1;	
 //  if(pRxAdr_Tab->RxAdrTabCnt > RXADRTABLEN){	//如果组网的从模块数量大于RXADRTABLEN，则在DATA阶段需要轮换Rx_P0~P5接收通道的地址
 //	for(Loopi = pRxAdr_Tab->TabIndex ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
- if(pRxAdr_Tab->RxAdrTabCnt){	//有模块组网才进入	
-	Loopi = pRxAdr_Tab->TabIndex;
-	while((RxPnCnt < 5) && (Loopi < RXADRTABLEN)){
-	  if(0x10 == pRxAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
-	    RxPnCnt++;
+	
+	if(pRxAdr_Tab->RxAdrTabCnt){										//有模块组网才进入		
+		iLoop = pRxAdr_Tab->LoopRxAdrIndex + 1;				//获得上次轮询到的组网地址pRxAdr_Tab->TabIndex
+		if(RXADRTABLEN == iLoop) {
+			iLoop = 0;	
+		}				//循环轮询
+		while(0x10 != pRxAdr_Tab->TabFlag[iLoop]){ 		//找到存有从模块地址的空间
+			iLoop++;			
+		};	
 		
-		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
-		SetSPI2_RXMode(RxPnCnt , pRxAdr_Tab->pRxAdrTabCnt);	//设置SPI2接收通道地址为各从模块地址
+		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * iLoop);	//指向从模块地址空间
+		Si4431RX_ReceiveMod(pRxAdr_Tab->pRxAdrTabCnt);			//设置SPI2接收通道地址为各从模块地址
 		
-		pRxAdr_Tab->RxAdrIndex++;
-		
-	//	if(RxPnCnt >= 5){
-	//	  break;
-	//	}
-	  }
-	  Loopi++;
-	  pRxAdr_Tab->TabIndex = Loopi;			
+	  pRxAdr_Tab->LoopRxAdrIndex = iLoop;		//记录这次轮询到的组网地址			
 	}
-	Tempi = (0xFF >> (7 - RxPnCnt)) & 0xFE;	//转化为24L01接收通道设置格式
- if(STA_NETCONNECT == WorkSta1){
-	Tempi |= 0x01	;	//联网状态下，打开通道1 	 
- 	Si4431RX_ReceiveMod(NetConnectRxAdr);
- }	
-	if(RxPnCnt >= 5){
-	  SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, Tempi);      //  频道1-5自动ACK应答允许	
-	  SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, Tempi);  //  允许接收频道1-5，	  	  
-	}
-	else {
-	  
-	  SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, Tempi);      //  频道RxPnCnt自动ACK应答允许	
-	  SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, Tempi);  //  允许接收频道RxPnCnt，
-	  pRxAdr_Tab->TabIndex = 0;	//重新开始轮换Rx_Pn通道地址
-	  pRxAdr_Tab->RxAdrIndex = 0;
-	}
- 	
-	if((pRxAdr_Tab->RxAdrIndex >= pRxAdr_Tab->RxAdrTabCnt) || (Loopi >= RXADRTABLEN)){
-	  pRxAdr_Tab->TabIndex = 0;	//重新开始轮换Rx_Pn通道地址
-	  pRxAdr_Tab->RxAdrIndex = 0;
-	}
-
-//  }
- }
 }
 
 
