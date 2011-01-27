@@ -312,7 +312,7 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			strSYN[5] = 0x00FF & (TIM3->CNT)>>8;	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
 			strSYN[6] = 0x00FF & TIM3->CNT;	
-			Si4431TX_TxPacket(strSYN);	//发送同步命令
+			Si4431TX_TxPacket(strSYN, sizeof(strSYN));	//发送同步命令
 		}			
 	}
 		WorkStaPre1 = STA_SYNCHRONIZE;
@@ -333,7 +333,7 @@ void SPI2_CMDCNT(uint8_t stacnt)
 		for(strindex=0;strindex<TX_ADR_WIDTH;strindex++){
 			strCNT[5+strindex] = MOD2_TXADR[strindex];	
 		}
-		nRF24L01_SPI2_TxPacket(strCNT);
+		Si4431TX_TxPacket(strCNT ,sizeof(strCNT));
 	}
 	else{
 	
@@ -350,8 +350,8 @@ void Broadcast(uint8_t * TxStr)
 	for(Loopi = 1 ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
 		if(0x10 == pRxAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
 			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
-			SetSPI1_TXMode(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
-			nRF24L01_SPI1_TxPacket(TxStr);
+			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+			Si4431TX_TxPacket(TxStr ,sizeof(TxStr));
 		//	pRxAdr_Tab->LoopRxAdrIndex = Loopi;
 		//	TempSta = 1;
 			break;
@@ -378,7 +378,7 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 			//找到要发送命令对应的从模块地址
 			pCmdBuf->pCmd_Body = &(Cmd_Body[loopi]);	//找到待发送的命令体
 
-			SetSPI1_TXMode(pCmdBuf->pCmd_Body->part.Adr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+			Si4431TX_TransmitMod(pCmdBuf->pCmd_Body->part.Adr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			
 			Si4431TX_TxPacket(pCmdBuf->pCmd_Body->all , sizeof(pCmdBuf->pCmd_Body->all));	//向从节点发送命令
 			StartTimeMs2 = ReadRunTime();

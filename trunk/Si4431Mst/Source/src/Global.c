@@ -16,7 +16,7 @@ volatile SysWorkStatus WorkStaPre1 = STA_SLEEP;		//整个系统的前一个工作状态
 volatile SysWorkStatus WorkSta2 = STA_SLEEP;		//整个系统的工作状态
 volatile SysWorkStatus WorkStaPre2 = STA_SLEEP;		//整个系统的前一个工作状态
 
-volatile STA24L01 Mst24L01Sta = TXSTATUS,Slv24L01Sta = RXSTATUS;
+//volatile STA24L01 Mst24L01Sta = TXSTATUS,Slv24L01Sta = RXSTATUS;
 
 __IO uint32_t TimingDelay;
 

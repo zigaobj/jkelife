@@ -12,7 +12,11 @@
 **************************************************/
 #include "stm32f10x.h"
 #include "Global.h"
-#include "SPICom.h"	
+#include "GloVar.h"
+#include "SPICom.h"
+#include "Si4431App.h"
+#include "UsartCom.h"
+	
 //------------------------------------------------------------------------------------//
 
 uint8_t SPI1_TxBuf[BufferSize] = "#NTA,0,12345\r\n";		//SPIy_Buffer_Tx

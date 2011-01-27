@@ -1,7 +1,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "Global.h"
-
+#include "GloVar.h"
+#include "UsartCom.h"
 
 
 //根据长度向串口发送字符串

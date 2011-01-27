@@ -25,6 +25,10 @@
 #include "platform_config.h"
 #include "Init.h"
 #include "Global.h"
+#include "GloVar.h"
+#include "SPICom.h"
+#include "Si4431App.h"
+
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{
   */
@@ -52,7 +56,7 @@ int main(void)
   SysInit_Config();
 
 //  Usart_SendString_End(USART1 ,TestWord );	//不知原因，串口发送第一字节数据会丢失或出错。只能单独发送一字节来预防
-  DelayCom(10);
+  DelayUs_Soft(10);
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送
 //  DelayUs(10);
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送
@@ -93,6 +97,7 @@ int main(void)
   while (1)
   {
 		SysRun();
+		
 		SPI2Rx_Parse();
 
 //	Usart1_Rx_Parse();
