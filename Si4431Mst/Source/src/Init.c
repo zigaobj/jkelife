@@ -1,7 +1,14 @@
  /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "Global.h"
+#include "platform_config.h"
 #include "Init.h"
+#include "GloVar.h"
+#include "Global.h"
+#include "SPICom.h"
+#include "Si4431App.h"
+
+#include <stdlib.h>
+
 
 void SysInit_Config(void)
 {
@@ -187,7 +194,7 @@ void VarInit(void)
 	
 //测试	pRxAdr_Tab->TabFlag[0]	=0x10;
 
-	for(i = 0;i < RX_ADR_WIDTH_24L01;i++){
+	for(i = 0;i < RX_ADR_WIDTH;i++){
 		pRxAdr_Tab->RxAdrTab0[i] = i;
 		pRxAdr_Tab->RxAdrTab1[i] = i;
 		pRxAdr_Tab->RxAdrTab2[i] = i;
@@ -196,7 +203,7 @@ void VarInit(void)
 		pRxAdr_Tab->RxAdrTab5[i] = i;	
 	}
 
-	srand((unsigned) MOD1_TXADR[4]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
+	srand((unsigned) MOD1_TXADR[3]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
 }
 
 

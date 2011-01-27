@@ -23,6 +23,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "Global.h"
+#include "GloVar.h"
+#include "SPICom.h"
+#include "Si4431App.h"
+
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{
   */
