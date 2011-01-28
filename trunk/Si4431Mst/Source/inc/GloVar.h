@@ -37,9 +37,13 @@
 
 
 /*************************变量声明*****************************************************/
-extern uint8_t   sta;   //状态标志
-extern uint8_t	SPI1FIFOSta,SPI1Sta;
-extern uint8_t	SPI2FIFOSta,SPI2Sta;	//SPI2负责接收的24L01的FIFO与STATUS,SPI2RxCnt计数进入RX次数
+extern uint8_t   sta;   //状态标志	
+extern uint8_t	SPI1FIFOSta,SPI1Sta1,SPI1Sta2;
+extern uint8_t	SPI2FIFOSta,SPI2Sta1,SPI2Sta2;	//SPI2负责接收的24L01的FIFO与STATUS,SPI2RxCnt计数进入RX次数
+extern uint8_t	TXItSta1,TXItSta2;
+extern uint8_t	RXItSta1,RXItSta2;
+
+
 extern uint16_t	SPI2RxCnt,SPI1RxCnt;
 extern uint8_t NetConnectRxAdr[RX_ADR_WIDTH];		//广播接收地址
 extern uint8_t TX_ADDRESS_24L01[TX_ADR_WIDTH];	//本地地址

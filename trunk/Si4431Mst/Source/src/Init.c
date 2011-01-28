@@ -165,8 +165,12 @@ void VarInit(void)
 		SPI2_TxBuf[i] = i+BufferSize;		
 	}
 	sta = 0;   //×´Ì¬±êÖ¾
-	SPI2FIFOSta = 0;
-	SPI2Sta = 0;
+
+	TXItSta1 = 0;
+	TXItSta2 = 0;
+	RXItSta1 = 0;
+	RXItSta2 = 0;
+
 	SPI2RxCnt = 0;
 //	pRxAdr_Tab->pTabFlag = pRxAdr_Tab->TabFlag ;
 #ifdef DEBUGJK

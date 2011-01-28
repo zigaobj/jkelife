@@ -14,6 +14,7 @@
 #include "Global.h"
 #include "GloVar.h"
 #include "SPICom.h"
+#include "Si4431Api.h"
 #include "Si4431App.h"
 #include "UsartCom.h"
 	
@@ -164,10 +165,10 @@ void SPI2Rx_Parse(void)
 { //uint8_t i,j,k;
   uint16_t LoopStart,LoopEnd,Loopi;
   uint16_t comnum;
+/*	//读取 InterruptStatus还是放到中断里面去
 
-	DelayCom(2000);
-
-	SPI2Sta = SPI2_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
+	SPI2Sta = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	
 	//	IRDA_LED_ON();
 	if(SPI2Sta & RX_DR){				// 判断是否接收到数据
 		DelayCom(1000);		    
@@ -216,6 +217,8 @@ void SPI2Rx_Parse(void)
 //	SPI2Sta = SPI2_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
 //	SPI2FIFOSta = SPI2_Read(FIFO_STATUS_24L01);
 	}
+
+	*/
 
 //	Init_NRF24L01_SPI2();
 //	NetConnect(TRUE);				//设置为组网模式

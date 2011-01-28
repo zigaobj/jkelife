@@ -394,20 +394,55 @@ typedef enum _RF_REG_MAP
   FIFOAccess							= 0x7F, 
 } RF_REG_MAP;
 
+//register name and addresses for Si4432 revV2
+typedef enum _SI4431_ITSTATUS1_MAP					
+{
+	icrcerror		=	0x01,
+	ipkvalid 		=	0x02,
+	ipksent 		=	0x04,
+	iext 				=	0x08,
+	irxffafull 	=	0x10,
+	itxffaem 		=	0x20,
+	itxffafull 	=	0x40,
+	ifferr 			=	0x80,
+			
+} SI4431_ITSTATUS1_MAP;
+
+typedef enum _SI4431_ITSTATUS2_MAP					
+{	       
+	ipor				=	0x01,
+	ichiprdy 		=	0x02,
+	ilbd		 		=	0x04,
+	iwut 				=	0x08,
+	irssi			 	=	0x10,
+	ipreainval	=	0x20,
+	ipreaval	 	=	0x40,
+	iswdet 			=	0x80,		
+} SI4431_ITSTATUS2_MAP;
 
 
-extern void Si4431TX_Init(void);
-extern void Si4431TX_IdleMod(void);
-extern void Si4431TX_TransmitMod(u8 * pTxHeader);
-extern void Si4431TX_ReceiveMod(u8 * pRxCheckHeader);
-extern u8 Si4431TX_BusyCheck(void);
-extern void Si4431TX_TxPacket(unsigned char * packet, unsigned char length);
-extern void Si4431RX_Init(void);
-extern void Si4431RX_IdleMod(void);
-extern void Si4431RX_TransmitMod(u8 * pTxHeader);
-extern void Si4431RX_ReceiveMod(u8 * pRxCheckHeader);
-extern u8 Si4431RX_BusyCheck(void);
-extern void Si4431RX_TxPacket(unsigned char * packet, unsigned char length);
+
+u8 SPI1_RW(u8 Data);
+u8 SPI1_RWReg(u8 Reg, u8 Data);
+u8 SPI1_Read(u8 Reg);
+u16 SPI1_RWWord(u16 Reg);
+u8 SPI2_RW(u8 Data);
+u8 SPI2_RWReg(u8 Reg, u8 Data);
+u8 SPI2_Read(u8 Reg);
+u16 SPI2_RWWord(u16 Reg);
+
+void Si4431TX_Init(void);
+void Si4431TX_IdleMod(void);
+void Si4431TX_TransmitMod(u8 * pTxHeader);
+void Si4431TX_ReceiveMod(u8 * pRxCheckHeader);
+u8 Si4431TX_BusyCheck(void);
+void Si4431TX_TxPacket(unsigned char * packet, unsigned char length);
+void Si4431RX_Init(void);
+void Si4431RX_IdleMod(void);
+void Si4431RX_TransmitMod(u8 * pTxHeader);
+void Si4431RX_ReceiveMod(u8 * pRxCheckHeader);
+u8 Si4431RX_BusyCheck(void);
+void Si4431RX_TxPacket(unsigned char * packet, unsigned char length);
 
 
 

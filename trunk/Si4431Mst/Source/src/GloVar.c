@@ -34,8 +34,11 @@ CMD_BUF_TypeDef * pCmdBuf;	//指向命理处理缓冲区
 
 ///*********************Global Variable**************************************************************
 uint8_t   sta;   //状态标志
-uint8_t	SPI1FIFOSta,SPI1Sta;
-uint8_t	SPI2FIFOSta,SPI2Sta;
+uint8_t	SPI1FIFOSta,SPI1Sta1,SPI1Sta2;
+uint8_t	SPI2FIFOSta,SPI2Sta1,SPI2Sta2;
+uint8_t	TXItSta1,TXItSta2;
+uint8_t	RXItSta1,RXItSta2;
+
 uint16_t	SPI2RxCnt,SPI1RxCnt;
 uint8_t NetConnectRxAdr[RX_ADR_WIDTH] = {0xA1,0x5C,0x00,0x01};	//广播接收地址
 uint8_t TX_ADDRESS_Si4431[TX_ADR_WIDTH]= {0x18,0x42,0x31,0x10};	//本地地址
