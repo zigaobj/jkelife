@@ -25,6 +25,7 @@
 #include "Global.h"
 #include "GloVar.h"
 #include "SPICom.h"
+#include "Si4431Api.h"
 #include "Si4431App.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Examples
@@ -151,7 +152,7 @@ void SysTick_Handler(void)
   * @param  None
   * @retval : None
   */
-void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的24L01的IRQ脚
+void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 { uint8_t TmpSta,i,TmpVal;
 //uint8_t StrRXOK[] = "24L01RXOK\r\n";
   if(EXTI_GetITStatus(EXTI_Line0) != RESET)	//SPI1的IRQ脚(TX 24L01)	
@@ -161,6 +162,8 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的24L01的IRQ脚
 
     /* Clear the Key Button EXTI line pending bit */
     EXTI_ClearITPendingBit(EXTI_Line0);	//清挂起寄存器
+	
+	/*
 	SPI1Sta = SPI1_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
 //	if(SPI1Sta == 0){
 //		DelayUs(10);	
@@ -203,21 +206,36 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的24L01的IRQ脚
 
 	}
 	SPI1_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,SPI1Sta);   //接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
+	*/
+  
+	}
 
-  }
-
-
+	
 }
 
-void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的24L01的IRQ脚
+void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 {	u8 TmpSta,i,TmpVal;
   if(EXTI_GetITStatus(EXTI_Line8) != RESET)	//SPI2的IRQ脚(RX 24L01)	
   {
-    /* Clear the Key Button EXTI line pending bit */
     EXTI_ClearITPendingBit(EXTI_Line8);	//清挂起寄存器
-		SPI2Sta = SPI2_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
+		
+		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+		RXItSta2 = SPI2_Read(InterruptStatus2);
+
 	//	IRDA_LED_ON();
 	//	SPI2_IRQ_H;
+
+	
+	if( (RXItSta1 & icrcerror) == icrcerror ){	//接收CRC校验错误中断
+		
+	
+	}
+	else if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包
+	
+	
+	}  
+	
+	/*
 	if(SPI2Sta & TX_DS){			//正常发送接收到ACK后的中断
 		SPI2_RW(FLUSH_TX_24L01);	//不知道是否要清空FIFO，还是读取FIFO值后自动清空	
 	}
@@ -263,6 +281,10 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的24L01的IRQ脚
 
 	}
 	SPI2_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,0xff);   //接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
+	*/
+
+
+
 
 /*	if(1 == SPI2RxCnt){
 		TransferStatus1 = Buffercmp(SPI2_RxBuf, SPI1_TxBuf, BufferSize);
@@ -410,7 +432,7 @@ void TIM3_IRQHandler(void)
 	}
 	*/
 //	SetSPI1_TXMode(MOD2_RXADR);	//2秒作为一个周期，1/4时间用于接收，3/4时间作为发射
-	Mst24L01Sta = TXSTATUS;
+//	Mst24L01Sta = TXSTATUS;
 //	GPIO_WriteBit(GPIOB, GPIO_Pin_8, Bit_RESET);
 //  TIM_ITConfig(TIM6 , TIM_IT_Update ,ENABLE);	//启动TIM6更新中断	
     /* TIM6 enable counter */
@@ -421,7 +443,7 @@ void TIM3_IRQHandler(void)
 //	GPIO_WriteBit(GPIOB, GPIO_Pin_8, Bit_SET);
 //	SetSPI1_BroadCast();	//2秒作为一个周期，1/4时间用于接收，3/4时间作为发射
 //	SetSPI1_RXMode();
-	Mst24L01Sta = RXSTATUS;
+//	Mst24L01Sta = RXSTATUS;
   }
 }
 

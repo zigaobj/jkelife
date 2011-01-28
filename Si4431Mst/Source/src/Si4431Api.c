@@ -11,7 +11,7 @@
 //*功能：Si4431的SPI写时序
 //****************************************************************************************************/
 
-static u8 SPI1_RW(u8 Data)
+u8 SPI1_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI1 , Data);
 	// Wait for SPI1 data reception 
@@ -21,7 +21,7 @@ static u8 SPI1_RW(u8 Data)
 }
 
 //u8 SpiRfWriteAddressData(u8 address, u8 data)
-static u8 SPI1_RWReg(u8 Reg, u8 Data)
+u8 SPI1_RWReg(u8 Reg, u8 Data)
 {
 	u8 status;
 	SPI1_CSN_L;			//NSS拉低		// CSN low, init SPI transaction                  
@@ -31,7 +31,7 @@ static u8 SPI1_RWReg(u8 Reg, u8 Data)
 	return(status);            // return nRF24L01 status uchar
 }
 
-static u8 SPI1_Read(u8 Reg)
+u8 SPI1_Read(u8 Reg)
 {
 	u8 Reg_val;
 	SPI1_CSN_L;			//NSS拉低
@@ -41,7 +41,7 @@ static u8 SPI1_Read(u8 Reg)
 	return(Reg_val);        // return register value
 }
 
-static u16 SPI1_RWWord(u16 Reg)
+u16 SPI1_RWWord(u16 Reg)
 {
 	u16 temp16;
 	SPI1_CSN_L;			//NSS拉低	// Set CSN low, init SPI tranaction = 0;						
@@ -59,7 +59,7 @@ static u16 SPI1_RWWord(u16 Reg)
 //*功能：Si4431的SPI写时序
 //****************************************************************************************************/
 
-static u8 SPI2_RW(u8 Data)
+u8 SPI2_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI2 , Data);
 	// Wait for SPI1 data reception 
@@ -69,7 +69,7 @@ static u8 SPI2_RW(u8 Data)
 }
 
 //u8 SpiRfWriteAddressData(u8 address, u8 data)
-static u8 SPI2_RWReg(u8 Reg, u8 Data)
+u8 SPI2_RWReg(u8 Reg, u8 Data)
 {
 	u8 status;
 	SPI2_CSN_L;			//NSS拉低		// CSN low, init SPI transaction                  
@@ -79,7 +79,7 @@ static u8 SPI2_RWReg(u8 Reg, u8 Data)
 	return(status);            // return nRF24L01 status uchar
 }
 
-static u8 SPI2_Read(u8 Reg)
+u8 SPI2_Read(u8 Reg)
 {
 	u8 Reg_val;
 	SPI2_CSN_L;			//NSS拉低
@@ -101,7 +101,7 @@ static u8 SPI2_Read(u8 Reg)
   + NOTES:          it controls the nSEL pin
   +
   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-static u16 SPI2_RWWord(u16 Reg)
+u16 SPI2_RWWord(u16 Reg)
 {
 	u16 temp16;
 	SPI2_CSN_L;			//NSS拉低	// Set CSN low, init SPI tranaction = 0;						

@@ -161,15 +161,15 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 	strNTA[6] = OrgSlvAdd[1];
 	strNTA[7] = OrgSlvAdd[2];
 	strNTA[8] = OrgSlvAdd[3];
-	strNTA[9] = OrgSlvAdd[4];	//原模块地址
+	strNTA[9] = OrgSlvAdd[4];		//原模块地址
 
 	strNTA[11] = MOD1_RXADR[1];
 	strNTA[12] = MOD1_RXADR[2];
 	strNTA[13] = MOD1_RXADR[3];
-	strNTA[14] = loopi;	//根据组网顺序添加的字段
+	strNTA[14] = loopi;					//根据组网顺序添加的字段
 
- 	NET_LED_TURN();	//有模块组网成功
-	CmdApply(strNTA ,32);		//将命令存到待处理缓冲区
+ 	NET_LED_TURN();							//有模块组网成功
+	CmdApply(strNTA ,32);				//将命令存到待处理缓冲区
 
 		/*
 		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
