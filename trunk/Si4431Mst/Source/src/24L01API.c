@@ -92,9 +92,9 @@ void Init_NRF24L01_SPI2(void)
 //	TmpSta = SPI2_Read(RX_PW_P0_24L01);
 	SPI2_RW_Reg(WRITE_REG_24L01 + RF_SETUP_24L01, 0x07);   		//设置发射速率为1MHZ，发射功率为最大值0dB	
 //	TmpSta = SPI2_Read(RF_SETUP_24L01);
-	SPI2_RW_Reg(WRITE_REG_24L01 + CONFIG_24L01, 0x0f);   		// 不响应发送中断， IRQ收发完成中断响应，16位CRC，上电，主接收
+	SPI2_RW_Reg(WRITE_REG_24L01 + CONFIG_24L01, 0x0f);   			//不响应发送中断， IRQ收发完成中断响应，16位CRC，上电，主接收
 //	TmpSta = SPI2_Read(CONFIG_24L01);
-	SPI2_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,0x70);   //接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
+	SPI2_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,0x70);   			//接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
 	SPI2_CE_H;	//RX模式
 	DelayUs(200);
 }

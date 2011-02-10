@@ -22,6 +22,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
+#include "platform_config.h"
 #include "Global.h"
 #include "GloVar.h"
 #include "SPICom.h"
@@ -153,7 +154,7 @@ void SysTick_Handler(void)
   * @retval : None
   */
 void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
-{ uint8_t TmpSta,i,TmpVal;
+{ //u8 TmpSta,i,TmpVal;
 //uint8_t StrRXOK[] = "24L01RXOK\r\n";
   if(EXTI_GetITStatus(EXTI_Line0) != RESET)	//SPI1的IRQ脚(TX 24L01)	
   {
@@ -162,6 +163,23 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 
     /* Clear the Key Button EXTI line pending bit */
     EXTI_ClearITPendingBit(EXTI_Line0);	//清挂起寄存器
+
+		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+		TXItSta2 = SPI1_Read(InterruptStatus2);
+
+	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
+		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	
+	}
+	if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
+		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	
+	}
+	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
+		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	
+	}
+
 	
 	/*
 	SPI1Sta = SPI1_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
@@ -214,7 +232,7 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 }
 
 void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
-{	u8 TmpSta,i,TmpVal;
+{	//u8 TmpSta,i,TmpVal;
   if(EXTI_GetITStatus(EXTI_Line8) != RESET)	//SPI2的IRQ脚(RX 24L01)	
   {
     EXTI_ClearITPendingBit(EXTI_Line8);	//清挂起寄存器
@@ -227,11 +245,11 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 
 	
 	if( (RXItSta1 & icrcerror) == icrcerror ){	//接收CRC校验错误中断
-		
+		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 	
 	}
-	else if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包
-	
+	if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包
+		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 	
 	}  
 	
@@ -420,7 +438,7 @@ void TIM3_IRQHandler(void)
 //	GPIO_WriteBit(LED_GPIO_PORT, RUN_LED_CN_PIN, (BitAction)((1-GPIO_ReadOutputDataBit(LED_GPIO_PORT, RUN_LED_CN_PIN))));
   	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 	GlobalRunTime.Second++;
-//	IRDA_LED_TURN();
+	IRDA_LED_TURN();
 //	NET_LED_OFF();
 //	IRDA_LED_OFF();
 	/*

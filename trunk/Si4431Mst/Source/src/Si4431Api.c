@@ -122,7 +122,7 @@ u16 SPI2_RWWord(u16 Reg)
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
 void Si4431TX_Init(void)
-{                   
+{ u8 TmpRegVal;                  
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//寄存器软复位
  	
 	while ( GPIO_ReadOutputDataBit(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
@@ -133,6 +133,8 @@ void Si4431TX_Init(void)
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);		//关闭所有中断
 
 	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x7F);		//30M晶振的调谐电容为12.5P
+	TmpRegVal = SPI1_Read(CrystalOscillatorLoadCapacitance);						//读寄存器，检查是否设置正确
+
 //	SPI1_RWReg((REG_WRITE | MicrocontrollerOutputClock), 0x05);				//GPIO输出2M时钟
 	SPI1_RWReg((REG_WRITE | GPIO0Configuration), 0x12);									//GPIO_0 发射模式
 	SPI1_RWReg((REG_WRITE | GPIO1Configuration), 0x14); 								//GPIO_1 接收数据
@@ -151,7 +153,7 @@ void Si4431TX_Init(void)
 	SPI1_RWReg((REG_WRITE | ClockRecoveryTimingLoopGain0), 0x36);				//(25h)0x0a
 	  
 	//case RATE_24K: // 2.4k 
-//	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x13); 												//
+//	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x13); 											//
 //	SPI1_RWReg((REG_WRITE | TXDataRate0), 0xa9); 
 	//TX发射速率9600BPS
 	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x02); 												//(6EH)9600BPS
@@ -171,23 +173,23 @@ void Si4431TX_Init(void)
 	SPI1_RWReg((REG_WRITE | ModulationModeControl1), 0x00); 						//(70H)
 	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 						//(71H)直接模式 FSK调制
 	//数据包结构
-	SPI1_RWReg((REG_WRITE | HeaderControl1), 0x00);											//(32h)帧头
-	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x02); 										//(33h)no head; sync word 3 and 2
-	SPI1_RWReg((REG_WRITE | PreambleLength), 0x04);   									//(34h)引导头2 byte
-	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x10); 					//(35h)8bit
+	SPI1_RWReg((REG_WRITE | HeaderControl1), 0x0F);											//(32h)校验checkhead3-0 4位接收地址
+	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x42); 										//(33h)no head; sync word 3 and 2
+	SPI1_RWReg((REG_WRITE | PreambleLength), 0x08);   									//(34h)引导头长度 32 byte
+//	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x10); 				//(35h)8bit
 	SPI1_RWReg((REG_WRITE | SyncWord3), 0x2d);													//(36h)同步头
 	SPI1_RWReg((REG_WRITE | SyncWord2), 0xa4);													//(37h)
-	SPI1_RWReg((REG_WRITE | SyncWord1), 0x2d);													//(36h)
-	SPI1_RWReg((REG_WRITE | SyncWord0), 0xa4);													//(37h)
+//	SPI1_RWReg((REG_WRITE | SyncWord1), 0x2d);												//(36h)
+//	SPI1_RWReg((REG_WRITE | SyncWord0), 0xa4);												//(37h)
 
-	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x88); 									//(30h)enable TX handling	不要CRC
+	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8D); 									//(30h)enable TX handling	CRC16
 	
 	SPI1_RWReg((REG_WRITE | ClockRecoveryGearshiftOverride), 0x13);			//(1Fh)
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);					//(09h)ready模式，Xtal
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x02);										//使能接收中断
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x60);										//(50h)使能发射FIFO几乎满，几乎空中断
 	SPI1_RWReg((REG_WRITE | TXPower), 0x07);
         
 	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x3f);
@@ -220,7 +222,7 @@ void Si4431TX_IdleMod(void)
 //=============================================================================================
 void Si4431TX_TransmitMod(u8 * pTxHeader)
 {
-	u8 iLoop,TxHeaderAdr;	
+	u8 iLoop,TxHeaderAdr,TmpVal;	
 	Si4431TX_IdleMod();        
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
@@ -229,6 +231,9 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		//设置发送地址头，高位对齐	
 		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		
 	}
+
+  TmpVal = SPI1_Read(TransmitHeader3);
+	TmpVal = SPI1_Read(TransmitHeader0);
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //中断使能包发送
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
@@ -243,7 +248,7 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
 void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
-{	u8 iLoop,RxCheckHeaderAdr;
+{	u8 iLoop,RxCheckHeaderAdr,TmpVal;
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
 	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
@@ -251,7 +256,9 @@ void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
 		SPI1_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
 	}
-  
+  TmpVal = SPI1_Read(CheckHeader3);
+	TmpVal = SPI1_Read(CheckHeader0);
+
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
  	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
 
@@ -311,7 +318,7 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 //修改:2011-01-20			KEN			初定
 //=============================================================================================
 void Si4431RX_Init(void)
-{                   
+{	u8 TmpRegVal;                 
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//寄存器软复位
  	
 	while ( GPIO_ReadOutputDataBit(SPI2_CTL_GPIO, SPI2_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
@@ -324,6 +331,8 @@ void Si4431RX_Init(void)
 	SPI2_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x7F);		//30M晶振的调谐电容为12.5P
 //	SPI2_RWReg((REG_WRITE | MicrocontrollerOutputClock), 0x05);				//GPIO输出2M时钟
 	SPI2_RWReg((REG_WRITE | GPIO0Configuration), 0x12);									//GPIO_0 发射模式
+	TmpRegVal = SPI2_Read(GPIO0Configuration);													//读寄存器，检查是否设置正确
+	
 	SPI2_RWReg((REG_WRITE | GPIO1Configuration), 0x14); 								//GPIO_1 接收数据
 	SPI2_RWReg((REG_WRITE | GPIO2Configuration), 0x15); 								//GPIO_2 接收模式	
 	SPI2_RWReg((REG_WRITE | IOPortConfiguration), 0x00); 							  // gpio    0, 1,2 NO OTHER FUNCTION. 
@@ -360,23 +369,23 @@ void Si4431RX_Init(void)
 	SPI2_RWReg((REG_WRITE | ModulationModeControl1), 0x00); 						//(70H)
 	SPI2_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 						//(71H)直接模式 FSK调制
 	//数据包结构
-	SPI2_RWReg((REG_WRITE | HeaderControl1), 0x00);											//(32h)帧头
-	SPI2_RWReg((REG_WRITE | HeaderControl2), 0x02); 										//(33h)no head; sync word 3 and 2
-	SPI2_RWReg((REG_WRITE | PreambleLength), 0x04);   									//(34h)引导头2 byte
-	SPI2_RWReg((REG_WRITE | PreambleDetectionControl), 0x10); 					//(35h)8bit
+	SPI2_RWReg((REG_WRITE | HeaderControl1), 0x0F);											//(32h)校验checkhead3-0 4位接收地址
+	SPI2_RWReg((REG_WRITE | HeaderControl2), 0x42); 										//(33h)no head; sync word 3 and 2
+	SPI2_RWReg((REG_WRITE | PreambleLength), 0x08);   									//(34h)引导头长度 32 byte
+//	SPI2_RWReg((REG_WRITE | PreambleDetectionControl), 0x10); 					//(35h)8bit
 	SPI2_RWReg((REG_WRITE | SyncWord3), 0x2d);													//(36h)同步头
 	SPI2_RWReg((REG_WRITE | SyncWord2), 0xa4);													//(37h)
-	SPI2_RWReg((REG_WRITE | SyncWord1), 0x2d);													//(36h)
-	SPI2_RWReg((REG_WRITE | SyncWord0), 0xa4);													//(37h)
+//	SPI2_RWReg((REG_WRITE | SyncWord1), 0x2d);													//(36h)
+//	SPI2_RWReg((REG_WRITE | SyncWord0), 0xa4);													//(37h)
 
-	SPI2_RWReg((REG_WRITE | DataAccessControl), 0x88); 									//(30h)enable TX handling	不要CRC
+	SPI2_RWReg((REG_WRITE | DataAccessControl), 0x8D); 									//(30h)enable TX handling	CRC16
 	
 	SPI2_RWReg((REG_WRITE | ClockRecoveryGearshiftOverride), 0x13);			//(1Fh)
 
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03);					//(08h)
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00);					//(08h)
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);					//(09h)ready模式，Xtal
-	SPI2_RWReg((REG_WRITE | InterruptEnable1), 0x02);										//使能接收中断
+	SPI2_RWReg((REG_WRITE | InterruptEnable1), 0x12);										//(50h)使能接收FIFO几乎满中断，接收有效包中断
 	SPI2_RWReg((REG_WRITE | TXPower), 0x07);
         
 	SPI2_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x3f);
@@ -441,7 +450,7 @@ void Si4431RX_ReceiveMod(u8 * pRxCheckHeader)
 		SPI2_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
 	}
   
-	SPI2_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
+	SPI2_RWReg((REG_WRITE | InterruptEnable1), 0x12);										//(50h)使能接收FIFO几乎满中断，接收有效包中断
  	SPI2_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
 
 	SPI2_Read(InterruptStatus1);
