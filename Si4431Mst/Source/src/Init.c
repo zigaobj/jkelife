@@ -476,8 +476,11 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(SPI2_CTL_GPIO, &GPIO_InitStructure);
 
-	SPI1_PWR_OFF();
-	SPI2_PWR_OFF();
+	SPI1_CE_L;
+	SPI2_CE_L;
+
+//	SPI1_PWR_OFF();
+//	SPI2_PWR_OFF();
 
 	GPIO_InitStructure.GPIO_Pin = SPI1_PIN_PWR ;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
@@ -490,7 +493,7 @@ void GPIO_Configuration(void)
   GPIO_Init(SPI2_CTL_GPIO, &GPIO_InitStructure);
 
   GPIO_InitStructure.GPIO_Pin = SPI1_PIN_IRQ | SPI2_PIN_IRQ ;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU ;	// GPIO_Mode_IN_FLOATING
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING ;	// GPIO_Mode_IN_FLOATING
   GPIO_Init(SPI1_CTL_GPIO, &GPIO_InitStructure);
 /*  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 ;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;

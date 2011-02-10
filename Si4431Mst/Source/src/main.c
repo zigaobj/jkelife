@@ -27,6 +27,7 @@
 #include "Global.h"
 #include "GloVar.h"
 #include "SPICom.h"
+#include "Si4431Api.h"
 #include "Si4431App.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Examples
@@ -62,9 +63,19 @@ int main(void)
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送
 //  DelayUs(10);
     
-//  Init_NRF24L01_SPI1();
+  Si4431TX_Init();
   
-//  Init_NRF24L01_SPI2();
+  Si4431RX_Init();
+
+	
+
+	Si4431TX_TransmitMod(MOD3_RXADR);
+	
+	Si4431RX_ReceiveMod(MOD3_TXADR);
+
+	DelayUs_Soft(1000);
+
+	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));
 
 //  SetSPI1_BroadCast();
 
@@ -94,11 +105,14 @@ int main(void)
 	//END测试
 
 //  WorkSta1 = STA_NETCONNECT;	//重新工作到组网状态。
-  while (1)
+  
+	
+	while (1)
   {
-		SysRun();
 		
-		SPI2Rx_Parse();
+	//	SysRun();
+		
+	//	SPI2Rx_Parse();
 
 //	Usart1_Rx_Parse();
 //	SPI1Rx_Parse();

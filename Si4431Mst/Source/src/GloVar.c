@@ -53,3 +53,6 @@ uint8_t MOD3_RXADR[TX_ADR_WIDTH]= {0x32,0xA1,0x0C,0xA4};	//本地地址
 uint8_t MOD4_TXADR[TX_ADR_WIDTH]= {0x33,0xA1,0x0D,0xE8};	//本地地址
 uint8_t MOD4_RXADR[TX_ADR_WIDTH]= {0x33,0xA1,0x0D,0xE8};	//本地地址
 
+u8 StrTest[13] = "Hello Si4431!";
+
+
