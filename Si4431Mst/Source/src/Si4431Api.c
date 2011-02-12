@@ -123,75 +123,95 @@ u16 SPI2_RWWord(u16 Reg)
 //=============================================================================================
 void Si4431TX_Init(void)
 { u8 TmpRegVal;                  
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//寄存器软复位
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)寄存器软复位
  	
 	while ( GPIO_ReadOutputDataBit(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
-	SPI1_Read(InterruptStatus1);	//清中断
-	SPI1_Read(InterruptStatus2);
+	SPI1_Read(InterruptStatus1);	//(03h)清中断
+	SPI1_Read(InterruptStatus2);	//(04h)
 
-	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);		//关闭所有中断
+	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);			//(06h)关闭所有中断
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), RF22_PWRSTATE_READY);	//(07h)空闲模式
 
-	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x7F);		//30M晶振的调谐电容为12.5P
+	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x7F);		//(09h)30M晶振的调谐电容为12.5P
 	TmpRegVal = SPI1_Read(CrystalOscillatorLoadCapacitance);						//读寄存器，检查是否设置正确
 
-//	SPI1_RWReg((REG_WRITE | MicrocontrollerOutputClock), 0x05);				//GPIO输出2M时钟
-	SPI1_RWReg((REG_WRITE | GPIO0Configuration), 0x12);									//GPIO_0 发射模式
-	SPI1_RWReg((REG_WRITE | GPIO1Configuration), 0x14); 								//GPIO_1 接收数据
-	SPI1_RWReg((REG_WRITE | GPIO2Configuration), 0x15); 								//GPIO_2 接收模式	
-	SPI1_RWReg((REG_WRITE | IOPortConfiguration), 0x00); 							  // gpio    0, 1,2 NO OTHER FUNCTION. 
-	SPI1_RWReg((REG_WRITE | ModulationModeControl1),0x20);							//不使用曼彻斯特编码 没有白化 
+	SPI1_RWReg((REG_WRITE | MicrocontrollerOutputClock), 0x05);						//(0Ah)GPIO输出2M时钟
+	SPI1_RWReg((REG_WRITE | GPIO0Configuration), 0x12);								//(0Bh)GPIO_0 发射模式
+	SPI1_RWReg((REG_WRITE | GPIO1Configuration), 0x14); 							//(0Ch)GPIO_1 接收数据
+	SPI1_RWReg((REG_WRITE | GPIO2Configuration), 0x15); 							//(0Dh)GPIO_2 接收模式	
+	SPI1_RWReg((REG_WRITE | IOPortConfiguration), 0x00); 							//(0Eh)gpio    0, 1,2 NO OTHER FUNCTION. 
+	SPI1_RWReg((REG_WRITE | ModulationModeControl1),0x20);							//(70h)不使用曼彻斯特编码 没有白化 
 
-//	SPI1_RWReg((REG_WRITE | IFFilterBandwidth), 0x1D); 								//(1Ch)BW=90kHZ
-	SPI1_RWReg((REG_WRITE | AFCLoopGearshiftOverride), 0x00);						//(1Dh)禁止AFC
+	SPI1_RWReg((REG_WRITE | AFCLoopGearshiftOverride), 0x40);						//(1Dh)使能AFC
 
-	SPI1_RWReg((REG_WRITE | ClockRecoveryOversamplingRatio), 0xa1);			//(20h)
-	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset2), 0x20);								//(21h)
-	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset1), 0x4e);								//(22h)
-	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset0), 0xa5);								//(23h)
-	SPI1_RWReg((REG_WRITE | ClockRecoveryTimingLoopGain1), 0x00);				//(24h)
-	SPI1_RWReg((REG_WRITE | ClockRecoveryTimingLoopGain0), 0x36);				//(25h)0x0a
-	  
+	//TX发射速率9600BPS
+	SPI1_RWReg((REG_WRITE | IFFilterBandwidth), 0x1e); 						//(1Ch)BW=90kHZ
+	SPI1_RWReg((REG_WRITE | ClockRecoveryOversamplingRatio), 0xd0);			//(20h)calculate from the datasheet  = 500*(1+2*down3_bypass)/(2^ndec*RB*(1+enmanch))
+	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset2), 0x00);					//(21h)rxosr[10--8] = 0; stalltr = (default), ccoff[19:16] = 0;
+	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset1), 0x9d);					//(22h)ncoff =5033 = 0x13a9
+	SPI1_RWReg((REG_WRITE | ClockRecoveryOffset0), 0x49);					//(23h)
+	SPI1_RWReg((REG_WRITE | ClockRecoveryTimingLoopGain1), 0x00);			//(24h)
+	SPI1_RWReg((REG_WRITE | ClockRecoveryTimingLoopGain0), 0x45);			//(25h)0x0a
+	SPI1_RWReg((REG_WRITE | 0x2a), 0x20);
+	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x4e); 	//(6Eh)											//(6EH)9600BPS
+	SPI1_RWReg((REG_WRITE | TXDataRate0), 0xa5);	//(6Fh)	  
 	//case RATE_24K: // 2.4k 
 //	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x13); 											//
 //	SPI1_RWReg((REG_WRITE | TXDataRate0), 0xa9); 
-	//TX发射速率9600BPS
-	SPI1_RWReg((REG_WRITE | TXDataRate1), 0x02); 												//(6EH)9600BPS
-	SPI1_RWReg((REG_WRITE | TXDataRate0), 0x75);												//(6FH)
-
-	SPI1_RWReg((REG_WRITE | TXRampControl), 0x7F); 	//Add by T.L.Steve
 	
-	//频率设置													
-	SPI1_RWReg((REG_WRITE | FrequencyBandSelect), 0x53);    						//(75H)边带选择，低频段240-479.9M 430Mhz
-	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency1), 0x4b);  					//(76H)fc  正好433HZ
-	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency0), 0x00);						//(77H)fc
-
-	//不知道作用
-	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x20);                 //(72h)频率偏差20k                            
-	SPI1_RWReg((REG_WRITE | FrequencyOffset),0x00); 										//(73h)
-
-	SPI1_RWReg((REG_WRITE | ModulationModeControl1), 0x00); 						//(70H)
-	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 						//(71H)直接模式 FSK调制
 	//数据包结构
-	SPI1_RWReg((REG_WRITE | HeaderControl1), 0x0F);											//(32h)校验checkhead3-0 4位接收地址
-	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x42); 										//(33h)no head; sync word 3 and 2
-	SPI1_RWReg((REG_WRITE | PreambleLength), 0x08);   									//(34h)引导头长度 32 byte
-//	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x10); 				//(35h)8bit
-	SPI1_RWReg((REG_WRITE | SyncWord3), 0x2d);													//(36h)同步头
-	SPI1_RWReg((REG_WRITE | SyncWord2), 0xa4);													//(37h)
-//	SPI1_RWReg((REG_WRITE | SyncWord1), 0x2d);												//(36h)
-//	SPI1_RWReg((REG_WRITE | SyncWord0), 0xa4);												//(37h)
-
-	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8D); 									//(30h)enable TX handling	CRC16
+	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8D); 					//(30h)enable packet handler使能包处理, msb first, enable crc,
+	SPI1_RWReg((REG_WRITE | HeaderControl1), 0xFF);						//(32h)校验checkhead3-0 4位接收地址address enable for headere byte 0, 1,2,3, receive header check for byte 0, 1,2,3
+	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x42); 					//(33h)header 3, 2, 1,0 used for head length, fixed packet length, synchronize word length 3, 2,
 	
+	SPI1_RWReg((REG_WRITE | PreambleLength), 64);   					//(34h)引导头长度 // 64 nibble = 32byte preamble
+	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x20); 			//(35h)need to detect 20bit preamble
+	SPI1_RWReg((REG_WRITE | SyncWord3), 0x2d);							//(36h)// synchronize word						//(36h)同步头
+	SPI1_RWReg((REG_WRITE | SyncWord2), 0xa4);							//(37h)						
+	SPI1_RWReg((REG_WRITE | SyncWord1), 0x00);							//(38h)
+	SPI1_RWReg((REG_WRITE | SyncWord0), 0x00);							//(39h)
+
+	SPI1_RWReg((REG_WRITE | 0x3a), 's');  // tx header
+	SPI1_RWReg((REG_WRITE | 0x3b), 'o');
+	SPI1_RWReg((REG_WRITE | 0x3c), 'n');
+	SPI1_RWReg((REG_WRITE | 0x3d), 'g');
+	SPI1_RWReg((REG_WRITE | 0x3e), 17);  // total tx 17 byte
+	SPI1_RWReg((REG_WRITE | 0x3f), 's'); // check hearder
+	SPI1_RWReg((REG_WRITE | 0x40), 'o');
+	SPI1_RWReg((REG_WRITE | 0x41), 'n');
+	SPI1_RWReg((REG_WRITE | 0x42), 'g');
+	SPI1_RWReg((REG_WRITE | 0x43), 0xff);  // all the bit to be checked
+	SPI1_RWReg((REG_WRITE | 0x44), 0xff);  // all the bit to be checked
+	SPI1_RWReg((REG_WRITE | 0x45), 0xff);  // all the bit to be checked
+	SPI1_RWReg((REG_WRITE | 0x46), 0xff);  // all the bit to be checked
+
+	SPI1_RWReg((REG_WRITE | TXPower), 0x03)				//(6Dh)1db发射
+	SPI1_RWReg((FrequencyHoppingChannelSelect), 0x0);  	//(79h)no hopping
+	SPI1_RWReg((FrequencyHoppingStepSize), 0x0);  		//(7Ah)no hopping
+	//频率设置
+	                           
+
+//	SPI1_RWReg((REG_WRITE | ModulationModeControl1), 0x00); 			//(70H)
+	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
+	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);                 //(72h)// frequency deviation setting to 45k = 72*625 													
+	SPI1_RWReg((REG_WRITE | FrequencyOffset),0x00); 					//(73h)
+	SPI1_RWReg((REG_WRITE | FrequencyChannelControl),0x00)				//(74h)no offset
+
+	SPI1_RWReg((REG_WRITE | FrequencyBandSelect), 0x53);    					//(75H)边带选择，低频段240-479.9M 430Mhz
+	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency1), 0x64);  					//(76H)fc  正好434HZ
+	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency0), 0x00);					//(77H)fc
+
+
+		
+	SPI1_RWReg((REG_WRITE | TXRampControl), 0x7F); 		//(52h)Add by T.L.Steve	
 	SPI1_RWReg((REG_WRITE | ClockRecoveryGearshiftOverride), 0x13);			//(1Fh)
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);					//(09h)ready模式，Xtal
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x60);										//(50h)使能发射FIFO几乎满，几乎空中断
-	SPI1_RWReg((REG_WRITE | TXPower), 0x07);
-        
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x60);							//(50h)使能发射FIFO几乎满，几乎空中断
+	        
 	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x3f);
 }
 
