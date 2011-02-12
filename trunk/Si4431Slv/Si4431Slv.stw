@@ -1,0 +1,12 @@
+;	STMicroelectronics Workspace file
+
+[Version]
+Keyword=ST7Workspace-V0.7
+
+[Project0]
+Filename=si4431slv.stp
+Dependencies=
+[Options]
+ActiveProject=si4431slv
+ActiveConfig=Debug
+AddSortedElements=1
