@@ -194,25 +194,25 @@ void Si4431TX_Init(void)
 
 //	SPI1_RWReg((REG_WRITE | ModulationModeControl1), 0x00); 			//(70H)
 	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
-	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);                 //(72h)// frequency deviation setting to 45k = 72*625 													
-	SPI1_RWReg((REG_WRITE | FrequencyOffset),0x00); 					//(73h)
+	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);           //(72h)// frequency deviation setting to 45k = 72*625 													
+	SPI1_RWReg((REG_WRITE | FrequencyOffset),0x00); 							//(73h)
 	SPI1_RWReg((REG_WRITE | FrequencyChannelControl),0x00)				//(74h)no offset
 
-	SPI1_RWReg((REG_WRITE | FrequencyBandSelect), 0x53);    					//(75H)边带选择，低频段240-479.9M 430Mhz
-	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency1), 0x64);  					//(76H)fc  正好434HZ
-	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency0), 0x00);					//(77H)fc
+	SPI1_RWReg((REG_WRITE | FrequencyBandSelect), 0x53);    			//(75H)边带选择，低频段240-479.9M 430Mhz
+	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency1), 0x64);  		//(76H)fc  正好434HZ
+	SPI1_RWReg((REG_WRITE | NominalCarrierFrequency0), 0x00);			//(77H)fc
 
 
-		
-	SPI1_RWReg((REG_WRITE | TXRampControl), 0x7F); 		//(52h)Add by T.L.Steve	
+	/*		
+	SPI1_RWReg((REG_WRITE | TXRampControl), 0x7F); 											//(52h)Add by T.L.Steve	
 	SPI1_RWReg((REG_WRITE | ClockRecoveryGearshiftOverride), 0x13);			//(1Fh)
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00);					//(08h)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);					//(09h)ready模式，Xtal
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x60);							//(50h)使能发射FIFO几乎满，几乎空中断
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x60);										//(50h)使能发射FIFO几乎满，几乎空中断
 	        
-	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x3f);
+	SPI1_RWReg((REG_WRITE | CrystalOscillatorLoadCapacitance), 0x3f);		*/
 }
 
 //=============================================================================================
@@ -224,13 +224,11 @@ void Si4431TX_Init(void)
 //=============================================================================================
 void Si4431TX_IdleMod(void)
 {
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		// 
-	//diasble all ITs
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x00);
-	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
   //releaze all IT flags
-	SPI1_Read(InterruptStatus1);
-	SPI1_Read(InterruptStatus2);
+	SPI1_Read(InterruptStatus1);		//(03h)
+	SPI1_Read(InterruptStatus2);		//(04h)
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h) 
 }
 
 //=============================================================================================
@@ -241,23 +239,27 @@ void Si4431TX_IdleMod(void)
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
 void Si4431TX_TransmitMod(u8 * pTxHeader)
-{
-	u8 iLoop,TxHeaderAdr,TmpVal;	
-	Si4431TX_IdleMod();        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //清发送FIFO
+{	u8 iLoop,TxHeaderAdr;
+		
+	Si4431TX_IdleMod();        	//设置空闲状态
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
+	
 	TxHeaderAdr = TransmitHeader3;			//发送帧头
   
-	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		//设置发送地址头，高位对齐	
-		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		
+	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		
+		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		//(3Ah-3Dh)设置发送地址头，高位对齐	
 	}
 
-  TmpVal = SPI1_Read(TransmitHeader3);
-	TmpVal = SPI1_Read(TransmitHeader0);
+	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 30);  //(7Dh)tx almost empty 门限
 
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //中断使能包发送
-	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//TX人工接收模式，预备模式
+//  TmpVal = SPI1_Read(TransmitHeader3);
+//	TmpVal = SPI1_Read(TransmitHeader0);
+
+//	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //(05h)中断使能包发送
+//	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
+//	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
 }
 
 //=============================================================================================
@@ -317,15 +319,21 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 {
 	u8 temp8;	
 	Si4431TX_IdleMod();        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //清发送FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
-	SPI1_RWReg((REG_WRITE | TransmitPacketLength), length);	 
+	SPI1_RWReg((REG_WRITE | TransmitPacketLength), length);	 				//(3Eh)发射包长度
   for(temp8=0;temp8<length;temp8++){	
-		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);		
+		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);						//(7Fh)
 	}
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);
+	
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //(05h)中断使能包发送
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);		
+
+	SPI1_Read(InterruptStatus1);
+	SPI1_Read(InterruptStatus2);
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
+				
 }
 
 /********************************Si4431RX分割线****************************************/
