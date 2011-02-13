@@ -57,7 +57,7 @@ int main(void)
   SysInit_Config();
 
 //  Usart_SendString_End(USART1 ,TestWord );	//不知原因，串口发送第一字节数据会丢失或出错。只能单独发送一字节来预防
-  DelayUs_Soft(10);
+  DelayMs_Soft(100);
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送
 //  DelayUs(10);
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送

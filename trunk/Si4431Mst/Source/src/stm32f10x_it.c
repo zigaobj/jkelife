@@ -168,15 +168,15 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 		TXItSta2 = SPI1_Read(InterruptStatus2);
 
 	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
-		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+		
 	
 	}
 	if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
-		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	
 	
 	}
 	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
-		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+		
 	
 	}
 
@@ -232,7 +232,7 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 }
 
 void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
-{	//u8 TmpSta,i,TmpVal;
+{ u8 RX_PacketLen,i = 0;
   if(EXTI_GetITStatus(EXTI_Line8) != RESET)	//SPI2的IRQ脚(RX 24L01)	
   {
     EXTI_ClearITPendingBit(EXTI_Line8);	//清挂起寄存器
@@ -240,19 +240,28 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 		RXItSta2 = SPI2_Read(InterruptStatus2);
 
-	//	IRDA_LED_ON();
+	//	
 	//	SPI2_IRQ_H;
 
 	
 	if( (RXItSta1 & icrcerror) == icrcerror ){	//接收CRC校验错误中断
-		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+		
 	
 	}
 	if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包
-		RXItSta1 = SPI2_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+			
 	
 	}  
-	
+	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎慢中断
+		RX_PacketLen = SPI2_Read (ReceivedPacketLength );	//(4Bh)接收包长度
+		for(i = SPI2index ;i < RX_PacketLen ;i++){
+			SPI2_ParseBuf[i] = SPI2_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
+		}
+		SPI2index += RX_PacketLen;
+		NET_LED_TURN();
+	}	
+
+
 	/*
 	if(SPI2Sta & TX_DS){			//正常发送接收到ACK后的中断
 		SPI2_RW(FLUSH_TX_24L01);	//不知道是否要清空FIFO，还是读取FIFO值后自动清空	
@@ -438,7 +447,7 @@ void TIM3_IRQHandler(void)
 //	GPIO_WriteBit(LED_GPIO_PORT, RUN_LED_CN_PIN, (BitAction)((1-GPIO_ReadOutputDataBit(LED_GPIO_PORT, RUN_LED_CN_PIN))));
   	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 	GlobalRunTime.Second++;
-	IRDA_LED_TURN();
+	RUN_LED_TURN();
 //	NET_LED_OFF();
 //	IRDA_LED_OFF();
 	/*
