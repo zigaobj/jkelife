@@ -160,6 +160,23 @@ u8 NewConnect(u8 * pNewAdr)
 }
 */
 
+u8 NetApply(u8 * pNewAdr)
+{	u8 loopi,loopj;
+	
+	for(loopj = 0 ;loopj < TX_ADR_WIDTH ; loopj++){
+		Net_TXADR[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
+		Net_RXADR[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
+	}
+//	SetSlv_RxMode(Net_RXADR);	
+	WorkSta1 = STA_STANDBY;
+	InNetFlag = TRUE;
+	//GPIO_WriteLow(LEDS_PORT, LED0_PIN);
+//	TIM2_Cmd(DISABLE); 
+  //TIMx 时钟频率除数的预分频值 16/1024 = 0.015625MHz 64US	 	
+//  TIM2_TimeBaseInit(TIM2_PRESCALER_1024, 15624);	//正好两秒
+// TIM2_Cmd(ENABLE);
+
+}
 //=============================================================================================
 //说明:监听网络上各模块发送的心跳包，监听到的心跳包个数用队列存储，
 //参数:函数名返回1找到从模块并记录心跳，返回0表示未找到从模块地址
@@ -253,8 +270,8 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 		if(0x10 == pRxAdr_Tab->TabFlag[loopi]){	//找到存有从模块地址的空间				
 			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向从模块地址空间
 			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
-			strSYN[5] = 0x00FF & (TIM3->CNT)>>8;	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
-			strSYN[6] = 0x00FF & TIM3->CNT;	
+			strSYN[5] = 0x00FF & (TIM3->CNTRH);	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
+			strSYN[6] = 0x00FF & TIM3->CNTRL;	
 			Si4431TX_TxPacket(strSYN, sizeof(strSYN));	//发送同步命令
 		}			
 	}

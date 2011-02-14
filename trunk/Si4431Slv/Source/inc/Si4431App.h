@@ -6,6 +6,7 @@
 
 u8 HeartBeat(u8 * pHeartBeatAdr);
 u8 NewConnect(u8 * pNewAdr);
+u8 NetApply(u8 * pNewAdr);
 void CheckConnect(void);
 void FreHopping(u8 SPIx , u8 Fre);
 void RandomDelayUs(void);

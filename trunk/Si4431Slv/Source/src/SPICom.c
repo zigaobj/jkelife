@@ -100,14 +100,15 @@ void SPI1Rx_Parse(void)
 					
 					case (RFCMD_SYN):	//收到同步命令	"#SYN,00\r\n";	//16位TIM3->CNT高位在前
 						if(STA_SYNCHRONIZE == WorkSta1){	//只有当系统在同步阶段才执行							
-							Synchronize(SPI1_ParseBuf + LoopStart);
+							Synchronize();
+						//	Synchronize(SPI1_ParseBuf + LoopStart);
 						//	Uart1_SendString(SPI1_ParseBuf + LoopStart ,LoopEnd - LoopStart);	//直接往上位机发送												
 						}
 					break;					
 					
 					case (RFCMD_TMP):	//温度采集	"#TMP,0,00000\r\n";
 						if(STA_DATA == WorkSta1){	//只有当系统在数据接收阶段才执行							
-							SPI1_CMDTMP();
+						//	SPI1_CMDTMP();
 						//	CmdApply(SPI1_ParseBuf + LoopStart ,LoopEnd - LoopStart);		//将命令存到待处理缓冲区
 						//	Uart1_SendString(SPI1_ParseBuf + LoopStart ,LoopEnd - LoopStart);	//直接往上位机发送												
 						}

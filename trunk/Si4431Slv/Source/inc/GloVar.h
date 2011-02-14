@@ -60,6 +60,9 @@ extern u8 MOD4_RXADR[TX_ADR_WIDTH];	//本地地址
 
 extern u8 StrTest[13];
 
+extern @near u8 Net_TXADR[TX_ADR_WIDTH];	//新组网地址	
+extern @near u8 Net_RXADR[TX_ADR_WIDTH];	//新组网地址
+
 extern u8 U1RxCmdFlag;		//收到一条完整的命令则自加1，数值表示当前待处理的命令数。
 extern u8 U2RxCmdFlag;
 //u8 U1NewFlag;		//SPI1收到新数据

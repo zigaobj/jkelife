@@ -54,4 +54,5 @@ u8 MOD4_RXADR[TX_ADR_WIDTH]= {0x33,0xA1,0x0D,0xE8};	//本地地址
 
 u8 StrTest[13] = "Hello Si4431!";
 
-
+@near u8 Net_TXADR[TX_ADR_WIDTH];	//新组网地址	
+@near u8 Net_RXADR[TX_ADR_WIDTH];	//新组网地址
