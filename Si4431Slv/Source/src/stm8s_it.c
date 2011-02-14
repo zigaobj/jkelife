@@ -202,39 +202,27 @@ void EXTI_PORTC_IRQHandler(void) interrupt 5
 void EXTI_PORTD_IRQHandler(void) interrupt 6
 #endif /* _COSMIC_ */
 {
-u8 TmpSta,i,TmpVal;
-  ButtonState ^= 0xFF;
-	
-  
-//uint8_t StrRXOK[] = "24L01RXOK\r\n";
+u8 RX_PacketLen,i;		//TmpSta,TmpVal,
 
-    /* Toggle GPIO_LED pin 7 */		//每次按下，B_LED状态(GPB7)改变，亮暗切换
-//    GPIO_WriteBit(GPIOB, GPIO_Pin_7, (BitAction)((1-GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_7))));
+	RXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	RXItSta2 = SPI1_Read(InterruptStatus2);
+		
+	GPIO_WriteReverse(LEDS_PORT, LED0_PIN);	//反转LED0 
 
-    /* Clear the Key Button EXTI line pending bit */
-	SPI1Sta = SPI1_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况	
-	SPI1_CE_L;	//StandBy I模式
-	if(SPI1Sta & TX_DS){			//正常发送接收到ACK后的中断
-	//	SPI1_RW(FLUSH_TX_24L01);	//不知道是否要清空FIFO，还是读取FIFO值后自动清空	
-		SPI1_RW_Reg(FLUSH_TX_24L01 , 0);
+	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
+		SPI1NewFlg = 1;
+		RX_PacketLen = SPI1_Read (ReceivedPacketLength );	//(4Bh)接收包长度
+		for(i = SPI1index ;i < RX_PacketLen ;i++){
+			SPI1_ParseBuf[i] = SPI1_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
+		}
+		SPI1index += RX_PacketLen;
+		SPI1NewFlg = 0;
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00); 
 	}
 	
-	if(SPI1Sta & MAX_RT){				// 判断是否超过重发最大数
-	//	SPI1_RW(FLUSH_TX_24L01);	//不知道是否要清空FIFO，还是读取FIFO值后自动清空
-		SPI1_RW_Reg(FLUSH_TX_24L01 , 0);	//不知道是否要清空FIFO，还是读取FIFO值后自动清空
-//		Uart1_SendString_End(TxNoReply);
-		//SPI1_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,SPI1Sta);   //接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
-	}
-	if(SPI1Sta & RX_DR){				// 判断是否接收到数据
-	  SPI1NewFlg = 1;
-	//	InNetFlag = TRUE;
-		SPI1_CE_L;	//StandBy I模式
-		SPI1_Read_Buf(RD_RX_PLOAD_24L01,SPI1_RxBuf,TX_PLOAD_WIDTH_24L01);// read receive payload from RX_FIFO buffer
-	
-	  SPI1_RW_Reg(FLUSH_RX_24L01 , 0);
-			//必须知道接收数据通道号RX_P_NO
-	  //	TmpVal = ((SPI1Sta & MASK_RX_P_NO)>>1);	//读取接收数据通道号RX_P_NO 
-		if(!SPI1FullFlag){
+
+/*		if(!SPI1FullFlag){
 			for(i=0 ; i<RX_PLOAD_WIDTH_24L01 ; i++){
 				SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[i];	//将接收缓冲区SPI1_RxBuf数据转移到处理数据缓冲区SPI1_ParseBuf
 				if(0x0A == SPI1_ParseBuf[SPI1index] ){		
@@ -247,11 +235,8 @@ u8 TmpSta,i,TmpVal;
 					SPI1FullFlag = 1;	//接收缓冲区满，未来得及处理数据
 				}
 			}
-	  }
-		SPI1NewFlg = 0;
-		SPI1_CE_H;	//置高CE，保持接收模式
-	}
-	SPI1_RW_Reg(WRITE_REG_24L01 + STATUS_24L01,0xff);   //接收到数据后RX_DR,TX_DS,MAX_PT都置高为1，通过写1来清楚中断标志
+	  }	*/
+		
 }
 
 /**
@@ -445,12 +430,13 @@ void TIM2_UPD_OVF_BRK_IRQHandler(void) interrupt 13
 		//WorkSta1 = STA_STANDBY;  
 		TIM2_ClearITPendingBit(TIM2_IT_UPDATE);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 		TIM2_ClearFlag(TIM2_FLAG_UPDATE );		
-		if(GPIO_ReadInputPin(LEDS_PORT, LED0_PIN)){
+		
+/*		if(GPIO_ReadInputPin(LEDS_PORT, LED0_PIN)){
 			GPIO_WriteLow(LEDS_PORT, LED0_PIN);
 		}
 		else{
 			GPIO_WriteHigh(LEDS_PORT, LED0_PIN);
-		}
+		}	*/
 	}		
 }
 

@@ -35,6 +35,16 @@ extern unsigned char txdata[20];
 # define LSB 1
 # define MSB 0
 
+#define RF22_PWRSTATE_READY		1
+#define RF22_PWRSTATE_TX		0x09
+#define RF22_PWRSTATE_RX		5
+#define RF22_PWRSTATE_POWERDOWN		0
+
+#define RF22_PACKET_SENT_INTERRUPT	4
+#define RF22_Tx_almost_empty_interrupt	0x20
+#define RF22_Rx_almost_full_interrupt   0x10
+#define RF22_Rx_packet_received_interrupt   0x02
+
 
 typedef union _uni_u16_
 {

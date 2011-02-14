@@ -57,8 +57,11 @@ void main(void)
 //  u8 Leds; /* Contains which LEDs to operate */
 
 	SysInit_Config();	//œµÕ≥≈‰÷√
-
+	
+	DelayMs_Soft(100);
+	
 	Si4431TX_Init();
+	
 
   /* Initialize I/O in Input Mode with Interrupt */
 //  GPIO_Init(BUTTON_PORT, BUTTON_PIN, GPIO_MODE_IN_FL_IT);
@@ -75,10 +78,12 @@ void main(void)
 //  Uart1_SendString_End(TestStr);		//
 	GPIO_WriteHigh(LEDS_PORT, LED0_PIN);
 
+	Si4431TX_ReceiveMod(MOD3_RXADR);
 	while (1)
   {
-		SysRun();
-		SPI1Rx_Parse();
+//		SysRun();
+//		SPI1Rx_Parse();
+
   }
 
 }
