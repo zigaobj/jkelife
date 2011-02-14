@@ -169,11 +169,12 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 
 	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
 		
-	
+		__NOP();
 	}
 	if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
 	
-	
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	
 	}
 	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
 		
@@ -252,7 +253,7 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 			
 	
 	}  
-	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎慢中断
+	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
 		RX_PacketLen = SPI2_Read (ReceivedPacketLength );	//(4Bh)接收包长度
 		for(i = SPI2index ;i < RX_PacketLen ;i++){
 			SPI2_ParseBuf[i] = SPI2_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
