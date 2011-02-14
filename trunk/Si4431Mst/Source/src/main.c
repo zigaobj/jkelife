@@ -71,11 +71,9 @@ int main(void)
 
 	Si4431TX_TransmitMod(MOD3_RXADR);
 	
-	Si4431RX_ReceiveMod(MOD3_TXADR);
+//	Si4431RX_ReceiveMod(MOD3_TXADR);
 
-	DelayUs_Soft(1000);
 
-	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));
 
 //  SetSPI1_BroadCast();
 
@@ -109,7 +107,10 @@ int main(void)
 	
 	while (1)
   {
-		
+
+	DelayUs_Soft(10000);
+
+	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));		
 	//	SysRun();
 		
 	//	SPI2Rx_Parse();

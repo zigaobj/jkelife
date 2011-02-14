@@ -256,7 +256,7 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		//(3Ah-3Dh)设置发送地址头，高位对齐	
 	}
 
-	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 30);  //(7Dh)tx almost empty 门限
+	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 32);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -330,7 +330,7 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);						//(7Fh)
 	}
 	
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x04);							  //(05h)中断使能包发送
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x44);							  //(05h)中断使能包发送
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
 
 	SPI1_Read(InterruptStatus1);
