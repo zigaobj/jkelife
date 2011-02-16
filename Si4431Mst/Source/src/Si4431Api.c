@@ -256,7 +256,7 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		//(3Ah-3Dh)设置发送地址头，高位对齐	
 	}
 
-	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 32);  //(7Dh)tx almost empty 门限
+	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 30);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -495,7 +495,7 @@ void Si4431RX_TransmitMod(u8 * pTxHeader)
 void Si4431RX_ReceiveMod(u8 * pRxCheckHeader)
 {	u8 iLoop,RxCheckHeaderAdr;
 	Si4431RX_IdleMod();
-	SPI2_RWReg((REG_WRITE | RXFIFOControl), 5);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI2_RWReg((REG_WRITE | RXFIFOControl), 30);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
  	SPI2_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
