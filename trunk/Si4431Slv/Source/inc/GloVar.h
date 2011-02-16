@@ -7,7 +7,7 @@
 
 
 /* define -----------------------------------------------------------*/
-#define U1RXBUFLEN 250		//串口1接收缓冲区长度
+#define U1RXBUFLEN 100		//串口1接收缓冲区长度
 #define U1TXBUFLEN 50		//串口1发送缓冲区长度
 #define U2RXBUFLEN 50		//串口1接收缓冲区长度
 #define U2TXBUFLEN 50		//串口1发送缓冲区长度
@@ -22,7 +22,7 @@
 //#define RX_PLOAD_WIDTH  32  	// 20 uints TX payload
 
 #define CMD_MAXRESEND	5		//命令重发最大次数
-#define CMD_NUMLMT 5			//最多能同时处理的命令个数
+#define CMD_NUMLMT 2			//最多能同时处理的命令个数
 #define NETCNT_TIMEOUT	1000	//组网退网状态超时为10S 测试时设置为1S
 #define DATARECEIVE_SPAN	200	//Data接收数据阶段，接收通道Rx_P1~5切换时间间隔
 #define CMD_BUF_LEN	32
@@ -51,10 +51,10 @@ extern u8 RX_ADDRESS_24L01[RX_ADR_WIDTH];	//接收地址
 
 extern u8 MOD1_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD1_RXADR[TX_ADR_WIDTH];	//本地地址
-extern u8 MOD2_TXADR[TX_ADR_WIDTH];	//本地地址
-extern u8 MOD2_RXADR[TX_ADR_WIDTH];	//本地地址
-extern u8 MOD3_TXADR[TX_ADR_WIDTH];	//本地地址
-extern u8 MOD3_RXADR[TX_ADR_WIDTH];	//本地地址
+extern const u8 MOD2_TXADR[TX_ADR_WIDTH];	//本地地址
+extern const u8 MOD2_RXADR[TX_ADR_WIDTH];	//本地地址
+extern const u8 MOD3_TXADR[TX_ADR_WIDTH];	//本地地址
+extern const u8 MOD3_RXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_RXADR[TX_ADR_WIDTH];	//本地地址
 

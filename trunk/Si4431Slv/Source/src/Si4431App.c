@@ -2,19 +2,20 @@
 
 
  /* Includes ------------------------------------------------------------------*/
+#include "stm8s_conf.h"
 #include "Global.h"
 #include "GloVar.h"
-#include "UsartCom.h"
+//#include "UsartCom.h"
 #include "Si4431Api.h"
 #include "Si4431App.h"
 
-
-
-//#include "24L01App.h"
-//#include <time.h>
 #include <stdlib.h>
+
+//#include <time.h>
+//#include <stdlib.h>
  /* Constant ------------------------------------------------------------------*/
 //跳频频道表
+/*
 const u8 FreHopBuf[80] = {\
 0x28,0x4A,0x38,0x10,0x74,0x62,0x0B,0x5D,0x3C,0x61,\
 0x6B,0x71,0x68,0x11,0x16,0x2A,0x30,0x41,0x5A,0x03,\
@@ -24,7 +25,7 @@ const u8 FreHopBuf[80] = {\
 0x33,0x74,0x38,0x65,0x17,0x45,0x52,0x06,0x17,0x2B,\
 0x51,0x75,0x63,0x30,0x34,0x08,0x38,0x5D,0x13,0x04,\
 0x42,0x54,0x48,0x4A,0x35,0x08,0x4B,0x64,0x78,0x35\
-} ;
+} ;	*/
  /* Global Variable ------------------------------------------------------------------*/
 // 以下变量用于程序运行
 //CMD_BUF_TypeDef	CmdBuf[CMD_NUMLMT] = {0};	
@@ -400,7 +401,7 @@ void DataReceive(void)
 		};	
 		
 		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * iLoop);	//指向从模块地址空间
-		Si4431RX_ReceiveMod(pRxAdr_Tab->pRxAdrTabCnt);			//设置SPI2接收通道地址为各从模块地址
+		Si4431TX_ReceiveMod(pRxAdr_Tab->pRxAdrTabCnt);			//设置SPI2接收通道地址为各从模块地址
 		
 	  pRxAdr_Tab->LoopRxAdrIndex = iLoop;		//记录这次轮询到的组网地址			
 	}

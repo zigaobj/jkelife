@@ -1,6 +1,10 @@
  /* Includes ------------------------------------------------------------------*/
+#include "stm8s_conf.h"
 #include "Global.h"
-//#include "Init.h"
+#include "GloVar.h"
+#include "Init.h"
+#include "SPICom.h"
+#include <stdlib.h>
 
 void SysInit_Config(void)
 {
