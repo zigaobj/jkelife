@@ -20,7 +20,12 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+
+#include "stm8s_conf.h"
 #include "Global.h"
+#include "GloVar.h"
+#include "Init.h"
+#include "Si4431Api.h"
 
 /**
   * @addtogroup GPIO_IOToggle_InterruptMode

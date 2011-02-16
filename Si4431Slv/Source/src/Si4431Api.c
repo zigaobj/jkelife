@@ -1,7 +1,8 @@
 
-//#include "stm32f10x.h"
+#include "stm8s_conf.h"
 #include "Global.h"
 #include "Si4431Api.h"
+
 //****************************************************************************************************
 //*函数：uint SPI1_RW(uint uchar)	输出1字节数据同时返回1字节
 //*功能：Si4431的SPI写时序

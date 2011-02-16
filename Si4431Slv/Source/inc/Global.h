@@ -1,6 +1,7 @@
 #ifndef  _GLOBAL_H_
 #define  _GLOBAL_H_
 
+/*
 #include "stm8s_conf.h"
 //#include "stm8s.h"
 
@@ -21,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+*/
 /* Òý½ÅI/O¶¨Òå */
 #define LEDS_PORT (GPIOB)
 #define LED0_PIN  (GPIO_PIN_0)

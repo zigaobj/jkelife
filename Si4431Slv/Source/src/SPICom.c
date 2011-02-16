@@ -10,8 +10,11 @@
 *Writer     :Ken
 *Date       :2010-08-27
 **************************************************/
+#include "stm8s_conf.h"
 #include "Global.h"
-//#include "SPICom.h"	
+#include "SPICom.h"	
+#include "Si4431App.h"
+
 //------------------------------------------------------------------------------------//
 
 @near u8 SPI1_TxBuf[SPIBUFLEN] ;		//SPIy_Buffer_Tx
@@ -32,7 +35,7 @@
 //u8 SPI2Pindex;        //串口处理命令标号
 //u8 pdata txIndex;          //串口发送缓冲区定标号
 @near u8 SPI1_ParseBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
-@near u8 SPI1_SendBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
+//@near u8 SPI1_SendBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
 
 //@near u8 txLog[TXLOGLEN];
 @near u8 SPI1ByteNum;		 //在协议0时串口按接收到的命令字节总数来结束一条命令的接收

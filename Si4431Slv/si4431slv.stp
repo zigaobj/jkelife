@@ -70,7 +70,7 @@ String.107.0=si4431slv.elf
 Int.108=1
 
 [Root.Config.0.Settings.1]
-String.6.0=2011,2,12,15,43,57
+String.6.0=2011,2,16,23,1,27
 String.100.0=$(TargetFName)
 String.101.0=
 String.102.0=
@@ -83,10 +83,10 @@ String.100.0=STM8S207K6
 
 [Root.Config.0.Settings.3]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc -isource\inc -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
+String.3.0=cxstm8 +modsl0 -customDebCompat -customOpt-no -customC-pp -customLst -l -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Config.0.Settings.4]
 String.2.0=Assembling $(InputFile)...
@@ -98,14 +98,16 @@ String.6.0=2011,2,12,15,39,20
 [Root.Config.0.Settings.5]
 String.2.0=Running Pre-Link step
 String.6.0=2011,2,12,15,39,20
+String.8.0=
 
 [Root.Config.0.Settings.6]
 String.2.0=Running Linker
-String.3.0=clnk -customMapFile -customMapFile-m $(OutputPath)$(TargetSName).map -fakeRunConv  -fakeInteger  -fakeSemiAutoGen  $(ToolsetLibOpts)  -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c    -fakeStartupcrtsi0.sm8 
+String.3.0=clnk -customMapFile -customMapFile-m $(OutputPath)$(TargetSName).map -fakeRunConv -fakeInteger -fakeSemiAutoGen $(ToolsetLibOpts) -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c -fakeStartupcrtsi0.sm8 
 String.3.1=cvdwarf $(OutputPath)$(TargetSName).sm8 -fakeVectAddr0x8000
 String.4.0=$(OutputPath)$(TargetFName)
 String.5.0=
-String.6.0=2011,2,12,15,41,48
+String.6.0=2011,2,16,22,21,32
+String.100.0=
 String.101.0=crtsi.st7
 String.102.0=+seg .const -b 0x8080 -m 0x7f80  -n .const -it 
 String.102.1=+seg .text -a .const  -n .text 
@@ -150,7 +152,7 @@ String.107.0=si4431slv.elf
 Int.108=1
 
 [Root.Config.1.Settings.1]
-String.6.0=2011,2,12,15,43,57
+String.6.0=2011,2,16,23,1,27
 String.100.0=$(TargetFName)
 String.101.0=
 String.102.0=
@@ -163,10 +165,10 @@ String.100.0=STM8S207K6
 
 [Root.Config.1.Settings.3]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc -isource\inc +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
+String.3.0=cxstm8 +modsl0 -customC-pp -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Config.1.Settings.4]
 String.2.0=Assembling $(InputFile)...
@@ -181,11 +183,12 @@ String.6.0=2011,2,12,15,39,20
 
 [Root.Config.1.Settings.6]
 String.2.0=Running Linker
-String.3.0=clnk -fakeRunConv  -fakeInteger  -fakeSemiAutoGen  $(ToolsetLibOpts)  -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c    -fakeStartupcrtsi0.sm8 
+String.3.0=clnk -fakeRunConv -fakeInteger -fakeSemiAutoGen $(ToolsetLibOpts) -o $(OutputPath)$(TargetSName).sm8 -fakeOutFile$(ProjectSFile).elf -customCfgFile $(OutputPath)$(TargetSName).lkf -fakeVectFilestm8_interrupt_vector.c -fakeStartupcrtsi0.sm8 
 String.3.1=cvdwarf $(OutputPath)$(TargetSName).sm8 -fakeVectAddr0x8000
 String.4.0=$(OutputPath)$(TargetFName)
 String.5.0=
 String.6.0=2011,2,12,15,41,48
+String.100.0=
 String.101.0=crtsi.st7
 String.102.0=+seg .const -b 0x8080 -m 0x7f80  -n .const -it 
 String.102.1=+seg .text -a .const  -n .text 
@@ -216,7 +219,7 @@ String.6.0=2011,2,12,15,39,20
 [Root.Source Files]
 ElemType=Folder
 PathName=Source Files
-Child=Root.Source Files.main.c
+Child=Root.Source Files.library\src\stm8s_clk.c
 Next=Root.Include Files
 Config.0=Root.Source Files.Config.0
 Config.1=Root.Source Files.Config.1
@@ -241,10 +244,10 @@ Int.1=0
 
 [Root.Source Files.Config.0.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc -isource\inc -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
+String.3.0=cxstm8 +modsl0 -customDebCompat -customOpt-no -customC-pp -customLst -l -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Source Files.Config.0.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -268,10 +271,10 @@ Int.1=0
 
 [Root.Source Files.Config.1.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc -isource\inc +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
+String.3.0=cxstm8 +modsl0 -customC-pp -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Source Files.Config.1.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -287,599 +290,98 @@ String.4.0=
 String.5.0=
 String.6.0=2011,2,12,15,39,20
 
+[Root.Source Files.library\src\stm8s_clk.c]
+ElemType=File
+PathName=library\src\stm8s_clk.c
+Next=Root.Source Files.library\src\stm8s_exti.c
+
+[Root.Source Files.library\src\stm8s_exti.c]
+ElemType=File
+PathName=library\src\stm8s_exti.c
+Next=Root.Source Files.library\src\stm8s_gpio.c
+
+[Root.Source Files.library\src\stm8s_gpio.c]
+ElemType=File
+PathName=library\src\stm8s_gpio.c
+Next=Root.Source Files.library\src\stm8s_itc.c
+
+[Root.Source Files.library\src\stm8s_itc.c]
+ElemType=File
+PathName=library\src\stm8s_itc.c
+Next=Root.Source Files.library\src\stm8s_spi.c
+
+[Root.Source Files.library\src\stm8s_spi.c]
+ElemType=File
+PathName=library\src\stm8s_spi.c
+Next=Root.Source Files.library\src\stm8s_tim1.c
+
+[Root.Source Files.library\src\stm8s_tim1.c]
+ElemType=File
+PathName=library\src\stm8s_tim1.c
+Next=Root.Source Files.library\src\stm8s_tim2.c
+
+[Root.Source Files.library\src\stm8s_tim2.c]
+ElemType=File
+PathName=library\src\stm8s_tim2.c
+Next=Root.Source Files.library\src\stm8s_tim3.c
+
+[Root.Source Files.library\src\stm8s_tim3.c]
+ElemType=File
+PathName=library\src\stm8s_tim3.c
+Next=Root.Source Files.library\src\stm8s_uart1.c
+
+[Root.Source Files.library\src\stm8s_uart1.c]
+ElemType=File
+PathName=library\src\stm8s_uart1.c
+Next=Root.Source Files.main.c
+
 [Root.Source Files.main.c]
 ElemType=File
 PathName=main.c
 Next=Root.Source Files.source\src\global.c
-Config.0=Root.Source Files.main.c.Config.0
-Config.1=Root.Source Files.main.c.Config.1
-
-[Root.Source Files.main.c.Config.0]
-Settings.0.0=Root.Source Files.main.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.main.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.main.c.Config.0.Settings.2
-
-[Root.Source Files.main.c.Config.1]
-Settings.1.0=Root.Source Files.main.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.main.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.main.c.Config.1.Settings.2
-
-[Root.Source Files.main.c.Config.0.Settings.0]
-String.6.0=2011,2,12,15,41,18
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.main.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.main.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.main.c.Config.1.Settings.0]
-String.6.0=2011,2,12,15,41,18
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.main.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.main.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\global.c]
 ElemType=File
 PathName=source\src\global.c
 Next=Root.Source Files.source\src\glovar.c
-Config.0=Root.Source Files.source\src\global.c.Config.0
-Config.1=Root.Source Files.source\src\global.c.Config.1
-
-[Root.Source Files.source\src\global.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\global.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\global.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\global.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\global.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\global.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\global.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\global.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\global.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\global.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\global.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\global.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\global.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\global.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\glovar.c]
 ElemType=File
 PathName=source\src\glovar.c
 Next=Root.Source Files.source\src\init.c
-Config.0=Root.Source Files.source\src\glovar.c.Config.0
-Config.1=Root.Source Files.source\src\glovar.c.Config.1
-
-[Root.Source Files.source\src\glovar.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\glovar.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\glovar.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\glovar.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\glovar.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\glovar.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\glovar.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\glovar.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\glovar.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\glovar.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\glovar.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\glovar.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\glovar.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\glovar.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\init.c]
 ElemType=File
 PathName=source\src\init.c
 Next=Root.Source Files.source\src\si4431api.c
-Config.0=Root.Source Files.source\src\init.c.Config.0
-Config.1=Root.Source Files.source\src\init.c.Config.1
-
-[Root.Source Files.source\src\init.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\init.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\init.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\init.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\init.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\init.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\init.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\init.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\init.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\init.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\init.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\init.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\init.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\init.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\si4431api.c]
 ElemType=File
 PathName=source\src\si4431api.c
 Next=Root.Source Files.source\src\si4431app.c
-Config.0=Root.Source Files.source\src\si4431api.c.Config.0
-Config.1=Root.Source Files.source\src\si4431api.c.Config.1
-
-[Root.Source Files.source\src\si4431api.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\si4431api.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\si4431api.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\si4431api.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\si4431api.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\si4431api.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\si4431api.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\si4431api.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\si4431api.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\si4431api.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\si4431api.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\si4431api.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\si4431api.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\si4431api.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\si4431app.c]
 ElemType=File
 PathName=source\src\si4431app.c
 Next=Root.Source Files.source\src\spicom.c
-Config.0=Root.Source Files.source\src\si4431app.c.Config.0
-Config.1=Root.Source Files.source\src\si4431app.c.Config.1
-
-[Root.Source Files.source\src\si4431app.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\si4431app.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\si4431app.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\si4431app.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\si4431app.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\si4431app.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\si4431app.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\si4431app.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\si4431app.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\si4431app.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\si4431app.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\si4431app.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\si4431app.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\si4431app.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\spicom.c]
 ElemType=File
 PathName=source\src\spicom.c
 Next=Root.Source Files.source\src\stm8s_it.c
-Config.0=Root.Source Files.source\src\spicom.c.Config.0
-Config.1=Root.Source Files.source\src\spicom.c.Config.1
-
-[Root.Source Files.source\src\spicom.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\spicom.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\spicom.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\spicom.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\spicom.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\spicom.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\spicom.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\spicom.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\spicom.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\spicom.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\spicom.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\spicom.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\spicom.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\spicom.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.source\src\stm8s_it.c]
 ElemType=File
 PathName=source\src\stm8s_it.c
-Next=Root.Source Files.source\src\usartcom.c
-Config.0=Root.Source Files.source\src\stm8s_it.c.Config.0
-Config.1=Root.Source Files.source\src\stm8s_it.c.Config.1
-
-[Root.Source Files.source\src\stm8s_it.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\stm8s_it.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\stm8s_it.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\stm8s_it.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
-
-[Root.Source Files.source\src\usartcom.c]
-ElemType=File
-PathName=source\src\usartcom.c
 Next=Root.Source Files.stm8_interrupt_vector.c
-Config.0=Root.Source Files.source\src\usartcom.c.Config.0
-Config.1=Root.Source Files.source\src\usartcom.c.Config.1
-
-[Root.Source Files.source\src\usartcom.c.Config.0]
-Settings.0.0=Root.Source Files.source\src\usartcom.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.source\src\usartcom.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.source\src\usartcom.c.Config.0.Settings.2
-
-[Root.Source Files.source\src\usartcom.c.Config.1]
-Settings.1.0=Root.Source Files.source\src\usartcom.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.source\src\usartcom.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.source\src\usartcom.c.Config.1.Settings.2
-
-[Root.Source Files.source\src\usartcom.c.Config.0.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\usartcom.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\usartcom.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.source\src\usartcom.c.Config.1.Settings.0]
-String.6.0=2011,2,12,22,1,27
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.source\src\usartcom.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.source\src\usartcom.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Source Files.stm8_interrupt_vector.c]
 ElemType=File
 PathName=stm8_interrupt_vector.c
-Config.0=Root.Source Files.stm8_interrupt_vector.c.Config.0
-Config.1=Root.Source Files.stm8_interrupt_vector.c.Config.1
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.0]
-Settings.0.0=Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.0
-Settings.0.1=Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.1
-Settings.0.2=Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.2
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.1]
-Settings.1.0=Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.0
-Settings.1.1=Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.1
-Settings.1.2=Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.2
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.0]
-String.6.0=2011,2,12,15,41,18
-String.8.0=Debug
-Int.0=0
-Int.1=0
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.0.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Debug
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.0]
-String.6.0=2011,2,12,15,41,18
-String.8.0=Release
-Int.0=0
-Int.1=0
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.1]
-String.2.0=Performing Custom Build on $(InputFile)
-String.3.0=
-String.4.0=
-String.5.0=
-String.6.0=2011,2,12,15,39,20
-
-[Root.Source Files.stm8_interrupt_vector.c.Config.1.Settings.2]
-String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
-String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
-String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
-String.8.0=Release
 
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.library\inc\stm8s.h
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -903,10 +405,10 @@ Int.1=0
 
 [Root.Include Files.Config.0.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  -customDbg -customDebCompat -customOpt-no -customLst -l +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +modsl0 -customDebCompat -customOpt-no -customC-pp -customLst -l -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Include Files.Config.0.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -930,10 +432,10 @@ Int.1=0
 
 [Root.Include Files.Config.1.Settings.1]
 String.2.0=Compiling $(InputFile)...
-String.3.0=cxstm8 -ilibrary\inc  -isource\inc  +mods0 -customC-pp $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile) 
+String.3.0=cxstm8 +modsl0 -customC-pp -ilibrary\inc -isource\inc $(ToolsetIncOpts) -cl$(IntermPath) -co$(IntermPath) $(InputFile)
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(IntermPath)$(InputName).ls
-String.6.0=2011,2,12,15,39,20
+String.6.0=2011,2,16,23,12,15
 
 [Root.Include Files.Config.1.Settings.2]
 String.2.0=Assembling $(InputFile)...
@@ -948,102 +450,3 @@ String.3.0=
 String.4.0=
 String.5.0=
 String.6.0=2011,2,12,15,39,20
-
-[Root.Include Files.library\inc\stm8s.h]
-ElemType=File
-PathName=library\inc\stm8s.h
-Next=Root.Include Files.library\inc\stm8s_clk.h
-
-[Root.Include Files.library\inc\stm8s_clk.h]
-ElemType=File
-PathName=library\inc\stm8s_clk.h
-Next=Root.Include Files.library\inc\stm8s_exti.h
-
-[Root.Include Files.library\inc\stm8s_exti.h]
-ElemType=File
-PathName=library\inc\stm8s_exti.h
-Next=Root.Include Files.library\inc\stm8s_gpio.h
-
-[Root.Include Files.library\inc\stm8s_gpio.h]
-ElemType=File
-PathName=library\inc\stm8s_gpio.h
-Next=Root.Include Files.library\inc\stm8s_itc.h
-
-[Root.Include Files.library\inc\stm8s_itc.h]
-ElemType=File
-PathName=library\inc\stm8s_itc.h
-Next=Root.Include Files.library\inc\stm8s_spi.h
-
-[Root.Include Files.library\inc\stm8s_spi.h]
-ElemType=File
-PathName=library\inc\stm8s_spi.h
-Next=Root.Include Files.library\inc\stm8s_tim2.h
-
-[Root.Include Files.library\inc\stm8s_tim2.h]
-ElemType=File
-PathName=library\inc\stm8s_tim2.h
-Next=Root.Include Files.library\inc\stm8s_tim3.h
-
-[Root.Include Files.library\inc\stm8s_tim3.h]
-ElemType=File
-PathName=library\inc\stm8s_tim3.h
-Next=Root.Include Files.library\inc\stm8s_type.h
-
-[Root.Include Files.library\inc\stm8s_type.h]
-ElemType=File
-PathName=library\inc\stm8s_type.h
-Next=Root.Include Files.library\inc\stm8s_uart1.h
-
-[Root.Include Files.library\inc\stm8s_uart1.h]
-ElemType=File
-PathName=library\inc\stm8s_uart1.h
-Next=Root.Include Files.source\inc\global.h
-
-[Root.Include Files.source\inc\global.h]
-ElemType=File
-PathName=source\inc\global.h
-Next=Root.Include Files.source\inc\glovar.h
-
-[Root.Include Files.source\inc\glovar.h]
-ElemType=File
-PathName=source\inc\glovar.h
-Next=Root.Include Files.source\inc\init.h
-
-[Root.Include Files.source\inc\init.h]
-ElemType=File
-PathName=source\inc\init.h
-Next=Root.Include Files.source\inc\si4431api.h
-
-[Root.Include Files.source\inc\si4431api.h]
-ElemType=File
-PathName=source\inc\si4431api.h
-Next=Root.Include Files.source\inc\si4431app.h
-
-[Root.Include Files.source\inc\si4431app.h]
-ElemType=File
-PathName=source\inc\si4431app.h
-Next=Root.Include Files.source\inc\south_keyboard.h
-
-[Root.Include Files.source\inc\south_keyboard.h]
-ElemType=File
-PathName=source\inc\south_keyboard.h
-Next=Root.Include Files.source\inc\spicom.h
-
-[Root.Include Files.source\inc\spicom.h]
-ElemType=File
-PathName=source\inc\spicom.h
-Next=Root.Include Files.source\inc\stm8s_conf.h
-
-[Root.Include Files.source\inc\stm8s_conf.h]
-ElemType=File
-PathName=source\inc\stm8s_conf.h
-Next=Root.Include Files.source\inc\stm8s_it.h
-
-[Root.Include Files.source\inc\stm8s_it.h]
-ElemType=File
-PathName=source\inc\stm8s_it.h
-Next=Root.Include Files.source\inc\usartcom.h
-
-[Root.Include Files.source\inc\usartcom.h]
-ElemType=File
-PathName=source\inc\usartcom.h

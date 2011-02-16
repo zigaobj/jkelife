@@ -20,8 +20,12 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm8s_conf.h"
 #include "Global.h"
-#include "stm8s_it.h"
+#include "GloVar.h"
+#include "Si4431Api.h"
+#include "SPICom.h"	
+//#include "stm8s_it.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -219,6 +223,7 @@ u8 RX_PacketLen,i;		//TmpSta,TmpVal,
 		SPI1NewFlg = 0;
 		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)«ÂΩ” ’FIFO
 		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00); 
+		
 	}
 	
 
