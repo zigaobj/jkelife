@@ -71,7 +71,7 @@ int main(void)
 
 	Si4431TX_TransmitMod(MOD3_RXADR);
 	
-	Si4431RX_ReceiveMod(MOD3_TXADR);
+//	Si4431RX_ReceiveMod(MOD3_TXADR);
 
 
 
