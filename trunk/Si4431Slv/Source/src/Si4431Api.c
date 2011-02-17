@@ -60,8 +60,9 @@ u16 SPI1_RWWord(u16 Reg)
 void Si4431TX_Init(void)
 { u8 TmpRegVal;                  
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)寄存器软复位
- 	
-	while ( GPIO_ReadInputPin(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
+	TmpRegVal = SPI1_Read(CrystalOscillatorLoadCapacitance);						//读寄存器，检查是否设置正确 	
+	
+	while ( GPIO_ReadInputPin(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
 	SPI1_Read(InterruptStatus1);	//(03h)清中断
 	SPI1_Read(InterruptStatus2);	//(04h)
@@ -204,24 +205,24 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
 void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
-{	u8 iLoop,RxCheckHeaderAdr,TmpVal;
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+{	u8 iLoop,RxCheckHeaderAdr;
+	Si4431TX_IdleMod();
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), 30);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
 	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
 	
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
 		SPI1_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
 	}
-  TmpVal = SPI1_Read(CheckHeader3);
-	TmpVal = SPI1_Read(CheckHeader0);
+  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
 
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x10);				 //(50h)使能接收FIFO几乎满中断
  	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
-        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式
 
 }
 

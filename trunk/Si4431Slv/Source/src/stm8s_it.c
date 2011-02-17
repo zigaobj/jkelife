@@ -208,25 +208,30 @@ void EXTI_PORTD_IRQHandler(void) interrupt 6
 {
 u8 RX_PacketLen,i;		//TmpSta,TmpVal,
 
-	RXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
-	RXItSta2 = SPI1_Read(InterruptStatus2);
+	TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
+	TXItSta2 = SPI1_Read(InterruptStatus2);
 		
-	GPIO_WriteReverse(LEDS_PORT, LED0_PIN);	//反转LED0 
+//	GPIO_WriteReverse(LEDS_PORT, LED0_PIN);	//反转LED0 
 
-	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
+	if( (TXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
 		SPI1NewFlg = 1;
 		RX_PacketLen = SPI1_Read (ReceivedPacketLength );	//(4Bh)接收包长度
-		for(i = SPI1index ;i < RX_PacketLen ;i++){
+/*		for(i = SPI1index ;i < RX_PacketLen ;i++){
 			SPI1_ParseBuf[i] = SPI1_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
 		}
-		SPI1index += RX_PacketLen;
+		SPI1index += RX_PacketLen;	*/
 		SPI1NewFlg = 0;
 		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00); 
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);
 		
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x10);				 //(50h)使能接收FIFO几乎满中断
+ 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 		
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式	
+		
+		GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
+	
 	}
 	
-
 /*		if(!SPI1FullFlag){
 			for(i=0 ; i<RX_PLOAD_WIDTH_24L01 ; i++){
 				SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[i];	//将接收缓冲区SPI1_RxBuf数据转移到处理数据缓冲区SPI1_ParseBuf
