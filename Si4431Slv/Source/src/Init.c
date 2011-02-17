@@ -87,6 +87,7 @@ void GPIO_Configuration(void)
   EXTI_SetExtIntSensitivity(EXTI_PORT_GPIOD, EXTI_SENSITIVITY_FALL_ONLY);	//设置输入线路下降沿为中断请求
 //  EXTI_SetTLISensitivity(EXTI_TLISENSITIVITY_FALL_ONLY);	
 	SPI1_PWR_OFF();	//断电重启24L01模块
+	SPI1_CE_L;
 }
 
 

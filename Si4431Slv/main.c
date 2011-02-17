@@ -84,6 +84,7 @@ void main(void)
 	GPIO_WriteHigh(LEDS_PORT, LED0_PIN);
 
 	Si4431TX_ReceiveMod(MOD3_RXADR);
+	
 	while (1)
   {
 //		SysRun();
