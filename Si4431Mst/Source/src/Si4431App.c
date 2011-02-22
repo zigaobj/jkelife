@@ -33,6 +33,42 @@ const uint8_t FreHopBuf[80] = {\
 //CMD_BUF_TypeDef	CmdBuf[CMD_NUMLMT] = {0};	
 //uint8_t	CmdListFlag[CMD_NUMLMT] = {0};	
 
+/*********************ken********************************** 
+*   函数说明： 命令中的八字节ASCII地址与                               
+*   输入：  pStrAdr - 字符串首地址; pNumAdr - 数值位数 ;sta = TRUE八字节ASCII地址转hex四字节地址,sta = FALSE hex四字节地址转八字节ASCII地址     				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+void Si4431AdrCover(u8 *pStrAdr, u8 *pNumAdr ,bool sta )		
+{	longWord32	tmpval ;
+	u8 i;
+	if(sta){	//八字节ASCII地址转hex四字节地址
+		tmpval.All32 = MyStrToHex(pStrAdr , CMDSPI_ADR_WIDTH);
+		pNumAdr[0] = tmpval.Bit8[0];
+		pNumAdr[1] = tmpval.Bit8[1];
+		pNumAdr[2] = tmpval.Bit8[2];
+		pNumAdr[3] = tmpval.Bit8[3];	
+	}
+	else{			//hex四字节地址转八字节ASCII地址
+		for(i = 0;i < SI4431_ADR_WIDTH;i++){
+			tmpval.Bit8[i] = pNumAdr[i];
+		}
+		MyHexToStr(pNumAdr , tmpval.All32 ,CMDSPI_ADR_WIDTH);			
+	}
+	
+/*	if(NumLen>10) {return result;}
+	for(i=0;i<NumLen;i++) {
+		if((pStr[i]>='0')&&(pStr[i]<='9')){
+			result *= 10;
+			result += (pStr[i] - '0');
+		}
+		else{
+			return 	0;
+		}
+	}
+	return 	result;	*/
+}
+
 
 //=============================================================================================
 //说明:跳频函数

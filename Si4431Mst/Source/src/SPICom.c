@@ -641,15 +641,14 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	}
 	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	
-	NewAdr = MyStrToNum(pCmdData->part.SourceAdr ,8);
 
 	//为新连接的从模块设置组网新地址，保存到空的接收地址列表
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = pCmdData->part.SourceAdr[1];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = pCmdData->part.SourceAdr[2];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = pCmdData->part.SourceAdr[3];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = pCmdData->part.SourceAdr[4];;	//根据组网顺序添加的字段
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = pCmdData->part.SourceAdr[1];
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = pCmdData->part.SourceAdr[2];
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = pCmdData->part.SourceAdr[3];
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = pCmdData->part.SourceAdr[4];;	//根据组网顺序添加的字段
 
-
+	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
 
 
 /*	

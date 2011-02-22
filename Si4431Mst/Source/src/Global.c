@@ -285,6 +285,62 @@ u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen)
 }
 
 /*********************ken********************************** 
+*   函数说明： 将接收命令中的字符长度转换成hex，最多转32位数字                               
+*   输入：  pStr - 字符串首地址, DataLen - 数值位数       				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+u32 MyStrToHex(u8 *pStr, u8	NumLen)		
+{	u32	result = 0;
+	u8 i;
+	if(NumLen>10) {return result;}
+	for(i=0;i<NumLen;i++) {
+		if((pStr[i]>='0')&&(pStr[i]<='9')){
+			result *= 16;
+			result += (pStr[i] - '0');
+		}
+		else if((pStr[i]>='A')&&(pStr[i]<='F')){
+			result *= 16;
+			result += (pStr[i] - 0x37);			
+		}
+		else if((pStr[i]>='a')&&(pStr[i]<='f')){
+			result *= 16;
+			result += (pStr[i] - 0x57);			
+		}		
+		else{
+			return 	0;
+		}
+	}
+	return 	result;
+}
+
+/*********************ken********************************** 
+*   函数说明： 将知道位数的hex转为字符，最多转32位数字                                
+*   输入：  pStr - 字符串首地址,Num - 要转化的数字， NumLen - 数字的位数       				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+
+u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen)
+{	u16	i;
+	u32 TmpNum;
+	u8 *pStrEnd = pStr+NumLen;
+	if(NumLen>8) {return 0;}
+	for(i=1;NumLen>=i;i++) {
+		TmpNum = Num % 16; //ken:取最低位
+		Num /=16;	
+		if(TmpNum < 0x0A){
+			*(pStrEnd-i) = TmpNum +0x30;
+		}
+		else{
+			*(pStrEnd-i) = TmpNum +0x37;
+		}
+	}
+	//*pStrEnd = '\0';
+	return 	1;
+}
+
+/*********************ken********************************** 
 *   函数说明： 将知道位数的数字转为字符                               
 *   输入：  pTarget - 字符串首地址,pLSource - 要转化的32位数据首地址， NumLen - 数字的位数       				
 *   输出：  函数名                            
@@ -314,27 +370,7 @@ u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen)
 	return 	1;
 }
 
-/*********************ken********************************** 
-*   函数说明： 将接收命令中的字符长度转换成数据                               
-*   输入：  pStr - 字符串首地址, DataLen - 数值位数       				
-*   输出：  函数名为转换后的数值 长度为32 long型                            
-*   调用函数：void                                      
-***********************************************************/ 
-u32 MyStrAdrToNumAdr(u8 *pStrAdr, u8	NumLen ,u8 *pNumAdr)		
-{	u32	result = 0;
-	u8 i;
-	if(NumLen>10) {return result;}
-	for(i=0;i<NumLen;i++) {
-		if((pStr[i]>='0')&&(pStr[i]<='9')){
-			result *= 10;
-			result += (pStr[i] - '0');
-		}
-		else{
-			return 	0;
-		}
-	}
-	return 	result;
-}
+
 
 ////===============================================================================//
 //float ASC_Float(u8 *cString, u8 cLen)
