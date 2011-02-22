@@ -12,6 +12,7 @@
 **************************************************/
 #include "stm8s_conf.h"
 #include "Global.h"
+#include "GloVar.h"
 #include "SPICom.h"	
 #include "Si4431App.h"
 
@@ -56,9 +57,9 @@ void SPI1Rx_Parse(void)
 //  static u8 LOG[] = "$log,ES";		   //  7
 //  static u8 SET[] = "$set,ES";		   //  7
 
-/*	if(1 == SPI1NewFlg){	//SPI1收到新数据
-		for(i=0;i<TX_PLOAD_WIDTH_24L01;i++){
-			SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[i];
+	if(1 == SPI1NewFlg){	//SPI1收到新数据
+		for(Loopi=0;Loopi<CMD_BUF_LEN;Loopi++){
+			SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[Loopi];
 			if(0x0A == SPI1_ParseBuf[SPI1index] ){		
 				if(0x0D == SPI1_ParseBuf[SPI1index-1] ){
 					SPI1OkFlag ++;		//收到0x0D 0x0A认为是一条完整的命令		
@@ -67,7 +68,7 @@ void SPI1Rx_Parse(void)
 			SPI1index++;
 		}
 		SPI1NewFlg = 0;	
-	}	*/
+	}	
 	if(0 != SPI1OkFlag ){								
 		for(LoopStart = SPI1Pindex; LoopStart < SPI1index; LoopStart++){
 			if(SPI1_ParseBuf[LoopStart]=='#'){//找到命令头了	

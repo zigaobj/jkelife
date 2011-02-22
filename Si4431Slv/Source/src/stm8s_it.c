@@ -206,7 +206,10 @@ void EXTI_PORTC_IRQHandler(void) interrupt 5
 void EXTI_PORTD_IRQHandler(void) interrupt 6
 #endif /* _COSMIC_ */
 {
-u8 RX_PacketLen,i;		//TmpSta,TmpVal,
+
+if ((GPIO_ReadInputData(SPI1_CTL_GPIO) & SPI1_PIN_IRQ) == 0x00)	//判断是否此引脚的中断
+{
+	u8 RX_PacketLen,i;		//TmpSta,TmpVal,
 
 	TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 	TXItSta2 = SPI1_Read(InterruptStatus2);
@@ -214,24 +217,47 @@ u8 RX_PacketLen,i;		//TmpSta,TmpVal,
 //	GPIO_WriteReverse(LEDS_PORT, LED0_PIN);	//反转LED0 
 
 	if( (TXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
-		SPI1NewFlg = 1;
+	//	SPI1NewFlg = 1;
 		RX_PacketLen = SPI1_Read (ReceivedPacketLength );	//(4Bh)接收包长度
-/*		for(i = SPI1index ;i < RX_PacketLen ;i++){
+		for(i = SPI1index ;i < RX_PacketLen ;i++){
 			SPI1_ParseBuf[i] = SPI1_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
 		}
-		SPI1index += RX_PacketLen;	*/
-		SPI1NewFlg = 0;
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);
-		
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x10);				 //(50h)使能接收FIFO几乎满中断
- 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 		
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式	
+		SPI1OkFlag = 1;
+		SPI1index += RX_PacketLen;	
+	//	SPI1NewFlg = 0;
 		
 		GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
-	
+	Si4431TX_IdleMod();		
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清发射接收FIFO
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);
+		
+//	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x10);				 //(50h)使能接收FIFO几乎满中断
+// 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 		
+		SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式	
 	}
+	if( (TXItSta1 & itxffafull) == itxffafull ){	//FIFO几乎满中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x01); 			 //清发射FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+	}
+	if( (TXItSta1 & ifferr) == ifferr ){	//FIFO上下溢中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+	}
+	if( (TXItSta1 & icrcerror) == icrcerror ){	//CRC错误中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+	}	
+	if( (TXItSta2 & ipreainval) == ipreainval ){	//引导码错误中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+	}		
 	
+	
+}	
 /*		if(!SPI1FullFlag){
 			for(i=0 ; i<RX_PLOAD_WIDTH_24L01 ; i++){
 				SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[i];	//将接收缓冲区SPI1_RxBuf数据转移到处理数据缓冲区SPI1_ParseBuf
@@ -428,7 +454,7 @@ void TIM5_CAP_COM_IRQHandler(void) interrupt 14
 void TIM2_UPD_OVF_BRK_IRQHandler(void) interrupt 13
 #endif /* _COSMIC_ */
 {
-//1秒中断一次， 作为系统的整体时基，用于同步网络各模块时基
+//2秒中断一次， 作为系统的整体时基，用于同步网络各模块时基
 	if(TIM2_GetITStatus(TIM2_IT_UPDATE) != RESET){		//待机状态	  
 /*		if(GPIO_ReadInputPin(LEDS_PORT, Q1_PIN)){
 			GPIO_WriteLow(LEDS_PORT, Q1_PIN);
@@ -440,13 +466,11 @@ void TIM2_UPD_OVF_BRK_IRQHandler(void) interrupt 13
 		//WorkSta1 = STA_STANDBY;  
 		TIM2_ClearITPendingBit(TIM2_IT_UPDATE);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 		TIM2_ClearFlag(TIM2_FLAG_UPDATE );		
-		
-/*		if(GPIO_ReadInputPin(LEDS_PORT, LED0_PIN)){
-			GPIO_WriteLow(LEDS_PORT, LED0_PIN);
+		if(STA_NETCONNECT == WorkStaPre1){
+			Si4431TX_TxPacket(StrTest ,sizeof(StrTest));	
 		}
-		else{
-			GPIO_WriteHigh(LEDS_PORT, LED0_PIN);
-		}	*/
+		GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
+			
 	}		
 }
 
