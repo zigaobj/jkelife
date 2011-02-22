@@ -87,7 +87,7 @@ typedef struct _CMDSPI_BUF_TypeDef{
  	CMDSPI_BODY_TypeDef * pCmd_Prc_Current;			//指向处理中的命令处理缓冲区
 	CMDSPI_BODY_TypeDef * pCmd_Body_Current;			//指向存放待处理的命令处理缓冲区
 	CMDSPI_BODY_TypeDef	 Cmd_Body[CMDSPI_RXLIST_LMT];	//命令处理缓冲空间
-	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区			
+				
 }CMDSPI_BUF_TypeDef;
 
 
@@ -104,6 +104,8 @@ struct CMD_END{
 	u8 cCR;
 	u8 cLF;
 };
+
+void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
 
 
 
@@ -125,10 +127,10 @@ extern uint8_t  SPI2_ParseBuf[SPI2PARSEBUFLEN];
 extern uint8_t  txLog[TXLOGLEN];
 
 extern uint8_t  SPI1ByteNum;
-//---------------------------------------------------------------//
+
 void SPI1Rx_Parse(void);
 void SPI2Rx_Parse(void);
-
+//---------------------------------------------------------------//
 
 
 /*

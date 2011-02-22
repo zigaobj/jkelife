@@ -314,6 +314,28 @@ u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen)
 	return 	1;
 }
 
+/*********************ken********************************** 
+*   函数说明： 将接收命令中的字符长度转换成数据                               
+*   输入：  pStr - 字符串首地址, DataLen - 数值位数       				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+u32 MyStrAdrToNumAdr(u8 *pStrAdr, u8	NumLen ,u8 *pNumAdr)		
+{	u32	result = 0;
+	u8 i;
+	if(NumLen>10) {return result;}
+	for(i=0;i<NumLen;i++) {
+		if((pStr[i]>='0')&&(pStr[i]<='9')){
+			result *= 10;
+			result += (pStr[i] - '0');
+		}
+		else{
+			return 	0;
+		}
+	}
+	return 	result;
+}
+
 ////===============================================================================//
 //float ASC_Float(u8 *cString, u8 cLen)
 //{

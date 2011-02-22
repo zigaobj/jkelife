@@ -11,6 +11,7 @@
 *Date       :2010-08-27
 **************************************************/
 #include "stm32f10x.h"
+#include "platform_config.h"
 #include "Global.h"
 #include "CmdPrc.h"
 #include "UsartCom.h"
@@ -619,15 +620,15 @@ void CmdExecute(void)		//执行散转函数
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
 //=============================================================================================
 void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
-{	u16 RpStrLen;
+{	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区	
+	u32	NewAdr;
+	u16 RpStrLen;
 	uint8_t loopi,loopj;//TmpSta;
-	uint8_t strNTA[32] = "#NTA,00000,00000\r\n";	//发送至从模块
+	uint8_t strNTA[32] = "#NETAPL\0";	//发送至从模块
 //	uint8_t strACN[14] = "#ACN,0,00000\r\n";		//发送给上位机
 	u8	OrgSlvAdd[5] = {0};
   if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){	//超过从模块地址保存空间了
   	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
-		return 0;
-
   }
   else{
 	
@@ -640,14 +641,18 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	}
 	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	
-//	strACN[5] = loopi;		//组网编号
+	NewAdr = MyStrToNum(pCmdData->part.SourceAdr ,8);
+
 	//为新连接的从模块设置组网新地址，保存到空的接收地址列表
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = MOD1_RXADR[1];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = MOD1_RXADR[2];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = MOD1_RXADR[3];
-	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = loopi;	//根据组网顺序添加的字段
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = pCmdData->part.SourceAdr[1];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = pCmdData->part.SourceAdr[2];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = pCmdData->part.SourceAdr[3];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = pCmdData->part.SourceAdr[4];;	//根据组网顺序添加的字段
 
 
+
+
+/*	
 	for(loopj = 0 ;loopj < SI4431_ADR_WIDTH ; loopj++){
 		OrgSlvAdd[loopj]	= * (pNewAdr+loopj);	//原来的从模块的Rx地址
 //		pJKNetAdr_Tab->pJKNetAdrTabCnt[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
@@ -677,8 +682,10 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	strNTA[13] = MOD1_RXADR[3];
 	strNTA[14] = loopi;					//根据组网顺序添加的字段
 
- 	NET_LED_TURN();							//有模块组网成功
-	CmdSpiApply(Spi1_Cmd_TxPort ,strNTA ,32);				//将命令存到待处理缓冲区
+ 	*/
+	
+	NET_LED_TURN();							//有模块组网成功
+	CmdSpiApply(Spi1_Cmd_TxPort ,pReplyBuf->all ,32);				//将命令存到待处理缓冲区
 
 		/*
 		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
