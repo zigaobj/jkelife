@@ -154,7 +154,7 @@ void SysTick_Handler(void)
   * @retval : None
   */
 void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
-{ //u8 TmpSta,i,TmpVal;
+{ u8 RX_PacketLen,i;
 //uint8_t StrRXOK[] = "24L01RXOK\r\n";
   if(EXTI_GetITStatus(EXTI_Line0) != RESET)	//SPI1的IRQ脚(TX 24L01)	
   {
@@ -167,22 +167,58 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 		TXItSta2 = SPI1_Read(InterruptStatus2);
 
-	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
-	//	NET_LED_TURN();
-		__NOP();
-	}
-	if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
-	
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
-		SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	
-	
-		IRDA_LED_TURN();
-	}
-	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
+//	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
+//	//	NET_LED_TURN();
+//		__NOP();
+//	}
+		if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
 		
-	
-	}
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	
+		
+			IRDA_LED_TURN();
+		}
+//	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
+//		
+//	
+//	}
 
+		if( (TXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
+			RX_PacketLen = SPI1_Read (ReceivedPacketLength );	//(4Bh)接收包长度
+			for(i = SPI1index ;i < RX_PacketLen ;i++){
+				SPI1_ParseBuf[i] = SPI1_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
+				if('\n' == SPI1_ParseBuf[i]){
+					SPI1OkFlag ++;	//暂时用此机制，接收到新一条命令
+				}
+				if(SPI1index >= SPI1PARSEBUFLEN){	//超出接收缓冲区范围
+					SPI1FullFlag = 1;
+					break;
+				}
+			}
+			
+			SPI1index += RX_PacketLen;	
+			NET_LED_TURN();
+			Si4431TX_IdleMod();
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);  	
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式		
+		}	
+		if( (TXItSta1 & ifferr) == ifferr ){	//FIFO上下溢中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+		}
+		if( (TXItSta1 & icrcerror) == icrcerror ){	//CRC错误中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+		}	
+		if( (TXItSta2 & ipreainval) == ipreainval ){	//引导码错误中断
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);			 //RX人工接收模式，预备模式				
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+ 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+		}
 	
 	/*
 	SPI1Sta = SPI1_Read(STATUS_24L01);	// 读取状态寄存其来判断数据接收状况
@@ -451,18 +487,18 @@ void TIM2_IRQHandler(void)
 }
 
 
-//2秒中断一次， 作为系统的整体时基，用于同步网络各模块时基
+//1秒中断一次， 作为系统的整体时基，用于同步网络各模块时基
 void TIM3_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET){  
 //	GPIO_WriteBit(LED_GPIO_PORT, RUN_LED_CN_PIN, (BitAction)((1-GPIO_ReadOutputDataBit(LED_GPIO_PORT, RUN_LED_CN_PIN))));
   	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 	GlobalRunTime.Second++;
-	RUN_LED_TURN();
+//	RUN_LED_TURN();
 
-	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));
-//	NET_LED_OFF();
-//	IRDA_LED_OFF();
+//	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));
+//	NET_LED_TURN();
+	IRDA_LED_TURN();
 	/*
 	if(TXSTATUS == Mst24L01Sta){
 		SetSPI1_RXMode();	//每隔2秒

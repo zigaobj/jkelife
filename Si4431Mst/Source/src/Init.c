@@ -1,12 +1,12 @@
  /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "platform_config.h"
-#include "Init.h"
-#include "GloVar.h"
 #include "Global.h"
+#include "CmdPrc.h"	
+#include "Init.h"
 #include "SPICom.h"
 #include "Si4431App.h"
-
+#include "GloVar.h"
 #include <stdlib.h>
 
 
@@ -156,14 +156,15 @@ void VarInit(void)
 	WorkStaPre2 = STA_SLEEP;	
 //	GlobalRunTime = 0;
 	
-	pCmdBuf =&CmdBuf;	//指向命理处理缓冲区
+	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
+	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
 	pRxAdr_Tab = &RxAdr_Tab;
-	for(i = 0;i < BufferSize;i++){
-		SPI1_RxBuf[i] = 0;
-		SPI2_RxBuf[i] = 0;
-//		SPI1_TxBuf[i] = i;
-		SPI2_TxBuf[i] = i+BufferSize;		
-	}
+//	for(i = 0;i < SPIBUFLEN;i++){
+//		SPI1_RxBuf[i] = 0;
+//		SPI2_RxBuf[i] = 0;
+////		SPI1_TxBuf[i] = i;
+//		SPI2_TxBuf[i] = i;		
+//	}
 	sta = 0;   //状态标志
 
 	TXItSta1 = 0;
@@ -172,6 +173,8 @@ void VarInit(void)
 	RXItSta2 = 0;
 
 	SPI2RxCnt = 0;
+
+/*
 //	pRxAdr_Tab->pTabFlag = pRxAdr_Tab->TabFlag ;
 #ifdef DEBUGJK
 //	pRxAdr_Tab->RxAdrTabCnt = 5;
@@ -198,7 +201,7 @@ void VarInit(void)
 	
 //测试	pRxAdr_Tab->TabFlag[0]	=0x10;
 
-	for(i = 0;i < RX_ADR_WIDTH;i++){
+	for(i = 0;i < SI4431_ADR_WIDTH;i++){
 		pRxAdr_Tab->RxAdrTab0[i] = i;
 		pRxAdr_Tab->RxAdrTab1[i] = i;
 		pRxAdr_Tab->RxAdrTab2[i] = i;
@@ -206,8 +209,8 @@ void VarInit(void)
 		pRxAdr_Tab->RxAdrTab4[i] = i;
 		pRxAdr_Tab->RxAdrTab5[i] = i;	
 	}
-
-	srand((unsigned) MOD1_TXADR[3]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
+*/
+	srand((unsigned) RX_ADDRESS_Si4431[3]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
 }
 
 
@@ -300,89 +303,7 @@ void SPI_Config(void)
   /* Enable SPIz */
   SPI_Cmd(SPI2, ENABLE);
 
-
-/*
-  // Transfer procedure 
-  while (TxIdx < BufferSize)
-  {
-    // Wait for SPIy Tx buffer empty 
-    while (SPI_I2S_GetFlagStatus(SPIy, SPI_I2S_FLAG_TXE) == RESET);
-    // Send SPIz data 
-    SPI_I2S_SendData(SPIz, SPI2_TxBuf[TxIdx]);
-    // Send SPIy data 
-    SPI_I2S_SendData(SPIy, SPI1_TxBuf[TxIdx++]);
-    // Wait for SPIz data reception 
-    while (SPI_I2S_GetFlagStatus(SPIz, SPI_I2S_FLAG_RXNE) == RESET);
-    // Read SPIz received data 
-    SPI2_RxBuf[RxIdx] = SPI_I2S_ReceiveData(SPIz);
-    // Wait for SPIy data reception 
-    while (SPI_I2S_GetFlagStatus(SPIy, SPI_I2S_FLAG_RXNE) == RESET);
-    // Read SPIy received data 
-    SPI1_RxBuf[RxIdx++] = SPI_I2S_ReceiveData(SPIy);
-  }
-
-  // Check the corectness of written dada 
-  TransferStatus1 = Buffercmp(SPI2_RxBuf, SPI1_TxBuf, BufferSize);
-  TransferStatus2 = Buffercmp(SPI1_RxBuf, SPI2_TxBuf, BufferSize);
-*/
-
-  /* TransferStatus1, TransferStatus2 = PASSED, if the transmitted and received data
-     are equal */
-  /* TransferStatus1, TransferStatus2 = FAILED, if the transmitted and received data
-     are different */
-/*
-  // Enable SPIy 
-  SPI_Cmd(SPIy, DISABLE);
-  // Enable SPIz 
-  SPI_Cmd(SPIz, DISABLE);
-  // 2nd phase: SPIy Slave and SPIz Master 
-  // SPIy Re-configuration ---------------------------------------------------
-  SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
-  SPI_Init(SPIy, &SPI_InitStructure);
-
-  // SPIz Re-configuration ---------------------------------------------------
-  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-  SPI_Init(SPIz, &SPI_InitStructure);
-
-  // Enable SPI2 NSS output for master mode 
-  SPI_SSOutputCmd(SPI2, ENABLE);
-  // Enable SPI1 NSS output for master mode 
-  SPI_SSOutputCmd(SPI1, DISABLE);
-
-  // Enable SPIy 
-  SPI_Cmd(SPIy, ENABLE);
-  // Enable SPIz 
-  SPI_Cmd(SPIz, ENABLE);
-
-  // Reset TxIdx, RxIdx indexes and receive tables values 
-  TxIdx = 0;
-  RxIdx = 0;
-  for (k = 0; k < BufferSize; k++)  SPI2_RxBuf[k] = 0;
-  for (k = 0; k < BufferSize; k++)  SPI1_RxBuf[k] = 0;
-
-  // Transfer procedure 
-  while (TxIdx < BufferSize)
-  {
-    // Wait for SPIz Tx buffer empty 
-    while (SPI_I2S_GetFlagStatus(SPIz, SPI_I2S_FLAG_TXE) == RESET);
-    // Send SPIy data 
-    SPI_I2S_SendData(SPIy, SPI1_TxBuf[TxIdx]);
-    // Send SPIz data 
-    SPI_I2S_SendData(SPIz, SPI2_TxBuf[TxIdx++]);
-    // Wait for SPIy data reception 
-    while (SPI_I2S_GetFlagStatus(SPIy, SPI_I2S_FLAG_RXNE) == RESET);
-    // Read SPIy received data 
-    SPI1_RxBuf[RxIdx] = SPI_I2S_ReceiveData(SPIy);
-    // Wait for SPIz data reception 
-    while (SPI_I2S_GetFlagStatus(SPIz, SPI_I2S_FLAG_RXNE) == RESET);
-    // Read SPIz received data 
-    SPI2_RxBuf[RxIdx++] = SPI_I2S_ReceiveData(SPIz);
-  }
-
-  // Check the corectness of written dada 
-  TransferStatus3 = Buffercmp(SPI2_RxBuf, SPI1_TxBuf, BufferSize);
-  TransferStatus4 = Buffercmp(SPI1_RxBuf, SPI2_TxBuf, BufferSize);
-*/	
+	
 
 }
 

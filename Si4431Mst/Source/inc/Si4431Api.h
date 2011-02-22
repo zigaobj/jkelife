@@ -13,23 +13,7 @@
 #define TXHEADERRATE (TXHEADERLEN/8)
 //sbit RF_NSEL_PIN = P0^7;
 
-//sbit SCLK = P3^4;
-//sbit SDA  = P3^3;
-//sbit LCDRS = P2^0;
-//sbit LCDE  = P2^1;
 
-void SYSCLK_Init (void);
-void PORT_Init (void);
-void delay(u16 n);
-////////////////////////lcd.h///////////////////////                                
-extern u8 dis_buf[32];  
-
-extern unsigned char rxdata[20];	//16,接收数据存储器组
-extern unsigned char txdata[20];
-#define RECKEY    1
-#define UPKEY    2
-#define DOWNKEY  4
-#define ENTKEY   8
 
 
 # define LSB 1
@@ -66,87 +50,7 @@ typedef union _uni_u32_
    s8 part_s8[4];
 } uni_u32;
                                                             
-//-----------------------------------------------------------------------------
-// 函数定义
-//-----------------------------------------------------------------------------
 
-//uni_u16 SpiRfReadWriteAddressData(u16 address, u16 d);
-
-//void send();
-void si4432_init(void);
-void recv_data(void);
-void recv(void);//接收节点地址函数
-void send_init(void);
-void recv_init(void);
-void send_data(unsigned char *seddat,unsigned char leng);
-
-void SpiRfWriteWord(uni_u16 spi_in);
-u8 SPI1_RW(u8 Data);
-u8 SPI1_RWReg(u8 Reg, u8 Data);
-u8 SPI1_Read(u8 Reg);
-u8 SPI2_RW(u8 Data);
-u8 SPI2_RWReg(u8 Reg, u8 Data);
-u8 SPI2_Read(u8 Reg);
-
-
-uni_u16 SpiRfReadWriteWord(uni_u16 spi_in);
-//u16 SpiRfReadRegister(u16 address);
-extern void LCD_Init(void);
-extern void write_byte(unsigned char wdata);
-extern void lcdaddr(u8 DDRAM);
-extern void lcdchar (u8 ch);
-extern void writedata(u8 sdata);
-extern void clrscreen(void);
-extern void lcddisplay(void);
-extern void display(u8 *pstr);
-extern void newdisplay(void);
-///////////////////////keyscan.h/////////////////////////////////
-
-
-
-extern u8   keyval;
-extern u8   keynew;	//判断键值
-extern u8   keylast;
-extern u8	KEYISNEW;
-
-extern u8 turncount;
-extern u8 txcount;
-extern u8 rxcount;
-extern u8 count0;
-extern u8 count1;
-extern u8 count2;
-
-extern u8 num0;
-extern u8 num1;
-extern u8 num2;
-
-
-extern void key_init(void);
-extern void key_scan(void);
-extern void keyproc(void);
-
-
-///////////////////////display.c/////////////////////////////////
-enum status {start,phy,trans,channels,powers,baudrates,chs,pows,bauds};//声明
-extern enum status workmode;//外部声明，而该变量在键盘文件中定义
-
-extern void new_dis_buf(void);
-typedef struct 
-	{
-	  u8  dischar[16];
-	  u8  datalen;
-	}testdisplay;
-
-extern testdisplay testdis[28];
-
-///////////////////////si4421SET/////////////////////////////////////////
-typedef union STYPE
-{
-     u16 U16;
-     int S16;
-     u8 U8[2];
-     char S8[2];
-} STYPE;
 
 /*
 #define		DeviceType 								 0x00

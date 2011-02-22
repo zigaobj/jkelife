@@ -21,13 +21,13 @@
 #include <string.h>
 
 */
-#define BufferSize 32
+#ifndef    NULL
+  #define  NULL   (void *)0  
+#endif 
+#ifndef    null
+ #define   null   (void *)0  
+#endif 
 
-
-
-
-#define SPI1CH	1
-#define SPI2CH	2 
 
 //随机数范围RANDMIN~RANDMAX 1~50
 #define RANDMIN	0x01
@@ -43,6 +43,13 @@
 
 typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 //typedef enum {FALSE = 0, TRUE = !FALSE} TestStatus;
+
+typedef	union _LONGWORD32_
+{
+	u32 All32;			//单位为1秒，所以换算为毫秒要*1000
+	u8 Bit8[4];			//单位为毫秒
+}longWord32;
+
 
 typedef enum {
 STA_SLEEP = 0 ,		//休眠
@@ -67,10 +74,7 @@ typedef uint32_t timems_t;	//定义记录毫秒类型的变量类型
 extern volatile RUN_TIME_TYPE GlobalRunTime;	//记录系统上电后的运行时间
 extern volatile timems_t StartTimeMs1,EndTimeMs1,StartTimeMs2,EndTimeMs2,StartTimeMs3,EndTimeMs3;
 
-extern u8 SPI1_TxBuf[BufferSize];
-extern u8 SPI2_TxBuf[BufferSize];
-extern u8 SPI1_RxBuf[BufferSize]; 
-extern u8 SPI2_RxBuf[BufferSize];
+
 
 extern u8 TxNoReply[] ;
 extern u8 RxNotMatch[];
@@ -101,12 +105,19 @@ void DelayMs_Soft(u16 time);
 
 //#define	_MsfInsrt(T, S)		MsgInsrt(T, S, sizeof(S))
 
-TestStatus Buffercmp(u8* pBuffer1, u8* pBuffer2, u16 BufferLength);
-u16 Hash(u8 *pStr, u8 len);
-void MsgInsrt(u8 *pTarget, u8 *pSource, u16 MsgLen);
-u16 MyStrLen(u8 str[]);
-
 timems_t ReadRunTime(void);
 timems_t CheckTimeInterval(timems_t StartTime,timems_t EndTime);
+
+TestStatus Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength);
+uint16_t Hash(uint8_t *pStr, uint8_t len);
+//u8 CmdCheck(CMD_BODY_TypeDef * pCmdDat);
+void MsgCopy(u8 * pTarget, u8 * pSource, u16 MsgLen);
+void MsgInsrt(uint8_t * pTarget, uint8_t * pSource, uint16_t MsgLen ,u8 AddDotFg);
+uint16_t MyStrLen(uint8_t str[]);
+//u16 ReplyAppend(CMD_BODY_TypeDef *pRplyStr);
+
+u32 MyStrToNum(u8 *pStr, u8	NumLen);
+u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen);
+u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen);
 
 #endif

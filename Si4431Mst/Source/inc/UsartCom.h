@@ -46,6 +46,5 @@ void Usart_SendString_End(USART_TypeDef* USARTx , uint8_t *string);
 void Usart_SendString(USART_TypeDef* USARTx , uint8_t *string , uint16_t len);
 void Usart_SendByte(USART_TypeDef* USARTx , uint8_t byte);
 void Usart1_Rx_Parse(void);
-uint8_t CmdApply(uint8_t *pCmdPos , uint8_t CmdLen);
 
 #endif

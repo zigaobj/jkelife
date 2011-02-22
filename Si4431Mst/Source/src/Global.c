@@ -133,17 +133,19 @@ uint16_t Hash(uint8_t *pStr, uint8_t len)
 	return result;  
 }
 
+///---------------------------------------------------------------------------
+//说明：命令数据插入函数	
+//参数：pTarget目标地址，pSource源地址，MsgLen插入字符长度，AddDotFg是否插入','号及从'\0'开始插入
+//返回：void	
 //---------------------------------------------------------------------------
-// MsgInsrt: 	
-// 回复内容组合函数:衔接处的第一位必须为'\0'
-//---------------------------------------------------------------------------
-
-void MsgInsrt(uint8_t * pTarget, uint8_t * pSource, uint16_t MsgLen)
+void MsgInsrt(uint8_t * pTarget, uint8_t * pSource, uint16_t MsgLen ,u8 AddDotFg)
 {
-	uint8_t i=0, j=0;
-
-	while(pTarget[i]){i++;}			// 寻找衔接处的'\0'
-//	if (i) pTarget[i++] = ',';		// 若不是开头， 则添加','
+	u16 i=0, j=0;
+	
+	if(TRUE == AddDotFg){
+		while(pTarget[i]){i++;}				// 寻找衔接处的'\0'
+		if (i) pTarget[i++] = ',';		// 若不是开头， 则添加','
+	}
 	for( ;j<MsgLen; ) {
 		pTarget[i++] = pSource[j++];
 	}
@@ -157,9 +159,6 @@ uint16_t MyStrLen(uint8_t str[])
 {
     uint16_t nlen = 0;
     uint8_t *p = str;
-
- 
-
     while (p && *p++)
         nlen++;
 
@@ -193,5 +192,183 @@ timems_t CheckTimeInterval(timems_t StartTime,timems_t EndTime)
 		return (EndTime - StartTime);
 	}
 }
+//---------------------------------------------------------------------------
+//说明：数据复制拷贝函数	
+//参数：pTarget目标地址，pSource源地址，MsgLen要复制的字符长度
+//返回：void	
+//---------------------------------------------------------------------------
+void MsgCopy(u8 * pTarget, u8 * pSource, u16 MsgLen)
+{
+	u16 j;	
+	for(j = 0 ;j<MsgLen; j++) {
+		pTarget[j] = pSource[j];
+	}
+//	pTarget[i] = '\0';
+}
 
+////--------------------------------------------------------------------------- 	
+//// 回复内容组合函数
+//// ken:会算出发送字符串长度	
+//u16 ReplyAppend(CMD_BODY_TypeDef *pRplyStr)
+//{	u16		nCheckNum = 0 ,nRplyStrLen = 0;
+//	u8		nCheckChar[2];
+//	u8 		i;
+//
+//	while(pRplyStr->all[nRplyStrLen] != '\0'){nRplyStrLen++;}	//寻找结尾
+//	//插入长度					
+//	MyNumToStr(pRplyStr->part.CmdTotalLen,(nRplyStrLen + CMD_TAIL_LEN) , 3);	//加上 *xor\r\n 5个字节长度
+//	
+//	for(i=0;i < nRplyStrLen;i++) {
+//		nCheckNum ^= pRplyStr->all[i];		//ken:计算CheckSum值
+//	}								
+//	//ken:把CheckSum值分为两个字节
+//	nCheckChar[0] = nCheckNum >> 4;		//ken:保存CheckSum高位
+//	nCheckChar[1] = nCheckNum & 0xF;	//ken:保存CheckSum低位
+//	for (i=0;i<2;i++) {
+//		if (nCheckChar[i]<=9)		{nCheckChar[i] += 48;}	//ken:将16进制转换为ASCII码
+//		else						{nCheckChar[i] += 55;}
+//	}
+//	
+//	pRplyStr->all[nRplyStrLen++] = '*';
+//	pRplyStr->all[nRplyStrLen++] = nCheckChar[0];		//异或校验高位
+//	pRplyStr->all[nRplyStrLen++] = nCheckChar[1];		//异或校验低位	
+//	pRplyStr->all[nRplyStrLen++] = '\r';
+//	pRplyStr->all[nRplyStrLen++] = '\n';
+//	 
+//	MyNumToStr(pRplyStr->part.CmdTotalLen, nRplyStrLen , CMD_TOTAL_LEN);	//将长度转为ASCII码，添加至
+//	return nRplyStrLen;
+//}
+	
+
+
+/*********************ken********************************** 
+*   函数说明： 将接收命令中的字符长度转换成数据                               
+*   输入：  pStr - 字符串首地址, DataLen - 数值位数       				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+u32 MyStrToNum(u8 *pStr, u8	NumLen)		
+{	u32	result = 0;
+	u8 i;
+	if(NumLen>10) {return result;}
+	for(i=0;i<NumLen;i++) {
+		if((pStr[i]>='0')&&(pStr[i]<='9')){
+			result *= 10;
+			result += (pStr[i] - '0');
+		}
+		else{
+			return 	0;
+		}
+	}
+	return 	result;
+}
+
+/*********************ken********************************** 
+*   函数说明： 将知道位数的数字转为字符                               
+*   输入：  pStr - 字符串首地址,Num - 要转化的数字， NumLen - 数字的位数       				
+*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   调用函数：void                                      
+***********************************************************/ 
+
+u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen)
+{	u16	i;
+	u32 TmpNum;
+	u8 *pStrEnd = pStr+NumLen;
+	if(NumLen>10) {return 0;}
+	for(i=1;NumLen>=i;i++) {
+		TmpNum = Num % 10; //ken:取最低位
+		Num /=10;	
+		*(pStrEnd-i) = TmpNum +'0';
+	}
+	//*pStrEnd = '\0';
+	return 	1;
+}
+
+/*********************ken********************************** 
+*   函数说明： 将知道位数的数字转为字符                               
+*   输入：  pTarget - 字符串首地址,pLSource - 要转化的32位数据首地址， NumLen - 数字的位数       				
+*   输出：  函数名                            
+*   调用函数：void                                      
+***********************************************************/ 
+u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen)
+{	u16	i,j,segment,temp;
+	longWord32 Temp32;
+	
+	if(NumLen % 4 == 0){
+		segment = NumLen / 4;	//
+	}
+	else{
+		segment = NumLen / 4 + 1;
+	}
+
+	for(i = 0; i < segment; i++){
+		Temp32.All32 = *(pLSource + i);
+//	Serial[iLoop] = *(cSerialNumber+iLoop);
+		for(j = 0; j<4; j++){
+			temp = i*4+j;
+			if(temp >= NumLen) break;
+			pTarget[temp] = Temp32.Bit8[j];		
+		}
+	}
+	//*pStrEnd = '\0';
+	return 	1;
+}
+
+////===============================================================================//
+//float ASC_Float(u8 *cString, u8 cLen)
+//{
+//	u8 iLoop;
+//	u8 sign;
+//	u8 digit;
+//	float value  = 0.;
+//	float value1 = .0;
+//	sign  = 0;
+//	digit = cLen;
+//	
+//	for(iLoop=0; iLoop<cLen; iLoop++) //检查数据格式是否合格，如果不合格返回999999
+//	{
+//		if(iLoop==0)
+//		{
+//			if(*(cString+iLoop)=='+')                                 sign = 0;//确定为正数
+//		 	else if(*(cString+iLoop)=='-')	                          sign = 1;//确定为负数
+//			else if((*(cString+iLoop)<=0x39)&&(*(cString+iLoop)>=0x30)) sign = 0;//确定为正数		
+//		}
+//	    if(*(cString+iLoop)=='.')               digit= iLoop;//确定小数点位 
+//		if(*(cString+iLoop)>0x39 || *(cString+iLoop)<0x30)
+//		{
+//			if((*(cString+iLoop)!='+')&&(*(cString+iLoop)!='-')&&(*(cString+iLoop)!='.'))
+//			return(-999999);			
+//		}	
+//	}
+//	
+//	for(iLoop=0; iLoop<digit; iLoop++)
+//	{     	
+//		if((*(cString+iLoop)>=0x30) && (*(cString+iLoop)<=0x39))
+//		{	
+//			value = value*10.+(*(cString+iLoop)-0x30);//转换整数部分；
+//		}
+//		else
+//		{
+//			return(-999999);	
+//		}
+//	}
+//
+//	for(iLoop=cLen-1; iLoop>digit; iLoop--) 
+//	{
+//		if((*(cString+iLoop)>=0x30) && (*(cString+iLoop)<=0x39))
+//		{
+//			value1 = (value1+(*(cString+iLoop)-0x30))/10.;//转换小数部分；
+//		}
+//		else
+//		{
+//			return(-999999);	
+//		}	
+//	}	
+//	value += value1;
+//	
+//	
+//	     if(sign==0) return(value);
+//	else if(sign==1) return(-value);
+//	return(1);	
+//}
 
