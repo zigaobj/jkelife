@@ -2,20 +2,22 @@
 
 
  /* Includes ------------------------------------------------------------------*/
-
+#include <stdlib.h>
 #include "stm32f10x.h"
 #include "platform_config.h"
 #include "Si4431Api.h"
 #include "Si4431App.h"
 #include "Global.h"
-#include "GloVar.h"
+#include "CmdPrc.h"
 #include "UsartCom.h"
-
+#include "SPICom.h"
+#include "GloVar.h"
 //#include "24L01App.h"
 //#include <time.h>
-#include <stdlib.h>
+
  /* Constant ------------------------------------------------------------------*/
 //跳频频道表
+/*
 const uint8_t FreHopBuf[80] = {\
 0x28,0x4A,0x38,0x10,0x74,0x62,0x0B,0x5D,0x3C,0x61,\
 0x6B,0x71,0x68,0x11,0x16,0x2A,0x30,0x41,0x5A,0x03,\
@@ -25,14 +27,12 @@ const uint8_t FreHopBuf[80] = {\
 0x33,0x74,0x38,0x65,0x17,0x45,0x52,0x06,0x17,0x2B,\
 0x51,0x75,0x63,0x30,0x34,0x08,0x38,0x5D,0x13,0x04,\
 0x42,0x54,0x48,0x4A,0x35,0x08,0x4B,0x64,0x78,0x35\
-} ;
+} ;		*/
  /* Global Variable ------------------------------------------------------------------*/
 // 以下变量用于程序运行
 //CMD_BUF_TypeDef	CmdBuf[CMD_NUMLMT] = {0};	
 //uint8_t	CmdListFlag[CMD_NUMLMT] = {0};	
-//保存各接收模块的地址。
-RxAdrTab_TypeDef * pRxAdr_Tab;
-RxAdrTab_TypeDef RxAdr_Tab;
+
 
 //=============================================================================================
 //说明:跳频函数
@@ -82,22 +82,15 @@ void RandomDelayUs(void)
 
 void NetConnect(bool Sta)
 {
-  /*
-	if(TRUE == Sta){	//组网	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, 0x3F);      //  全频道自动ACK应答允许	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, 0x3F);  //  允许接收地址全频道，	
-	SetSPI2_RXMode(RX_P1_24L01,NetConnectRxAdr);					//P1通道	
-	WorkStaPre1 = STA_NETCONNECT;
-
+	if(TRUE == Sta){	//组网		
+		Si4431TX_ReceiveMod(NetConnectRxAdr);		//组网接收地址	
+		WorkStaPre1 = STA_NETCONNECT;
 	}
-  else{	//退出组网状态
-	SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, 0x03F);      //  禁止频道0自动ACK应答允许	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, 0x3E);  //  禁止接收地址频道0，  	
-  SetSPI2_RXMode(RX_P1_24L01,RX_ADDRESS_24L01);						//	无效的接收地址	
+  else{	//退出组网状态 	
+  	Si4431TX_ReceiveMod(RX_ADDRESS_Si4431);	//回到原来接收地址	
 		WorkStaPre1 = STA_STANDBY;
 //  IRDA_LED_OFF();
 	}
-	*/
 //	SPI1_CE_L;	//StandBy I模式
 //	SPI1_CSN_H;	//NSS拉高	
 //	SPI1_Write_Buf(WRITE_REG_24L01 + RX_ADDR_P0_24L01, NetConnectRxAdr, RX_ADR_WIDTH_24L01); // 写接收端地址	
@@ -115,37 +108,37 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 	uint8_t strNTA[32] = "#NTA,00000,00000\r\n";	//发送至从模块
 //	uint8_t strACN[14] = "#ACN,0,00000\r\n";		//发送给上位机
 	u8	OrgSlvAdd[5] = {0};
-  if(pRxAdr_Tab->RxAdrTabCnt > RXADRTABLEN){	//超过从模块地址保存空间了
-  	Usart_SendString_End(USART1 , "RxAdrTab is Full!\r\n");
+  if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){	//超过从模块地址保存空间了
+  	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
 		return 0;
 
   }
   else{
 	
-	for(loopi = 1 ; loopi < RXADRTABLEN ;loopi++){	//寻找空的从模块地址空间
-		if(0 == pRxAdr_Tab->TabFlag[loopi]){
-		 	pRxAdr_Tab->TabFlag[loopi] = 0x10;	//找到空从模块地址空间
-			pRxAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
+	for(loopi = 1 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
+		if(0 == pJKNetAdr_Tab->TabFlag[loopi]){
+		 	pJKNetAdr_Tab->TabFlag[loopi] = 0x10;	//找到空从模块地址空间
+			pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
 			break;
 		}			
 	}
-	pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向空的从模块地址空间
+	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	
 //	strACN[5] = loopi;		//组网编号
 	//为新连接的从模块设置组网新地址，保存到空的接收地址列表
-	pRxAdr_Tab->pRxAdrTabCnt[0] = MOD1_RXADR[1];
-	pRxAdr_Tab->pRxAdrTabCnt[1] = MOD1_RXADR[2];
-	pRxAdr_Tab->pRxAdrTabCnt[2] = MOD1_RXADR[3];
-	pRxAdr_Tab->pRxAdrTabCnt[4] = loopi;	//根据组网顺序添加的字段
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = MOD1_RXADR[1];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = MOD1_RXADR[2];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = MOD1_RXADR[3];
+	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = loopi;	//根据组网顺序添加的字段
 
 
-	for(loopj = 0 ;loopj < TX_ADR_WIDTH ; loopj++){
+	for(loopj = 0 ;loopj < SI4431_ADR_WIDTH ; loopj++){
 		OrgSlvAdd[loopj]	= * (pNewAdr+loopj);	//原来的从模块的Rx地址
-//		pRxAdr_Tab->pRxAdrTabCnt[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
+//		pJKNetAdr_Tab->pJKNetAdrTabCnt[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
 //		strACN[loopj + 7] = * (pNewAdr+loopj);	//从模块的Rx地址
 	}
 		
-	pRxAdr_Tab->RxAdrTabCnt++;	//从模块地址计数器加1
+	pJKNetAdr_Tab->JKNetAdrTabCnt++;	//从模块地址计数器加1
 	//组网成功，向从模块发送新的TX地址(即主模块RX_P1~P5的RX地址)
 	//组网后在主模块上对应的的从模块接收通道地址命名规范 :(需要符合24L01规范)
 	//主模块2 3 4 5字段地址 + 根据组网顺序添加的字段
@@ -169,7 +162,7 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 	strNTA[14] = loopi;					//根据组网顺序添加的字段
 
  	NET_LED_TURN();							//有模块组网成功
-	CmdApply(strNTA ,32);				//将命令存到待处理缓冲区
+	CmdSpiApply(Spi1_Cmd_TxPort ,strNTA ,32);				//将命令存到待处理缓冲区
 
 		/*
 		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
@@ -203,14 +196,14 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 				if(loopj == CMD_MAXRESEND-1){	//若到达最大重发次数，表明命令发送失败
 //					Usart_SendString_End(USART1 , "CMDNTANoReply\r\n");
 					//ACN组网命令接收成功，发接新收到的从节点Rx地址及组网编号到串口1。
-					pRxAdr_Tab->TabFlag[loopi] = 0x00;	//如果新组网地址发送不成功，不保存此模块地址记录，认为组网不成功
+					pJKNetAdr_Tab->TabFlag[loopi] = 0x00;	//如果新组网地址发送不成功，不保存此模块地址记录，认为组网不成功
 					return 0;
 				}
 			}			
 		}	
 		*/
-/*	if(RXADRTABLEN > pRxAdr_Tab->RxAdrTabCnt){	//超过RXADRTABLEN个地址不在存储
-		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH*pRxAdr_Tab->RxAdrTabCnt);	//指向下一个空的从模块地址空间
+/*	if(JKNETADRTABLEN > pJKNetAdr_Tab->JKNetAdrTabCnt){	//超过JKNETADRTABLEN个地址不在存储
+		pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (TX_ADR_WIDTH*pJKNetAdr_Tab->JKNetAdrTabCnt);	//指向下一个空的从模块地址空间
   	}	*/
 
   }
@@ -225,12 +218,12 @@ uint8_t HeartBeat(uint8_t * pHeartBeatAdr)
 {	uint8_t TmpTabCnt,CmpFlag;
 	uint8_t * pTmpTab;
 	RUN_LED_TURN();	//新收到数据IR灯跳转一次
-	if(0 != pRxAdr_Tab->RxAdrTabCnt){	//无从模块组网则不用检查心跳包地址
-		for(TmpTabCnt = 0; TmpTabCnt < RXADRTABLEN; TmpTabCnt++){	//遍历从模块地址
-			pTmpTab = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * TmpTabCnt);
-			CmpFlag = Buffercmp(pTmpTab , pHeartBeatAdr , TX_ADR_WIDTH);
+	if(0 != pJKNetAdr_Tab->JKNetAdrTabCnt){	//无从模块组网则不用检查心跳包地址
+		for(TmpTabCnt = 0; TmpTabCnt < JKNETADRTABLEN; TmpTabCnt++){	//遍历从模块地址
+			pTmpTab = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * TmpTabCnt);
+			CmpFlag = Buffercmp(pTmpTab , pHeartBeatAdr , SI4431_ADR_WIDTH);
 			if(1 == CmpFlag){	//检查到地址
-				pRxAdr_Tab->HeartBeatSta[TmpTabCnt]++;	//心跳计数+1	
+				pJKNetAdr_Tab->HeartBeatSta[TmpTabCnt]++;	//心跳计数+1	
 				return 1;				
 			}						
 		}
@@ -248,11 +241,11 @@ void CheckConnect(void)
 {	uint8_t TmpTabCnt,TmpDelCount;
 	u8 strMod[] =	"Miss Mod000!\r\n"; 
 //	SetSPI1_TXMode
-	if(0 != pRxAdr_Tab->RxAdrTabCnt){	//无从模块组网则不用检查心跳包地址
-		for(TmpTabCnt = 1; TmpTabCnt < RXADRTABLEN; TmpTabCnt++){	//	
-			if(0x10 == pRxAdr_Tab->TabFlag[TmpTabCnt]){	//有从模块地址的空间进入		
-				if(0 != pRxAdr_Tab->HeartBeatSta[TmpTabCnt]){
-					pRxAdr_Tab->HeartBeatSta[TmpTabCnt]--;	//	
+	if(0 != pJKNetAdr_Tab->JKNetAdrTabCnt){	//无从模块组网则不用检查心跳包地址
+		for(TmpTabCnt = 1; TmpTabCnt < JKNETADRTABLEN; TmpTabCnt++){	//	
+			if(0x10 == pJKNetAdr_Tab->TabFlag[TmpTabCnt]){	//有从模块地址的空间进入		
+				if(0 != pJKNetAdr_Tab->HeartBeatSta[TmpTabCnt]){
+					pJKNetAdr_Tab->HeartBeatSta[TmpTabCnt]--;	//	
 				}
 				else{	//认为有从模块离网了
 				/*	Usart_SendString_End(USART1 ,"Miss Mod");		//往串口发模块号		 
@@ -264,14 +257,14 @@ void CheckConnect(void)
 					strMod[9] = TmpTabCnt%100/10 + 0x30;
 					strMod[10] = TmpTabCnt%100%10 + 0x30;
 				//	Usart_SendString_End(USART1 , strMod);
-					pRxAdr_Tab->TabFlag[TmpTabCnt] = 0;
+					pJKNetAdr_Tab->TabFlag[TmpTabCnt] = 0;
 					IRDA_LED_TURN();	//有模块离网了	
 				}
 			}
 		}
 	}
 
-	for(TmpDelCount = TmpTabCnt ;TmpDelCount < pRxAdr_Tab->RxAdrTabCnt; TmpDelCount++ ){
+	for(TmpDelCount = TmpTabCnt ;TmpDelCount < pJKNetAdr_Tab->JKNetAdrTabCnt; TmpDelCount++ ){
 			
 	}
 
@@ -306,10 +299,10 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 //	uint8_t strindex,Temp_TIM3CNT;	,TempSta = 0
 	uint8_t loopi;	
 
-	for(loopi = 1 ; loopi < RXADRTABLEN ;loopi++){	//寻找从模块地址空间
-		if(0x10 == pRxAdr_Tab->TabFlag[loopi]){	//找到存有从模块地址的空间				
-			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * loopi);	//指向从模块地址空间
-			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+	for(loopi = 1 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找从模块地址空间
+		if(0x10 == pJKNetAdr_Tab->TabFlag[loopi]){	//找到存有从模块地址的空间				
+			pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向从模块地址空间
+			Si4431TX_TransmitMod(pJKNetAdr_Tab->pJKNetAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			strSYN[5] = 0x00FF & (TIM3->CNT)>>8;	//从模块接收后立刻修正自身的TIMx->CNTRH 与 TIMx->CNTRL
 			strSYN[6] = 0x00FF & TIM3->CNT;	
 			Si4431TX_TxPacket(strSYN, sizeof(strSYN));	//发送同步命令
@@ -330,7 +323,7 @@ void SPI2_CMDCNT(uint8_t stacnt)
 	if(1 == stacnt){	//从模块转为握手模式
 	//	SetSPI2_TXMode(NetConnectRxAdr);		//设置SPI2连接的24L01为发射模式，且设置其发射地址为广播地址
 		
-		for(strindex=0;strindex<TX_ADR_WIDTH;strindex++){
+		for(strindex=0;strindex<SI4431_ADR_WIDTH;strindex++){
 			strCNT[5+strindex] = MOD2_TXADR[strindex];	
 		}
 		Si4431TX_TxPacket(strCNT ,sizeof(strCNT));
@@ -347,12 +340,12 @@ void SPI2_CMDCNT(uint8_t stacnt)
 //*********************************************************************************************************/
 void Broadcast(uint8_t * TxStr)
 {u8 Loopi;
-	for(Loopi = 1 ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
-		if(0x10 == pRxAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
-			pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * Loopi);	//指向从模块地址空间
-			Si4431TX_TransmitMod(pRxAdr_Tab->pRxAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+	for(Loopi = 1 ; Loopi < JKNETADRTABLEN ;Loopi++){	//寻找从模块地址空间
+		if(0x10 == pJKNetAdr_Tab->TabFlag[Loopi]){	//找到存有从模块地址的空间				
+			pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * Loopi);	//指向从模块地址空间
+			Si4431TX_TransmitMod(pJKNetAdr_Tab->pJKNetAdrTabCnt);		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			Si4431TX_TxPacket(TxStr ,sizeof(TxStr));
-		//	pRxAdr_Tab->LoopRxAdrIndex = Loopi;
+		//	pJKNetAdr_Tab->LoopJKNetAdrIndex = Loopi;
 		//	TempSta = 1;
 			break;
 		}			
@@ -370,17 +363,17 @@ void DataSend(void)
 	uint8_t loopi,loopj;
 //	uint16_t TmpVal;	
 for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
-	if(0 == pCmdBuf->CmdListNum){
+	if(0 == pCmdSpiTxBuf->CmdListNum){
 		break;
 	}
-	for(loopi = 0 ; loopi < CMD_NUMLMT ;loopi++){	//寻找存有待发命令的空间
-		if(0x10 == pCmdBuf->CmdListFlag[loopi]){
+	for(loopi = 0 ; loopi < CMDSPI_TXLIST_LMT ;loopi++){	//寻找存有待发命令的空间
+		if(0x10 == pCmdSpiTxBuf->CmdListFlag[loopi]){
 			//找到要发送命令对应的从模块地址
-			pCmdBuf->pCmd_Body = &(Cmd_Body[loopi]);	//找到待发送的命令体
+			pCmdSpiTxBuf->pCmd_Prc_Current = &(pCmdSpiTxBuf->Cmd_Body[loopi]);	//找到待发送的命令体
 
-			Si4431TX_TransmitMod(pCmdBuf->pCmd_Body->part.Adr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
+			Si4431TX_TransmitMod(pCmdSpiTxBuf->pCmd_Prc_Current->part.TargetAdr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
 			
-			Si4431TX_TxPacket(pCmdBuf->pCmd_Body->all , sizeof(pCmdBuf->pCmd_Body->all));	//向从节点发送命令
+			Si4431TX_TxPacket(pCmdSpiTxBuf->pCmd_Prc_Current->all , MyStrLen(pCmdSpiTxBuf->pCmd_Prc_Current->all));	//向从节点发送命令
 			StartTimeMs2 = ReadRunTime();
 			
 			//再次Si4431发送程序不检查发送是否成功
@@ -427,22 +420,22 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 //=============================================================================================
 void DataReceive(void)
 {uint8_t iLoop,Tempi,RxPnCnt = 1;	
-//  if(pRxAdr_Tab->RxAdrTabCnt > RXADRTABLEN){	//如果组网的从模块数量大于RXADRTABLEN，则在DATA阶段需要轮换Rx_P0~P5接收通道的地址
-//	for(Loopi = pRxAdr_Tab->TabIndex ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
+//  if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){	//如果组网的从模块数量大于JKNETADRTABLEN，则在DATA阶段需要轮换Rx_P0~P5接收通道的地址
+//	for(Loopi = pJKNetAdr_Tab->TabIndex ; Loopi < JKNETADRTABLEN ;Loopi++){	//寻找从模块地址空间
 	
-	if(pRxAdr_Tab->RxAdrTabCnt){										//有模块组网才进入		
-		iLoop = pRxAdr_Tab->LoopRxAdrIndex + 1;				//获得上次轮询到的组网地址pRxAdr_Tab->TabIndex
-		if(RXADRTABLEN == iLoop) {
+	if(pJKNetAdr_Tab->JKNetAdrTabCnt){										//有模块组网才进入		
+		iLoop = pJKNetAdr_Tab->LoopJKNetAdrIndex + 1;				//获得上次轮询到的组网地址pJKNetAdr_Tab->TabIndex
+		if(JKNETADRTABLEN == iLoop) {
 			iLoop = 0;	
 		}				//循环轮询
-		while(0x10 != pRxAdr_Tab->TabFlag[iLoop]){ 		//找到存有从模块地址的空间
+		while(0x10 != pJKNetAdr_Tab->TabFlag[iLoop]){ 		//找到存有从模块地址的空间
 			iLoop++;			
 		};	
 		
-		pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0 + (TX_ADR_WIDTH * iLoop);	//指向从模块地址空间
-		Si4431RX_ReceiveMod(pRxAdr_Tab->pRxAdrTabCnt);			//设置SPI2接收通道地址为各从模块地址
+		pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * iLoop);	//指向从模块地址空间
+		Si4431RX_ReceiveMod(pJKNetAdr_Tab->pJKNetAdrTabCnt);			//设置SPI2接收通道地址为各从模块地址
 		
-	  pRxAdr_Tab->LoopRxAdrIndex = iLoop;		//记录这次轮询到的组网地址			
+	  pJKNetAdr_Tab->LoopJKNetAdrIndex = iLoop;		//记录这次轮询到的组网地址			
 	}
 }
 
@@ -455,10 +448,9 @@ void SysRun(void)
 {
   switch(WorkSta1){
 	case(STA_NETCONNECT):		//组网退网阶段
-      if(STA_NETCONNECT != WorkStaPre1){
-	  //	Init_NRF24L01_SPI2();
+		if(STA_NETCONNECT != WorkStaPre1){
 			NetConnect(TRUE);				//设置为组网模式
-	  //	StartTimeMs1 = ReadRunTime(); 
+	  	StartTimeMs1 = ReadRunTime(); 
 	  }
 /*	  else {
 	  	EndTimeMs1 = ReadRunTime();

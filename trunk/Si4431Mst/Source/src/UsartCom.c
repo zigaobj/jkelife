@@ -84,7 +84,7 @@ void Usart1_Rx_Parse(void)
 						WorkSta1 = STA_NETCONNECT;
 					break;
 					case (UCMD_PSWCTL):	//上位机的开关控制命令	"#PSWCTL,00000,0,0\r\n";
-						CmdApply(U1RxBuf + LoopStart ,LoopEnd - LoopStart);		//将命令存到待处理缓冲区		
+			//			CmdSpiApply(U1RxBuf + LoopStart ,LoopEnd - LoopStart);		//将命令存到待处理缓冲区		
 					break;
 					
 					default:
@@ -121,7 +121,8 @@ void Usart1_Rx_Parse(void)
 *   输出：  命令索引建立成功，函数名返回所建立的命令首地址，返回NULL表示建立不成功                            
 *   调用函数：void                                       
 ***********************************************************/ 
-uint8_t CmdApply(uint8_t *pCmdPos , uint8_t CmdLen)	//ken:建立命令索引函数
+/*
+uint8_t CmdUasrtApply(uint8_t *pCmdPos , uint8_t CmdLen)	//ken:建立命令索引函数
 {
 	uint8_t	loopi,loopj;
 //	CMD_BUF_TypeDef *pRxBuf = NULL;
@@ -149,7 +150,7 @@ uint8_t CmdApply(uint8_t *pCmdPos , uint8_t CmdLen)	//ken:建立命令索引函数
 	}
 //	return pRxBuf;		//ken:返回所建立的命令首地址
 }
-
+*/
 
 
 //====================================================================================//

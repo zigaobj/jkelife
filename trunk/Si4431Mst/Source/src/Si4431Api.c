@@ -190,7 +190,7 @@ void Si4431TX_Init(void)
 	SPI1_RWReg((REG_WRITE | 0x45), 0xff);  // all the bit to be checked
 	SPI1_RWReg((REG_WRITE | 0x46), 0xff);  // all the bit to be checked
 
-	SPI1_RWReg((REG_WRITE | TXPower), 0x03);				//(6Dh)1db发射
+	SPI1_RWReg((REG_WRITE | TXPower), 0x04);				//(6Dh)4db发射
 	SPI1_RWReg((REG_WRITE | FrequencyHoppingChannelSelect), 0x00);  	//(79h)no hopping
 	SPI1_RWReg((REG_WRITE | FrequencyHoppingStepSize), 0x00);  		//(7Ah)no hopping
 	//频率设置
@@ -275,24 +275,23 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 //=============================================================================================
 void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
 {	u8 iLoop,RxCheckHeaderAdr;
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
+	Si4431TX_IdleMod();
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), 30);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
 	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
 	
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
 		SPI1_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
 	}
-//  TmpVal = SPI1_Read(CheckHeader3);
-//	TmpVal = SPI1_Read(CheckHeader0);
+  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
 
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x02); 							 //中断使能接收到有效包
- 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x91);				 //(05h)使能接收FIFO几乎满中断 FIFO上下溢 CRC错误中断
+ 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x20); 			//(06h)无效引导码
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
-        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式
-
 }
 
 //=============================================================================================

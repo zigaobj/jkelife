@@ -25,11 +25,11 @@
 #include "platform_config.h"
 #include "Init.h"
 #include "Global.h"
-#include "GloVar.h"
+#include "CmdPrc.h"
 #include "SPICom.h"
 #include "Si4431Api.h"
 #include "Si4431App.h"
-
+#include "GloVar.h"
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{
   */
@@ -65,11 +65,11 @@ int main(void)
     
   Si4431TX_Init();
   
-  Si4431RX_Init();
+//  Si4431RX_Init();
 
 	
 
-	Si4431TX_TransmitMod(MOD3_RXADR);
+	
 	
 //	Si4431RX_ReceiveMod(MOD3_TXADR);
 
@@ -102,17 +102,14 @@ int main(void)
 	
 	//END测试
 
-//  WorkSta1 = STA_NETCONNECT;	//重新工作到组网状态。
+  WorkSta1 = STA_NETCONNECT;	//上电进入组网状态。
   
 	
 	while (1)
-  {
-
-		
-	//	SysRun();
-		
-	SPI2Rx_Parse();
-
+  {	
+		SysRun();		
+		SPI1Rx_Parse();
+		CmdExecute();
 //	Usart1_Rx_Parse();
 //	SPI1Rx_Parse();
 
