@@ -81,23 +81,16 @@ void RandomDelayUs(void)
 //****************************************************************************************************/
 
 void NetConnect(bool Sta)
-{
-  /*
-	if(TRUE == Sta){	//组网	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, 0x3F);      //  全频道自动ACK应答允许	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, 0x3F);  //  允许接收地址全频道，	
-	SetSPI2_RXMode(RX_P1_24L01,NetConnectRxAdr);					//P1通道	
-	WorkStaPre1 = STA_NETCONNECT;
-
+{  
+	if(TRUE == Sta){	//组网		
+		Si4431TX_TransmitMod(NetConnectRxAdr);					//组网发射地址
+		WorkStaPre1 = STA_NETCONNECT;
 	}
-  else{	//退出组网状态
-	SPI2_RWReg(WRITE_REG_24L01 + EN_AA_24L01, 0x03F);      //  禁止频道0自动ACK应答允许	
-	SPI2_RWReg(WRITE_REG_24L01 + EN_RXADDR_24L01, 0x3E);  //  禁止接收地址频道0，  	
-  SetSPI2_RXMode(RX_P1_24L01,RX_ADDRESS_24L01);						//	无效的接收地址	
+  else{	//退出组网状态 	
+		Si4431TX_ReceiveMod(RX_ADDRESS_Si4431);						//	无效的接收地址	
 		WorkStaPre1 = STA_STANDBY;
 //  IRDA_LED_OFF();
 	}
-	*/
 //	SPI1_CE_L;	//StandBy I模式
 //	SPI1_CSN_H;	//NSS拉高	
 //	SPI1_Write_Buf(WRITE_REG_24L01 + RX_ADDR_P0_24L01, NetConnectRxAdr, RX_ADR_WIDTH_24L01); // 写接收端地址	
@@ -416,8 +409,7 @@ void SysRun(void)
 {
   switch(WorkSta1){
 	case(STA_NETCONNECT):		//组网退网阶段
-      if(STA_NETCONNECT != WorkStaPre1){
-	  //	Init_NRF24L01_SPI2();
+		if(STA_NETCONNECT != WorkStaPre1){
 			NetConnect(TRUE);				//设置为组网模式
 	  //	StartTimeMs1 = ReadRunTime(); 
 	  }

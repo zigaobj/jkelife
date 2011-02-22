@@ -26,6 +26,8 @@
 #include "GloVar.h"
 #include "Init.h"
 #include "Si4431Api.h"
+#include "Si4431App.h"
+#include "SPICom.h"
 
 /**
   * @addtogroup GPIO_IOToggle_InterruptMode
@@ -63,7 +65,7 @@ void main(void)
 
 	SysInit_Config();	//系统配置
 	
-	DelayMs_Soft(100);
+	DelayMs_Soft(1000);
 	
 	Si4431TX_Init();
 	
@@ -76,19 +78,19 @@ void main(void)
 
   enableInterrupts();		//开全局中断
 	
-	WorkSta1 = STA_NETCONNECT;	//上电组网
-
+	WorkSta1 = STA_NETCONNECT;	//上电进入组网状态。
   /* Toggles LEDs */
 	
 //  Uart1_SendString_End(TestStr);		//
 	GPIO_WriteHigh(LEDS_PORT, LED0_PIN);
 
-	Si4431TX_ReceiveMod(MOD3_RXADR);
+
 	
 	while (1)
   {
-//		SysRun();
-//		SPI1Rx_Parse();
+		SysRun();
+		
+		SPI1Rx_Parse();
 
   }
 

@@ -44,7 +44,7 @@ void SysInit_Config(void)
 /**
   * @brief  Configures the different system clocks.
   * @param  None
-  * @retval None
+  * @retval None		8M时钟
   */
 void CLK_Configuration(void)
 {
@@ -81,12 +81,13 @@ void GPIO_Configuration(void)
 	
 //	GPIO_Init(SPI1_PIN_GPIO, (SPI1_PIN_SCK | SPI1_PIN_MOSI | SPI1_PIN_MISO), GPIO_MODE_OUT_PP_HIGH_FAST);		//推挽输出
 	// Initialize I/O in Input Mode with Interrupt for SPI1_PIN_IRQ
-	GPIO_Init(SPI1_CTL_GPIO , SPI1_PIN_IRQ , GPIO_MODE_IN_FL_IT );
+	GPIO_Init(SPI1_CTL_GPIO , SPI1_PIN_IRQ , GPIO_MODE_IN_PU_IT );	//GPIO_MODE_IN_FL_IT
 	
   /* Initialize the Interrupt sensitivity */
   EXTI_SetExtIntSensitivity(EXTI_PORT_GPIOD, EXTI_SENSITIVITY_FALL_ONLY);	//设置输入线路下降沿为中断请求
-//  EXTI_SetTLISensitivity(EXTI_TLISENSITIVITY_FALL_ONLY);	
-	SPI1_PWR_OFF();	//断电重启24L01模块
+  EXTI_SetTLISensitivity(EXTI_TLISENSITIVITY_FALL_ONLY);	
+//	SPI1_PWR_OFF();	//模块断电
+	SPI1_PWR_ON();		//模块上电
 	SPI1_CE_L;
 }
 

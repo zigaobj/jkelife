@@ -85,7 +85,7 @@ void DelayUs_Soft(u16 time)
    u16 i=0;  
    while(time--)
    {
-      i=10;  //尹工用的17 
+      i=6;  //尹工用的17 
       while(i--) ;    
    }
 }
@@ -101,9 +101,9 @@ void DelayMs_Soft(u16 time)
    u16 i=0;  
    while(time--)
    {
-      i=12000;  //尹工用的18000
-      while(i--) ;    
-   }
+      for(i=0;i<490;i++)	
+      _asm("");			
+   } 
 }
 
 

@@ -46,8 +46,8 @@ extern u8	RXItSta1,RXItSta2;
 
 extern u16	SPI2RxCnt,SPI1RxCnt;
 extern u8 NetConnectRxAdr[RX_ADR_WIDTH];		//广播接收地址
-extern u8 TX_ADDRESS_24L01[TX_ADR_WIDTH];	//本地地址
-extern u8 RX_ADDRESS_24L01[RX_ADR_WIDTH];	//接收地址
+extern u8 TX_ADDRESS_Si4431[TX_ADR_WIDTH];	//本地地址
+extern u8 RX_ADDRESS_Si4431[RX_ADR_WIDTH];	//接收地址
 
 extern u8 MOD1_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD1_RXADR[TX_ADR_WIDTH];	//本地地址
@@ -58,7 +58,7 @@ extern const u8 MOD3_RXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_RXADR[TX_ADR_WIDTH];	//本地地址
 
-extern u8 StrTest[13];
+extern u8 StrTest[64];
 
 extern @near u8 Net_TXADR[TX_ADR_WIDTH];	//新组网地址	
 extern @near u8 Net_RXADR[TX_ADR_WIDTH];	//新组网地址
