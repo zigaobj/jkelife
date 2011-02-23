@@ -56,14 +56,6 @@ CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
 
 //CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
 //CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
-/*
-	u8		CmdListNum;													//待处理的命令个数
-	u8		CmdCurrentList;
-	u8		CmdListFlag[CMD_LISTLMT];						//记录命令处理缓冲使用情况，0表示对应索引空，1表示索引内有待处理的命令
- 	CMD_BODY_TypeDef * pCmd_Body_Current;							//指向待处理的命令处理缓冲区
-	CMD_BODY_TypeDef	 Cmd_Body[CMD_LISTLMT];	//命令处理缓冲空间
-	CMD_BODY_TypeDef * pReplyBuf;							//应答缓冲区	
-*/
 //CMD_BUF_TypeDef * pCmdBuf;	//指向命理处理缓冲区
 
 //union STT_DAT SttDat;
@@ -616,23 +608,33 @@ void CmdExecute(void)		//执行散转函数
 }
 
 //=============================================================================================
-//说明:保存新组网的模块地址，按链表方式保存，每次在上一次保存地址空间后插入
+//说明:保存新组网的模块地址，按链表方式保存，先跟现有组网地址比较，不同才组网，每次在上一次保存地址空间后插入
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
 //=============================================================================================
-void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
+u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 {	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区	
 	u32	NewAdr;
 	u16 RpStrLen;
-	uint8_t loopi,loopj;//TmpSta;
-	uint8_t strNTA[32] = "#NETAPL\0";	//发送至从模块
+	uint8_t loopi,loopj,NetFlag;//TmpSta;
+	uint8_t strNETAPL[32] = "#NETAPL\0";	//发送至从模块
 //	uint8_t strACN[14] = "#ACN,0,00000\r\n";		//发送给上位机
-	u8	OrgSlvAdd[5] = {0};
-  if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){	//超过从模块地址保存空间了
+//	u8	OrgSlvAdd[5] = {0};
+	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){	//首先与已组网地址比较
+		if(1 == pJKNetAdr_Tab->TabFlag[loopi]){	
+		 	if(memcmp( ,4)){
+				NetFlag = 1;
+				pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数				
+			}
+		}			
+	}  
+if(0 == NetFlag){
+	if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){		//超过从模块地址保存空间了
   	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
-  }
+  	return 0;	//此模块以组网
+	}
   else{
 	
-	for(loopi = 1 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
+	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
 		if(0 == pJKNetAdr_Tab->TabFlag[loopi]){
 		 	pJKNetAdr_Tab->TabFlag[loopi] = 0x10;	//找到空从模块地址空间
 			pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
@@ -650,7 +652,9 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 
 	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
 
-
+	MsgInsrt(pReplyBuf->all , strNETAPL , MyStrLen(strNETAPL) , TRUE);	//插入命令头
+	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431 , MyStrLen(RX_ADDRESS_Si4431) , TRUE);	//插入源地址
+	MsgInsrt(pReplyBuf->all , pJKNetAdr_Tab->pJKNetAdrTabCnt , MyStrLen(pJKNetAdr_Tab->pJKNetAdrTabCnt) , TRUE);	//插入目标地址
 /*	
 	for(loopj = 0 ;loopj < SI4431_ADR_WIDTH ; loopj++){
 		OrgSlvAdd[loopj]	= * (pNewAdr+loopj);	//原来的从模块的Rx地址
@@ -684,8 +688,9 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
  	*/
 	
 	NET_LED_TURN();							//有模块组网成功
-	CmdSpiApply(Spi1_Cmd_TxPort ,pReplyBuf->all ,32);				//将命令存到待处理缓冲区
-
+	CmdSpiApply(Spi1_Cmd_TxPort ,pReplyBuf->all ,MyStrLen(pReplyBuf->all));				//将命令存到待处理缓冲区
+	return 1;	//已记录新组网模块地址
+	}
 		/*
 		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
 			nRF24L01_SPI1_TxPacket(strNTA);		//NTA发送新的从节点Tx地址
@@ -728,7 +733,7 @@ void CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 		pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (TX_ADR_WIDTH*pJKNetAdr_Tab->JKNetAdrTabCnt);	//指向下一个空的从模块地址空间
   	}	*/
 
-  }
+  
 		
 	
 /*	pCmdBuf->pReplyBuf = pCmdSTTBody;

@@ -37,14 +37,6 @@ u8	MsgReplyUNK[] = "$SEMUNK,013\r\n";	//应答不是南方第三版测深仪的命令
 
 //CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
 //CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
-/*
-	u8		CmdListNum;													//待处理的命令个数
-	u8		CmdCurrentList;
-	u8		CmdListFlag[CMD_LISTLMT];						//记录命令处理缓冲使用情况，0表示对应索引空，1表示索引内有待处理的命令
- 	CMD_BODY_TypeDef * pCmd_Body_Current;							//指向待处理的命令处理缓冲区
-	CMD_BODY_TypeDef	 Cmd_Body[CMD_LISTLMT];	//命令处理缓冲空间
-	CMD_BODY_TypeDef * pReplyBuf;							//应答缓冲区	
-*/
 //CMD_BUF_TypeDef * pCmdBuf;	//指向命理处理缓冲区
 
 //union STT_DAT SttDat;
