@@ -34,26 +34,25 @@ const uint8_t FreHopBuf[80] = {\
 //uint8_t	CmdListFlag[CMD_NUMLMT] = {0};	
 
 /*********************ken********************************** 
-*   函数说明： 命令中的八字节ASCII地址与                               
-*   输入：  pStrAdr - 字符串首地址; pNumAdr - 数值位数 ;sta = TRUE八字节ASCII地址转hex四字节地址,sta = FALSE hex四字节地址转八字节ASCII地址     				
-*   输出：  函数名为转换后的数值 长度为32 long型                            
+*   函数说明： 命令中的八字节ASCII地址与32位变量转换                               
+*   输入：  pStrAdr - 字符串首地址; NumAdr - 32位变量 ;sta = TRUE八字节ASCII地址转32位变量,sta = FALSE 32位变量转八字节ASCII地址     				
+*   输出：  函数名为转换后的数值 长度为32位                            
 *   调用函数：void                                      
 ***********************************************************/ 
-u32 Si4431AdrCover(u8 *pStrAdr, u8 *pNumAdr ,bool sta )		
+u32 Si4431AdrCover(u8 *pStrAdr, u32 NumAdr ,bool sta )		
 {	longWord32	tmpval ;
 	u8 i;
-	if(sta){	//八字节ASCII地址转hex四字节地址
+	if(sta){	//八字节ASCII地址转32位变量
 		tmpval.All32 = MyStrToHex(pStrAdr , CMDSPI_ADR_WIDTH);
-		pNumAdr[0] = tmpval.Bit8[0];
-		pNumAdr[1] = tmpval.Bit8[1];
-		pNumAdr[2] = tmpval.Bit8[2];
-		pNumAdr[3] = tmpval.Bit8[3];	
+//		pNumAdr[0] = tmpval.Bit8[0];
+//		pNumAdr[1] = tmpval.Bit8[1];
+//		pNumAdr[2] = tmpval.Bit8[2];
+//		pNumAdr[3] = tmpval.Bit8[3];
+		return 	tmpval.All32;
 	}
-	else{			//hex四字节地址转八字节ASCII地址
-		for(i = 0;i < SI4431_ADR_WIDTH;i++){
-			tmpval.Bit8[i] = pNumAdr[i];
-		}
-		MyHexToStr(pNumAdr , tmpval.All32 ,CMDSPI_ADR_WIDTH);			
+	else{			//32位变量转八字节ASCII地址
+		MyHexToStr(pStrAdr , NumAdr ,CMDSPI_ADR_WIDTH);			
+		return 	NumAdr;
 	}
 	
 /*	if(NumLen>10) {return result;}

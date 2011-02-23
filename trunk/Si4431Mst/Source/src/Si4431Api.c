@@ -14,9 +14,9 @@
 u8 SPI1_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI1 , Data);
-	DelayUs_Soft(100);
+//	DelayUs_Soft(100);
 	// Wait for SPI1 data reception 
-//	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 	
 	Data = SPI_I2S_ReceiveData(SPI1);
 	return(Data);           		  // return read uchar

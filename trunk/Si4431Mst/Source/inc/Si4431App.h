@@ -3,7 +3,7 @@
 #define _SI4431APP_H_
 
 
-u32 Si4431AdrCover(u8 *pStrAdr, u8 *pNumAdr ,bool sta );
+u32 Si4431AdrCover(u8 *pStrAdr, u32 NumAdr ,bool sta );
 uint8_t HeartBeat(uint8_t * pHeartBeatAdr);
 uint8_t NewConnect(uint8_t * pNewAdr);
 void CheckConnect(void);
