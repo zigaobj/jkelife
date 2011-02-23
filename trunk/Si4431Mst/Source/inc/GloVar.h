@@ -121,6 +121,7 @@ typedef struct	_JKNetAdrTab_TypeDef
 	uint8_t JKNetAdrTab4[SI4431_ADR_WIDTH];
 	uint8_t JKNetAdrTab5[SI4431_ADR_WIDTH];
 //	uint8_t JKNetAdrAll[JKNETADRTABLEN][SI4431_ADR_WIDTH];
+	u32	JKNetNumTab[JKNETADRTABLEN];				//用32位数记录地址
 }JKNetAdrTab_TypeDef;	//记录组网从模块的地址
 
 

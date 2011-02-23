@@ -39,7 +39,7 @@ const uint8_t FreHopBuf[80] = {\
 *   输出：  函数名为转换后的数值 长度为32 long型                            
 *   调用函数：void                                      
 ***********************************************************/ 
-void Si4431AdrCover(u8 *pStrAdr, u8 *pNumAdr ,bool sta )		
+u32 Si4431AdrCover(u8 *pStrAdr, u8 *pNumAdr ,bool sta )		
 {	longWord32	tmpval ;
 	u8 i;
 	if(sta){	//八字节ASCII地址转hex四字节地址

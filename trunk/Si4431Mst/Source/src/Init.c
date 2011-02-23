@@ -158,7 +158,7 @@ void VarInit(void)
 	
 	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
 	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
-	pRxAdr_Tab = &RxAdr_Tab;
+//	pRxAdr_Tab = &RxAdr_Tab;
 //	for(i = 0;i < SPIBUFLEN;i++){
 //		SPI1_RxBuf[i] = 0;
 //		SPI2_RxBuf[i] = 0;
