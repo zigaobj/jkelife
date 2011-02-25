@@ -156,6 +156,7 @@ void VarInit(void)
 	WorkStaPre2 = STA_SLEEP;	
 //	GlobalRunTime = 0;
 	
+
 	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
 	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
 //	pRxAdr_Tab = &RxAdr_Tab;
@@ -165,6 +166,17 @@ void VarInit(void)
 ////		SPI1_TxBuf[i] = i;
 //		SPI2_TxBuf[i] = i;		
 //	}
+
+	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
+	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
+//	pRxAdr_Tab = &RxAdr_Tab;
+//	for(i = 0;i < SPIBUFLEN;i++){
+//		SPI1_RxBuf[i] = 0;
+//		SPI2_RxBuf[i] = 0;
+////		SPI1_TxBuf[i] = i;
+//		SPI2_TxBuf[i] = i;		
+//	}
+
 	sta = 0;   //状态标志
 
 	TXItSta1 = 0;

@@ -12,6 +12,7 @@
 #include "UsartCom.h"
 #include "SPICom.h"
 #include "GloVar.h"
+
 //#include "24L01App.h"
 //#include <time.h>
 
@@ -39,6 +40,7 @@ const uint8_t FreHopBuf[80] = {\
 *   输出：  函数名为转换后的数值 长度为32位                            
 *   调用函数：void                                      
 ***********************************************************/ 
+/*
 u32 Si4431AdrCover(u8 *pStrAdr, u32 NumAdr ,bool sta )		
 {	longWord32	tmpval ;
 	u8 i;
@@ -54,7 +56,8 @@ u32 Si4431AdrCover(u8 *pStrAdr, u32 NumAdr ,bool sta )
 		MyHexToStr(pStrAdr , NumAdr ,CMDSPI_ADR_WIDTH);			
 		return 	NumAdr;
 	}
-	
+}	
+*/
 /*	if(NumLen>10) {return result;}
 	for(i=0;i<NumLen;i++) {
 		if((pStr[i]>='0')&&(pStr[i]<='9')){
@@ -66,7 +69,7 @@ u32 Si4431AdrCover(u8 *pStrAdr, u32 NumAdr ,bool sta )
 		}
 	}
 	return 	result;	*/
-}
+
 
 
 //=============================================================================================
@@ -523,7 +526,7 @@ void SysRun(void)
 
   switch(WorkSta2){  
 	case(STA_DATA):			//维持心跳包及普通数据采集阶段	
-		DataReceive();
+//		DataReceive();
 
 	/*	if(STA_DATA != WorkStaPre2){
 	//	SetSPI1_RXMode(RX_P0_24L01,MOD1_RXADR);	//设置为自身的地址

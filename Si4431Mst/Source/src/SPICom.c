@@ -47,6 +47,39 @@ uint8_t	txLog[TXLOGLEN];
 uint8_t	SPI1ByteNum;		 //在协议0时串口按接收到的命令字节总数来结束一条命令的接收
 uint8_t	SPI2_ParseBuf[SPI2PARSEBUFLEN];//串口1接收缓冲区
 
+
+//CMD_BODY_TypeDef Cmd_Body[CMD_RXLIST_LMT];	//命令数据体
+CMDSPI_BUF_TypeDef		CmdSpiTxBuf;										//命令发送缓冲区
+CMDSPI_BUF_TypeDef	*	pCmdSpiTxBuf;								//指向命令发送缓冲区
+CMDSPI_BUF_TypeDef		CmdSpiRxBuf;										//命令接收缓冲区
+CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
+
+
+//CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
+//CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
+/*
+	u8		CmdListNum;													//待处理的命令个数
+	u8		CmdCurrentList;
+	u8		CmdListFlag[CMD_LISTLMT];						//记录命令处理缓冲使用情况，0表示对应索引空，1表示索引内有待处理的命令
+ 	CMD_BODY_TypeDef * pCmd_Body_Current;							//指向待处理的命令处理缓冲区
+	CMD_BODY_TypeDef	 Cmd_Body[CMD_LISTLMT];	//命令处理缓冲空间
+	CMD_BODY_TypeDef * pReplyBuf;							//应答缓冲区	
+*/
+//CMD_BUF_TypeDef * pCmdBuf;	//指向命理处理缓冲区
+
+//union STT_DAT SttDat;
+//union STT_DAT * pSttDat = &SttDat;
+//union SUV_DAT	SuvDat;
+//union SUV_DAT * pSuvDat = &SuvDat;
+////union SYS_DAT	SysDat;
+////union SYS_DAT * pSysDat = &SysDat;
+//union CHN_DAT	ChnDat;
+//union CHN_DAT * pChnDat = &ChnDat; 
+//union FRQ_DAT	FrqDat;
+//union FRQ_DAT * pFrqDat = &FrqDat; 
+//union SEN_DAT	SenDat;
+//union SEN_DAT * pSenDat = &SenDat;
+
 //CMD_BODY_TypeDef Cmd_Body[CMD_RXLIST_LMT];	//命令数据体
 CMDSPI_BUF_TypeDef		CmdSpiTxBuf;										//命令发送缓冲区
 CMDSPI_BUF_TypeDef	*	pCmdSpiTxBuf;								//指向命令发送缓冲区
@@ -70,6 +103,7 @@ CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
 //union FRQ_DAT * pFrqDat = &FrqDat; 
 //union SEN_DAT	SenDat;
 //union SEN_DAT * pSenDat = &SenDat;
+
 
 //====================================================================================//
 //====================================================================================// 
@@ -312,7 +346,6 @@ void SPI2Rx_Parse(void)
 }
 
 
-
                                 
 //---------------------------------------------------------------------------
 //说明：Spi建立命令索引函数，寻找空的索引空间
@@ -478,6 +511,7 @@ CMD_BODY_TypeDef * CmdPrase(u8 ListNum)		//ken:建立命令索引函数
 	SetEPRxStatus(ENDP2, EP_RX_VALID);	//重新使能接收				
 }
 */
+                               
 //---------------------------------------------------------------------------
 //说明：USB命令执行程序	
 //参数：void
@@ -623,7 +657,7 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 //	u8	OrgSlvAdd[5] = {0};
 //	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
 	
-	NewAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);
+//	NewAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);
 	
 	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){		//首先与已组网地址比较
 		if(1 == pJKNetAdr_Tab->TabFlag[loopi]){	
@@ -783,7 +817,6 @@ ERROR:
 	pCmdBuf->pReplyBuf = NULL;
 	*/			
 }
-
 
 //======================================no  more==========================================//
 

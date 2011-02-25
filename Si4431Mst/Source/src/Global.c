@@ -240,7 +240,6 @@ void MsgCopy(u8 * pTarget, u8 * pSource, u16 MsgLen)
 //}
 	
 
-
 /*********************ken********************************** 
 *   函数说明： 将接收命令中的字符长度转换成数据                               
 *   输入：  pStr - 字符串首地址, DataLen - 数值位数       				
@@ -290,6 +289,7 @@ u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen)
 *   输出：  函数名为转换后的数值 长度为32 long型                            
 *   调用函数：void                                      
 ***********************************************************/ 
+/*
 u32 MyStrToHex(u8 *pStr, u8	NumLen)		
 {	u32	result = 0;
 	u8 i;
@@ -313,14 +313,14 @@ u32 MyStrToHex(u8 *pStr, u8	NumLen)
 	}
 	return 	result;
 }
-
+*/
 /*********************ken********************************** 
 *   函数说明： 将知道位数的hex转为字符，最多转32位数字                                
 *   输入：  pStr - 字符串首地址,Num - 要转化的数字， NumLen - 数字的位数       				
 *   输出：  函数名为转换后的数值 长度为32 long型                            
 *   调用函数：void                                      
 ***********************************************************/ 
-
+/*
 u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen)
 {	u16	i;
 	u32 TmpNum;
@@ -339,7 +339,7 @@ u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen)
 	//*pStrEnd = '\0';
 	return 	1;
 }
-
+*/
 /*********************ken********************************** 
 *   函数说明： 将知道位数的数字转为字符                               
 *   输入：  pTarget - 字符串首地址,pLSource - 要转化的32位数据首地址， NumLen - 数字的位数       				
@@ -429,4 +429,5 @@ u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen)
 //	else if(sign==1) return(-value);
 //	return(1);	
 //}
+
 

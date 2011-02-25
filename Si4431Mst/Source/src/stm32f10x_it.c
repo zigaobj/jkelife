@@ -284,11 +284,9 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 
 	
 	if( (RXItSta1 & icrcerror) == icrcerror ){	//接收CRC校验错误中断
-		
-	
+		__NOP();	
 	}
-	if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包
-			
+	if( (RXItSta1 & ipkvalid) == ipkvalid ){	//接收到正常的包			
 		__NOP();
 	}  
 	if( (RXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
