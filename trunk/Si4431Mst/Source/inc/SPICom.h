@@ -78,16 +78,16 @@ typedef union _CMDSPI_BODY_TypeDef{
 // 自定义共用体命令接收处理数据类型 CMD_BUF
 typedef struct _CMDSPI_BUF_TypeDef{				
 		
-//	uint16_t 	HeadHash;															//计算出来的Hash头，用于散转
-//	u8		CmdTxFlag[CMD_LISTLMT];										//命令发送状态
-	u8		CmdListNum;																	//待处理的命令个数
-	u8		CmdCurrentList;															//当前接收的命令位置
-	u8		CmdPrcList;																	//当前处理的命令位置
-	u8		CmdListFlag[CMDSPI_RXLIST_LMT];							//记录命令处理缓冲使用情况，0表示对应索引空，1表示索引内有待处理的命令,2表示命令已发送等待回复
- 	CMDSPI_BODY_TypeDef * pCmd_Prc_Current;						//指向处理中的命令处理缓冲区
-	CMDSPI_BODY_TypeDef * pCmd_Body_Current;					//指向存放待处理的命令处理缓冲区
+//	uint16_t 	HeadHash;											//计算出来的Hash头，用于散转
+//	u8		CmdTxFlag[CMD_LISTLMT];						//命令发送状态
+	u8		CmdListNum;													//待处理的命令个数
+	u8		CmdCurrentList;											//当前接收的命令位置
+	u8		CmdPrcList;													//当前处理的命令位置
+	u8		CmdListFlag[CMDSPI_RXLIST_LMT];						//记录命令处理缓冲使用情况，0表示对应索引空，1表示索引内有待处理的命令
+ 	CMDSPI_BODY_TypeDef * pCmd_Prc_Current;			//指向处理中的命令处理缓冲区
+	CMDSPI_BODY_TypeDef * pCmd_Body_Current;			//指向存放待处理的命令处理缓冲区
 	CMDSPI_BODY_TypeDef	 Cmd_Body[CMDSPI_RXLIST_LMT];	//命令处理缓冲空间
-				
+	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区			
 }CMDSPI_BUF_TypeDef;
 
 
@@ -105,8 +105,11 @@ struct CMD_END{
 	u8 cLF;
 };
 
-u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
 
+
+
+
+u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
 
 
 extern uint8_t   SPI1OkFlag;	//收到一条完整的命令则自加1，数值表示当前待处理的命令数。

@@ -119,6 +119,18 @@ uint16_t MyStrLen(uint8_t str[]);
 u32 MyStrToNum(u8 *pStr, u8	NumLen);
 u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen);
 u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen);
+
+TestStatus Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength);
+uint16_t Hash(uint8_t *pStr, uint8_t len);
+//u8 CmdCheck(CMD_BODY_TypeDef * pCmdDat);
+void MsgCopy(u8 * pTarget, u8 * pSource, u16 MsgLen);
+void MsgInsrt(uint8_t * pTarget, uint8_t * pSource, uint16_t MsgLen ,u8 AddDotFg);
+uint16_t MyStrLen(uint8_t str[]);
+//u16 ReplyAppend(CMD_BODY_TypeDef *pRplyStr);
+
+u32 MyStrToNum(u8 *pStr, u8	NumLen);
+u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen);
+u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen);
 u32 MyStrToHex(u8 *pStr, u8	NumLen)	;
 u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen);
 

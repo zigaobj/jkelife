@@ -14,9 +14,9 @@
 u8 SPI1_RW(u8 Data)
 {
 	SPI_I2S_SendData(SPI1 , Data);
-//	DelayUs_Soft(100);
+	DelayUs_Soft(100);
 	// Wait for SPI1 data reception 
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+//	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 	
 	Data = SPI_I2S_ReceiveData(SPI1);
 	return(Data);           		  // return read uchar
@@ -129,6 +129,7 @@ void Si4431TX_Init(void)
 { u8 TmpRegVal;                  
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)¼Ä´æÆ÷Èí¸´Î»
  	
+
 	while ( GPIO_ReadOutputDataBit(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
 	SPI1_Read(InterruptStatus1);	//(03h)ÇåÖÐ¶Ï
@@ -352,6 +353,7 @@ void Si4431RX_Init(void)
 {u8 TmpRegVal;                  
 	SPI2_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)¼Ä´æÆ÷Èí¸´Î»
  	
+
 	while ( GPIO_ReadOutputDataBit(SPI2_CTL_GPIO, SPI2_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
 	SPI2_Read(InterruptStatus1);	//(03h)ÇåÖÐ¶Ï
