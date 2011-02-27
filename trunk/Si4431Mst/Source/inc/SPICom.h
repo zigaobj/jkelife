@@ -87,7 +87,7 @@ typedef struct _CMDSPI_BUF_TypeDef{
  	CMDSPI_BODY_TypeDef * pCmd_Prc_Current;			//指向处理中的命令处理缓冲区
 	CMDSPI_BODY_TypeDef * pCmd_Body_Current;			//指向存放待处理的命令处理缓冲区
 	CMDSPI_BODY_TypeDef	 Cmd_Body[CMDSPI_RXLIST_LMT];	//命令处理缓冲空间
-	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区			
+//	CMDSPI_BODY_TypeDef * pReplyBuf;							//应答缓冲区			
 }CMDSPI_BUF_TypeDef;
 
 
@@ -99,6 +99,8 @@ extern CMDSPI_BUF_TypeDef 	CmdSpiTxBuf;									//命令发送缓冲区
 extern CMDSPI_BUF_TypeDef * pCmdSpiTxBuf;								//指向命令发送缓冲区
 extern CMDSPI_BUF_TypeDef		CmdSpiRxBuf;									//命令接收缓冲区
 extern CMDSPI_BUF_TypeDef * pCmdSpiRxBuf;								//指向命令接收缓冲区
+extern CMDSPI_BODY_TypeDef  ReplyBuf;								//应答缓冲区
+extern CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区
 				 
 struct CMD_END{
 	u8 cCR;

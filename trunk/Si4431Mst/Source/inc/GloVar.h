@@ -106,7 +106,7 @@ extern uint8_t U2RxBuf[USARTBUFLEN];
 typedef enum {TXSTATUS = 0, RXSTATUS = !TXSTATUS} STA24L01;
 typedef struct	_JKNetAdrTab_TypeDef
 {
-	uint8_t	JKNetAdrTabCnt;							//记录已使用的地址空间个数
+	uint8_t	JKNetAdrTabCnt;								//记录已使用的地址空间个数
 	uint8_t * pJKNetAdrTabCnt;						//指向空的接收地址表格空间。
 	uint8_t LoopJKNetAdrIndex;						//轮询接收地址
 	uint8_t TabFlag[JKNETADRTABLEN];			//记录地址空间使用情况索引,0x00:未使用或断开连接了，0x01:正常组网，从TabFlag[1]开始记录 

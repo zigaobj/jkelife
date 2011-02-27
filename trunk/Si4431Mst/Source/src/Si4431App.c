@@ -506,7 +506,7 @@ void SysRun(void)
 	break;
 	case(STA_BROADCAST):	//广播阶段，向需要控制的从模块发送命令
  //     	Broadcast();		//向各从模块发送控制命令
-		DataSend();
+//		DataSend();
 	break;
 
 	case(STA_P2P):			//大量数据点对点传输
