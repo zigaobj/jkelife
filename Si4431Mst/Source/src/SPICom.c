@@ -41,9 +41,9 @@ uint8_t	SPI2index;		 //串口接收缓冲区定标号
 uint8_t	SPI2Pindex;        //串口处理命令标号
 //uint8_t pdata txIndex;          //串口发送缓冲区定标号
 uint8_t	SPI1_ParseBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
-u8		SPI1_SendBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
+//u8		SPI1_SendBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
 
-uint8_t	txLog[TXLOGLEN];
+//uint8_t	txLog[TXLOGLEN];
 uint8_t	SPI1ByteNum;		 //在协议0时串口按接收到的命令字节总数来结束一条命令的接收
 uint8_t	SPI2_ParseBuf[SPI2PARSEBUFLEN];//串口1接收缓冲区
 
@@ -85,7 +85,8 @@ CMDSPI_BUF_TypeDef		CmdSpiTxBuf;										//命令发送缓冲区
 CMDSPI_BUF_TypeDef	*	pCmdSpiTxBuf;								//指向命令发送缓冲区
 CMDSPI_BUF_TypeDef		CmdSpiRxBuf;										//命令接收缓冲区
 CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
-
+CMDSPI_BODY_TypeDef  ReplyBuf;								//应答缓冲区
+CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区
 
 //CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
 //CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
@@ -137,7 +138,8 @@ void SPI1Rx_Parse(void)
 					if(SPI1_ParseBuf[LoopEnd]=='\n'){	//找到命令结尾
 						SPI1OkFlag--;	//每处理一条命令，接收命令计数器自减
 						SPI1Pindex = LoopEnd + 1;
-						CmdSpiApply(Spi1_Cmd_RxPort , &SPI1_ParseBuf[LoopStart] ,(LoopEnd-LoopStart));	//建立索引命令
+						CmdSpiApply(Spi1_Cmd_RxPort , &SPI1_ParseBuf[LoopStart] ,(LoopEnd-LoopStart+1));	//建立索引命令
+						break;
 					}
 				}
 			}
@@ -646,18 +648,18 @@ void CmdExecute(void)		//执行散转函数
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
 //=============================================================================================
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
-{	CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区	
+{			
 	longWord32	NewAdr;
-	u16 RpStrLen;
-	 
+	u16 RpStrLen;	 
 	uint8_t loopi,loopj,NetFlag;//TmpSta;
 	uint8_t strNETAPL[32] = "#NETAPL\0";	//发送至从模块
+
 
 //	uint8_t strACN[14] = "#ACN,0,00000\r\n";		//发送给上位机
 //	u8	OrgSlvAdd[5] = {0};
 //	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
 	
-//	NewAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);
+	NewAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);
 	
 	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){		//首先与已组网地址比较
 		if(1 == pJKNetAdr_Tab->TabFlag[loopi]){	
@@ -669,7 +671,7 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	}  
 if(0 == NetFlag){		//新模块未组网
 	if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){		//超过从模块地址保存空间了
-  	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
+  //	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
   	return 0;	//此模块以组网
 	}
   else{
@@ -681,10 +683,11 @@ if(0 == NetFlag){		//新模块未组网
 			}			
 		}
 	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
+/*	
+	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	for(loopj = 0; loopj < SI4431_ADR_WIDTH; loopj++){
 		pJKNetAdr_Tab->pJKNetAdrTabCnt[loopj] = NewAdr.Bit8[loopj];
-	}
-//	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
+	}*/
 	
 
 	//为新连接的从模块设置组网新地址，保存到空的接收地址列表

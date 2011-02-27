@@ -37,7 +37,7 @@ void SysInit_Config(void)
 
   TIM3_Config();	//系统时钟，提供10us的最小计时单元
 
-  TIM2_Config();
+ // TIM2_Config();
 
   VarInit();	//系统变量，状态初始化
 
@@ -148,71 +148,54 @@ void SysInit_Config(void)
 }
 
 void VarInit(void)
-{	uint8_t i;
-	
-	WorkStaPre1 = STA_SLEEP;
-	WorkSta1	= STA_SLEEP;
-	WorkSta2 = STA_SLEEP;
+{	u8 i;	
+	WorkStaPre1	= STA_SLEEP;
+	WorkSta1		= STA_SLEEP;
+	WorkSta2		= STA_SLEEP;
 	WorkStaPre2 = STA_SLEEP;	
 //	GlobalRunTime = 0;
-	
-
-	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
-	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
-//	pRxAdr_Tab = &RxAdr_Tab;
-//	for(i = 0;i < SPIBUFLEN;i++){
-//		SPI1_RxBuf[i] = 0;
-//		SPI2_RxBuf[i] = 0;
-////		SPI1_TxBuf[i] = i;
-//		SPI2_TxBuf[i] = i;		
-//	}
-
-	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
-	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
-//	pRxAdr_Tab = &RxAdr_Tab;
-//	for(i = 0;i < SPIBUFLEN;i++){
-//		SPI1_RxBuf[i] = 0;
-//		SPI2_RxBuf[i] = 0;
-////		SPI1_TxBuf[i] = i;
-//		SPI2_TxBuf[i] = i;		
-//	}
 
 	sta = 0;   //状态标志
-
 	TXItSta1 = 0;
 	TXItSta2 = 0;
 	RXItSta1 = 0;
 	RXItSta2 = 0;
-
 	SPI2RxCnt = 0;
 
-/*
-//	pRxAdr_Tab->pTabFlag = pRxAdr_Tab->TabFlag ;
-#ifdef DEBUGJK
-//	pRxAdr_Tab->RxAdrTabCnt = 5;
-//	pCmdBuf->CmdListNum = 5;
-#else 
-	pRxAdr_Tab->RxAdrTabCnt = 0;
-#endif
-
-	pRxAdr_Tab->pRxAdrTabCnt = pRxAdr_Tab->RxAdrTab0;	//将pRxAdrTabCnt指向空的接收地址表格空间。
-
-	for(i = 0; i < RXADRTABLEN; i++){
-#ifdef DEBUGJK
-//		pRxAdr_Tab->TabFlag[i] = 0x10;
-//		pRxAdr_Tab->HeartBeatSta[i]	= MAXMISSHEART;		//初始化心跳包个数
-//		pCmdBuf->CmdListFlag[i] = 0x10;
-
-#else
-		pRxAdr_Tab->TabFlag[i] = 0;
-		pCmdBuf->CmdListFlag[i] = 0;
-#endif
+	for(i = 0;i < SPI1PARSEBUFLEN;i++){
+		SPI1_ParseBuf[i] = 0;	
 	}
-	pRxAdr_Tab->TabFlag[5] = 0;
+	SPI1index = 0;
+	SPI1Pindex = 0;
 
+	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
+	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
+
+//	pRxAdr_Tab = &RxAdr_Tab;	
+	for(i = 0;i < CMDSPI_RXLIST_LMT;i++){
+		pCmdSpiTxBuf->CmdListFlag[i] = 0;
+		pCmdSpiRxBuf->CmdListFlag[i] = 0;
+	}
+	pCmdSpiTxBuf->pCmd_Prc_Current = 	pCmdSpiRxBuf->Cmd_Body;
+	pCmdSpiTxBuf->pCmd_Body_Current = pCmdSpiRxBuf->Cmd_Body;
+
+	pCmdSpiTxBuf->CmdListNum = 0;
+	pCmdSpiRxBuf->CmdListNum = 0;
+	pCmdSpiTxBuf->CmdCurrentList = 0;
+	pCmdSpiRxBuf->CmdCurrentList = 0;
+
+	pJKNetAdr_Tab = &JKNetAdr_Tab;
+	pJKNetAdr_Tab->JKNetAdrTabCnt = 0;
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0;	//将pRxAdrTabCnt指向空的接收地址表格空间。
 	
+	for(i = 0; i < JKNETADRTABLEN; i++){
+		pJKNetAdr_Tab->TabFlag[i] = 0;
+		pJKNetAdr_Tab->JKNetNumTab[i] = 0;
+	}	
+	
+	pReplyBuf = &ReplyBuf;	//接收命令应答处理缓冲区
 //测试	pRxAdr_Tab->TabFlag[0]	=0x10;
-
+/*
 	for(i = 0;i < SI4431_ADR_WIDTH;i++){
 		pRxAdr_Tab->RxAdrTab0[i] = i;
 		pRxAdr_Tab->RxAdrTab1[i] = i;
@@ -222,6 +205,8 @@ void VarInit(void)
 		pRxAdr_Tab->RxAdrTab5[i] = i;	
 	}
 */
+
+
 	srand((unsigned) RX_ADDRESS_Si4431[3]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
 }
 
@@ -269,7 +254,7 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;	  
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;	
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
   NVIC_Init(&NVIC_InitStructure);
 
 }
