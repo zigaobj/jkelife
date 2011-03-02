@@ -48,9 +48,9 @@ extern uint8_t	RXItSta1,RXItSta2;
 
 
 extern uint16_t	SPI2RxCnt,SPI1RxCnt;
-extern uint8_t NetConnectRxAdr[SI4431_ADR_WIDTH];		//广播接收地址
+extern si4431adrtype NetConnectRxAdr;		//广播接收地址
 extern uint8_t TX_ADDRESS_Si4431[SI4431_ADR_WIDTH];	//本地地址
-extern uint8_t RX_ADDRESS_Si4431[SI4431_ADR_WIDTH];	//接收地址
+extern si4431adrtype RX_ADDRESS_Si4431;	//接收地址
 
 extern uint8_t MOD1_TXADR[SI4431_ADR_WIDTH];	//本地地址
 extern uint8_t MOD1_RXADR[SI4431_ADR_WIDTH];	//本地地址
@@ -122,6 +122,7 @@ typedef struct	_JKNetAdrTab_TypeDef
 	uint8_t JKNetAdrTab5[SI4431_ADR_WIDTH];
 //	uint8_t JKNetAdrAll[JKNETADRTABLEN][SI4431_ADR_WIDTH];
 	u32	JKNetNumTab[JKNETADRTABLEN];				//用32位数记录地址
+	si4431adrtype JKNetAdrTab[JKNETADRTABLEN];
 }JKNetAdrTab_TypeDef;	//记录组网从模块的地址
 
 

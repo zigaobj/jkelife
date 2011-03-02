@@ -171,12 +171,9 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 //	//	NET_LED_TURN();
 //		__NOP();
 //	}
-		if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满
-		
+		if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满		
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	
-		
-			IRDA_LED_TURN();
 		}
 //	if( (TXItSta1 & itxffaem) == itxffaem ){	//发射几乎空
 //		
@@ -197,7 +194,7 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 			}
 			
 			SPI1index += RX_PacketLen;	
-			NET_LED_TURN();
+//			IRDA_LED_TURN();
 			Si4431TX_IdleMod();
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);  	
@@ -298,7 +295,7 @@ void EXTI9_5_IRQHandler(void)	//EXTI8线对应的中断，连接RX的Si4431的IRQ脚
 		for(i = 0 ;i < RX_PacketLen ;i++){
 			SPI2_ParseBuf[i] = SPI2_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
 		}
-		NET_LED_TURN();
+//		IRDA_LED_TURN();
 		SPI2_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
 		SPI2_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);  
 
@@ -496,7 +493,7 @@ void TIM3_IRQHandler(void)
 
 //	Si4431TX_TxPacket(StrTest ,sizeof(StrTest));
 //	NET_LED_TURN();
-	IRDA_LED_TURN();
+	RUN_LED_TURN();
 	/*
 	if(TXSTATUS == Mst24L01Sta){
 		SetSPI1_RXMode();	//每隔2秒

@@ -46,19 +46,24 @@ typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 
 typedef	union _LONGWORD32_
 {
-	u32 All32;			//单位为1秒，所以换算为毫秒要*1000
-	u8 Bit8[4];			//单位为毫秒
-}longWord32;
+	u32 All32;			
+	u8 Bit8[4];			
+}longword32;
 
+typedef	struct _SI4431ADRTYPE_
+{
+	longword32 HexAdr;			
+	u8 StrAdr[8];			
+}si4431adrtype;
 
 typedef enum {
-STA_SLEEP = 0 ,		//休眠
-STA_NETCONNECT ,	//组网退网阶段
-STA_SYNCHRONIZE ,	//同步阶段
-STA_BROADCAST ,		//数据发送阶段
-STA_DATA ,			//维持心跳包及普通数据采集阶段
-STA_P2P ,			//大量数据点对点传输
-STA_STANDBY			//待机状态
+	STA_SLEEP = 0 ,		//休眠
+	STA_NETCONNECT ,	//组网退网阶段
+	STA_SYNCHRONIZE ,	//同步阶段
+	STA_BROADCAST ,		//数据发送阶段
+	STA_DATA ,			//维持心跳包及普通数据采集阶段
+	STA_P2P ,			//大量数据点对点传输
+	STA_STANDBY			//待机状态
 }SysWorkStatus;	//整个系统的工作状态，1、组网退网阶段，2、同步阶段 ，3、广播阶段，4、维持心跳普通数据传输阶段，5、大量数据点对点传输
 
 

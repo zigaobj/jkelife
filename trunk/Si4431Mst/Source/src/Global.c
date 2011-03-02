@@ -348,7 +348,7 @@ u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen)
 ***********************************************************/ 
 u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen)
 {	u16	i,j,segment,temp;
-	longWord32 Temp32;
+	longword32 Temp32;
 	
 	if(NumLen % 4 == 0){
 		segment = NumLen / 4;	//

@@ -1,8 +1,9 @@
 
 #include "stm32f10x.h"
 #include "platform_config.h"
-#include "Si4431Api.h"
 #include "Global.h"
+#include "Si4431Api.h"
+
 
 
 
@@ -168,14 +169,14 @@ void Si4431TX_Init(void)
 	//数据包结构
 	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8D); 					//(30h)enable packet handler使能包处理, msb first, enable crc,
 	SPI1_RWReg((REG_WRITE | HeaderControl1), 0xFF);						//(32h)校验checkhead3-0 4位接收地址address enable for headere byte 0, 1,2,3, receive header check for byte 0, 1,2,3
-	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x42); 					//(33h)header 3, 2, 1,0 used for head length, fixed packet length, synchronize word length 3, 2,
+	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x46); 					//(33h)header 3, 2, 1,0 used for head length, fixed packet length, synchronize word length 3,2,1,0,
 	
-	SPI1_RWReg((REG_WRITE | PreambleLength), 64);   					//(34h)引导头长度 // 64 nibble = 32byte preamble
+	SPI1_RWReg((REG_WRITE | PreambleLength), 32);   					//(34h)引导头长度 // 64 nibble = 32byte preamble
 	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x20); 			//(35h)need to detect 20bit preamble
-	SPI1_RWReg((REG_WRITE | SyncWord3), 0x2d);							//(36h)// synchronize word						//(36h)同步头
-	SPI1_RWReg((REG_WRITE | SyncWord2), 0xa4);							//(37h)						
-	SPI1_RWReg((REG_WRITE | SyncWord1), 0x00);							//(38h)
-	SPI1_RWReg((REG_WRITE | SyncWord0), 0x00);							//(39h)
+	SPI1_RWReg((REG_WRITE | SyncWord3), 0xA1);							//(36h)// synchronize word						//(36h)同步头
+	SPI1_RWReg((REG_WRITE | SyncWord2), 0x28);							//(37h)						
+	SPI1_RWReg((REG_WRITE | SyncWord1), 0xFC);							//(38h)
+	SPI1_RWReg((REG_WRITE | SyncWord0), 0x6D);							//(39h)
 
 	SPI1_RWReg((REG_WRITE | 0x3a), 's');  // tx header
 	SPI1_RWReg((REG_WRITE | 0x3b), 'o');
@@ -274,22 +275,22 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
-void Si4431TX_ReceiveMod(u8 * pRxCheckHeader)
+void Si4431TX_ReceiveMod(si4431adrtype RxCheckHeader)
 {	u8 iLoop,RxCheckHeaderAdr;
 	Si4431TX_IdleMod();
 	SPI1_RWReg((REG_WRITE | RXFIFOControl), 30);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-	RxCheckHeaderAdr = CheckHeader3;			//接收校对地址头
+	RxCheckHeaderAdr = CheckHeader0;			//接收校对地址头
 	
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
-		SPI1_RWReg((REG_WRITE | RxCheckHeaderAdr + iLoop),* (pRxCheckHeader+iLoop));		
+		SPI1_RWReg((REG_WRITE | (RxCheckHeaderAdr - iLoop)),RxCheckHeader.HexAdr.Bit8[iLoop]);	//由于STM32是小端模式，Bit8[0]是低位地址		
 	}
   	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x91);				 //(05h)使能接收FIFO几乎满中断 FIFO上下溢 CRC错误中断
- 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x20); 			//(06h)无效引导码
+ 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 			//(06h)无效引导码
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
