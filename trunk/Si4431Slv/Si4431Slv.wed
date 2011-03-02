@@ -11,8 +11,8 @@ ptn_Child3=Frames
 
 [WorkState_v1_2.DockState]
 Bars=28
-ScreenCX=1280
-ScreenCY=1024
+ScreenCX=1024
+ScreenCY=768
 ptn_Child1=Bar-0
 ptn_Child2=Bar-1
 ptn_Child3=Bar-2
@@ -172,7 +172,7 @@ Docking=True
 MRUDockID=59419
 MRUDockLeftPos=-1
 MRUDockTopPos=-1
-MRUDockRightPos=1279
+MRUDockRightPos=1023
 MRUDockBottomPos=28
 MRUFloatStyle=8196
 MRUFloatXPos=-1
@@ -184,7 +184,7 @@ MDIChild=False
 PctWidth=1000000
 MRUFloatCX=314
 MRUFloatCY=47
-MRUHorzDockCX=1280
+MRUHorzDockCX=1024
 MRUHorzDockCY=29
 MRUVertDockCX=76
 MRUVertDockCY=676
@@ -217,7 +217,7 @@ Style=12212
 ExStyle=131852
 PrevFloating=False
 MDIChild=False
-PctWidth=176319
+PctWidth=175954
 MRUFloatCX=148
 MRUFloatCY=30
 MRUHorzDockCX=148
@@ -238,14 +238,14 @@ Buttons=AABOAAAAAAGPDBAAAAAAAIIBAAAAAAAAAAAAAAAADABOAAAAAAAAAAAAAAAAHABOAAAAAA
 
 [WorkState_v1_2.DockState.Bar-6]
 BarID=59396
-XPos=184
+XPos=147
 YPos=28
 MRUWidth=566
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=184
+MRUDockLeftPos=147
 MRUDockTopPos=28
-MRUDockRightPos=767
+MRUDockRightPos=730
 MRUDockBottomPos=58
 MRUFloatStyle=8196
 MRUFloatXPos=-1
@@ -254,7 +254,7 @@ Style=12212
 ExStyle=131852
 PrevFloating=False
 MDIChild=False
-PctWidth=603833
+PctWidth=602584
 MRUFloatCX=583
 MRUFloatCY=30
 MRUHorzDockCX=583
@@ -279,13 +279,13 @@ Visible=False
 MRUWidth=246
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=853
-MRUDockTopPos=56
-MRUDockRightPos=1116
-MRUDockBottomPos=86
+MRUDockLeftPos=682
+MRUDockTopPos=42
+MRUDockRightPos=945
+MRUDockBottomPos=72
 MRUFloatStyle=8192
-MRUFloatXPos=730
-MRUFloatYPos=53
+MRUFloatXPos=584
+MRUFloatYPos=40
 Style=12213
 ExStyle=131852
 PrevFloating=False
@@ -311,14 +311,14 @@ Buttons=IFGBAAAAAAJFGBAAAAAAAAAAAAAAAAFEGBAAAAAAIEGBAAAAAAMBJIAAAAAAMEGBAAAAAAAA
 
 [WorkState_v1_2.DockState.Bar-8]
 BarID=59398
-XPos=501
+XPos=401
 YPos=58
 MRUWidth=339
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=501
+MRUDockLeftPos=401
 MRUDockTopPos=58
-MRUDockRightPos=857
+MRUDockRightPos=757
 MRUDockBottomPos=88
 MRUFloatStyle=8196
 MRUFloatXPos=-1
@@ -384,14 +384,14 @@ Buttons=HKAIAAAAAAIKAIAAAAAAAAAAAAAAAAADKBAAAAAAAAAAAAAAAAGPKBAAAAAAEPKBAAAAAAFP
 
 [WorkState_v1_2.DockState.Bar-10]
 BarID=59400
-XPos=893
+XPos=730
 YPos=28
 MRUWidth=23
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=893
+MRUDockLeftPos=730
 MRUDockTopPos=28
-MRUDockRightPos=933
+MRUDockRightPos=770
 MRUDockBottomPos=58
 MRUFloatStyle=8196
 MRUFloatXPos=-1
@@ -400,7 +400,7 @@ Style=12212
 ExStyle=131852
 PrevFloating=False
 MDIChild=False
-PctWidth=176319
+PctWidth=175954
 MRUFloatCX=40
 MRUFloatCY=30
 MRUHorzDockCX=40
@@ -421,14 +421,14 @@ Buttons=JPAIAAAAAA
 
 [WorkState_v1_2.DockState.Bar-11]
 BarID=59401
-XPos=862
+XPos=757
 YPos=58
 MRUWidth=77
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=862
+MRUDockLeftPos=757
 MRUDockTopPos=58
-MRUDockRightPos=933
+MRUDockRightPos=828
 MRUDockBottomPos=88
 MRUFloatStyle=8196
 MRUFloatXPos=-1
@@ -458,23 +458,23 @@ Buttons=AHHBAAAAAABHHBAAAAAAAAAAAAAAAA
 
 [WorkState_v1_2.DockState.Bar-12]
 BarID=59402
-XPos=933
+XPos=770
 YPos=28
 MRUWidth=115
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=933
+MRUDockLeftPos=770
 MRUDockTopPos=28
-MRUDockRightPos=1065
+MRUDockRightPos=902
 MRUDockBottomPos=58
 MRUFloatStyle=8192
-MRUFloatXPos=473
-MRUFloatYPos=180
+MRUFloatXPos=378
+MRUFloatYPos=135
 Style=12212
 ExStyle=131852
 PrevFloating=False
 MDIChild=False
-PctWidth=43526
+PctWidth=45506
 MRUFloatCX=129
 MRUFloatCY=30
 MRUHorzDockCX=132
@@ -499,10 +499,10 @@ Visible=False
 MRUWidth=115
 Docking=True
 MRUDockID=59419
-MRUDockLeftPos=146
-MRUDockTopPos=27
-MRUDockRightPos=278
-MRUDockBottomPos=57
+MRUDockLeftPos=117
+MRUDockTopPos=20
+MRUDockRightPos=249
+MRUDockBottomPos=50
 MRUFloatStyle=8196
 MRUFloatXPos=-1
 MRUFloatYPos=0
@@ -538,7 +538,7 @@ MRUDockID=0
 MRUDockLeftPos=0
 MRUDockTopPos=-2
 MRUDockRightPos=187
-MRUDockBottomPos=676
+MRUDockBottomPos=419
 MRUFloatStyle=4
 MRUFloatXPos=-1
 MRUFloatYPos=0
@@ -552,7 +552,7 @@ MRUFloatCY=180
 MRUHorzDockCX=300
 MRUHorzDockCY=180
 MRUVertDockCX=187
-MRUVertDockCY=678
+MRUVertDockCY=421
 MRUDockingState=0
 DockingStyle=61440
 TypeID=0
@@ -568,7 +568,7 @@ Docking=True
 MRUDockID=59422
 MRUDockLeftPos=1
 MRUDockTopPos=5
-MRUDockRightPos=1280
+MRUDockRightPos=1024
 MRUDockBottomPos=182
 MRUFloatStyle=4
 MRUFloatXPos=-1
@@ -580,7 +580,7 @@ MDIChild=False
 PctWidth=1000000
 MRUFloatCX=300
 MRUFloatCY=180
-MRUHorzDockCX=1279
+MRUHorzDockCX=1023
 MRUHorzDockCY=177
 MRUVertDockCX=300
 MRUVertDockCY=180
@@ -667,7 +667,7 @@ MRUDockTopPos=0
 MRUDockRightPos=0
 MRUDockBottomPos=0
 MRUFloatStyle=4
-MRUFloatXPos=-1908874354
+MRUFloatXPos=-1527099483
 MRUFloatYPos=0
 Style=20356
 ExStyle=69393
@@ -699,7 +699,7 @@ MRUDockTopPos=0
 MRUDockRightPos=0
 MRUDockBottomPos=0
 MRUFloatStyle=4
-MRUFloatXPos=-1908874354
+MRUFloatXPos=-1527099483
 MRUFloatYPos=0
 Style=20356
 ExStyle=69393
@@ -731,7 +731,7 @@ MRUDockTopPos=0
 MRUDockRightPos=0
 MRUDockBottomPos=0
 MRUFloatStyle=4
-MRUFloatXPos=-1908874354
+MRUFloatXPos=-1527099483
 MRUFloatYPos=0
 Style=20356
 ExStyle=69393
@@ -763,7 +763,7 @@ MRUDockTopPos=0
 MRUDockRightPos=0
 MRUDockBottomPos=0
 MRUFloatStyle=4
-MRUFloatXPos=-1908874354
+MRUFloatXPos=-1527099483
 MRUFloatYPos=0
 Style=20356
 ExStyle=69393
@@ -915,8 +915,8 @@ ResourceID=0
 BarID=59423
 Horz=True
 Floating=True
-XPos=151
-YPos=76
+XPos=121
+YPos=57
 Bars=3
 Bar#0=0
 Bar#1=59403
@@ -943,8 +943,8 @@ ResourceID=0
 BarID=59423
 Horz=True
 Floating=True
-XPos=734
-YPos=76
+XPos=587
+YPos=57
 Bars=3
 Bar#0=0
 Bar#1=59397
@@ -978,7 +978,7 @@ ptn_Child2=ChildFrames
 
 [WorkState_v1_2.Frames.MainFrame]
 WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAAADIPPPPAADIPPPPPPPPPPPPPPPPPPPPHICAAAAADMAAAAAAEDGAAAAACGDAAAAA
-Title=ST Visual Develop - Si4431Slv.stw - [GloVar.c]
+Title=ST Visual Develop - Si4431Slv.stw - [Si4431Api.c]
 
 [WorkState_v1_2.Frames.ChildFrames]
 ptn_Child1=Document-0
@@ -1010,21 +1010,21 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-1.ViewFrame-0]
-DocPathName=source\src\glovar.c
+DocPathName=source\src\init.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPMCAAAAAAKDAAAAAAJPCAAAAALDBAAAAA
-IsActiveChildFrame=True
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAAPADAAAAAIFBAAAAA
+IsActiveChildFrame=False
 IsFrameVisible=True
 
 [WorkState_v1_2.Frames.ChildFrames.Document-2]
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-2.ViewFrame-0]
-DocPathName=source\src\si4431api.c
+DocPathName=source\src\stm8s_it.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAAPADAAAAAIFBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPAAAAAAAAAAAAAAAANMCAAAAABABAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1032,10 +1032,10 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-3.ViewFrame-0]
-DocPathName=source\src\si4431app.c
+DocPathName=source\src\global.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPIFAAAAAAEHAAAAAAFCDAAAAAFHBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPGBAAAAAANBAAAAAADOCAAAAAOBBAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1043,10 +1043,10 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-4.ViewFrame-0]
-DocPathName=source\src\spicom.c
+DocPathName=source\inc\glovar.h
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPAAAAAAAAAAAAAAAANMCAAAAABABAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPIFAAAAAAEHAAAAAADODAAAAAPBCAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1054,7 +1054,7 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-5.ViewFrame-0]
-DocPathName=library\src\stm8s_tim2.c
+DocPathName=source\src\glovar.c
 DocumentString=
 DocTemplateIndex=0
 WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPMCAAAAAAKDAAAAAAJPCAAAAALDBAAAAA
@@ -1065,21 +1065,21 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-6.ViewFrame-0]
-DocPathName=source\inc\global.h
+DocPathName=source\src\si4431api.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPAAAAAAAAAAAAAAAANMCAAAAABABAAAAA
-IsActiveChildFrame=False
+WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAAPADAAAAAIFBAAAAA
+IsActiveChildFrame=True
 IsFrameVisible=True
 
 [WorkState_v1_2.Frames.ChildFrames.Document-7]
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-7.ViewFrame-0]
-DocPathName=source\inc\stm8s_conf.h
+DocPathName=source\src\si4431app.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPGBAAAAAANBAAAAAADOCAAAAAOBBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPIFAAAAAAEHAAAAAAFCDAAAAAFHBAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1087,10 +1087,10 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-8.ViewFrame-0]
-DocPathName=source\inc\si4431api.h
+DocPathName=source\src\spicom.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAANMDAAAAACACAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPAAAAAAAAAAAAAAAANMCAAAAABABAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1098,10 +1098,10 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-9.ViewFrame-0]
-DocPathName=source\src\init.c
+DocPathName=library\src\stm8s_tim2.c
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAAPADAAAAAIFBAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPMCAAAAAAKDAAAAAAJPCAAAAALDBAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
 
@@ -1109,7 +1109,7 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-10.ViewFrame-0]
-DocPathName=source\src\stm8s_it.c
+DocPathName=source\inc\global.h
 DocumentString=
 DocTemplateIndex=0
 WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPAAAAAAAAAAAAAAAANMCAAAAABABAAAAA
@@ -1120,7 +1120,7 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-11.ViewFrame-0]
-DocPathName=source\src\global.c
+DocPathName=source\inc\stm8s_conf.h
 DocumentString=
 DocTemplateIndex=0
 WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPGBAAAAAANBAAAAAADOCAAAAAOBBAAAAA
@@ -1131,9 +1131,9 @@ IsFrameVisible=True
 ptn_Child1=ViewFrame-0
 
 [WorkState_v1_2.Frames.ChildFrames.Document-12.ViewFrame-0]
-DocPathName=source\inc\glovar.h
+DocPathName=source\inc\si4431api.h
 DocumentString=
 DocTemplateIndex=0
-WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPIFAAAAAAEHAAAAAADODAAAAAPBCAAAAA
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPCOPPPPPPCEAAAAAAHFAAAAAANMDAAAAACACAAAAA
 IsActiveChildFrame=False
 IsFrameVisible=True
