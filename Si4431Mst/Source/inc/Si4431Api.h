@@ -349,7 +349,7 @@ u16 SPI2_RWWord(u16 Reg);
 void Si4431TX_Init(void);
 void Si4431TX_IdleMod(void);
 void Si4431TX_TransmitMod(u8 * pTxHeader);
-void Si4431TX_ReceiveMod(u8 * pRxCheckHeader);
+void Si4431TX_ReceiveMod(si4431adrtype RxCheckHeader);
 u8 Si4431TX_BusyCheck(void);
 void Si4431TX_TxPacket(unsigned char * packet, unsigned char length);
 void Si4431RX_Init(void);

@@ -649,7 +649,7 @@ void CmdExecute(void)		//执行散转函数
 //=============================================================================================
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 {			
-	longWord32	NewAdr;
+	longword32	NewAdr;
 	u16 RpStrLen;	 
 	uint8_t loopi,loopj,NetFlag;//TmpSta;
 	uint8_t strNETAPL[32] = "#NETAPL\0";	//发送至从模块
@@ -666,6 +666,7 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 		 	if(pJKNetAdr_Tab->JKNetNumTab[loopi] == NewAdr.All32){
 				NetFlag = 1;																					//此模块已组网
 				pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//重置心跳包个数				
+				break;
 			}
 		}			
 	}  
@@ -682,7 +683,9 @@ if(0 == NetFlag){		//新模块未组网
 				break;
 			}			
 		}
-	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
+//	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
+	pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 = NewAdr.All32;	//记录新组网地址
+	MyHexToStr(pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr ,pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 , CMDSPI_ADR_WIDTH)	;
 /*	
 	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
 	for(loopj = 0; loopj < SI4431_ADR_WIDTH; loopj++){
@@ -699,8 +702,8 @@ if(0 == NetFlag){		//新模块未组网
 //	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
 
 	MsgInsrt(pReplyBuf->all , strNETAPL , MyStrLen(strNETAPL) , TRUE);	//插入命令头
-	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431 , MyStrLen(RX_ADDRESS_Si4431) , TRUE);	//插入源地址
-	MsgInsrt(pReplyBuf->all , pJKNetAdr_Tab->pJKNetAdrTabCnt , MyStrLen(pJKNetAdr_Tab->pJKNetAdrTabCnt) , TRUE);	//插入目标地址
+	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入源地址
+	MsgInsrt(pReplyBuf->all , pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入目标地址
 
 
 /*	
@@ -740,6 +743,7 @@ if(0 == NetFlag){		//新模块未组网
 	return 1;	//已记录新组网模块地址
 	}
  }
+return 0;	//此模块以组网
 		/*
 		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
 			nRF24L01_SPI1_TxPacket(strNTA);		//NTA发送新的从节点Tx地址

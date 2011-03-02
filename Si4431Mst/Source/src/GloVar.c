@@ -1,5 +1,6 @@
 //#include "Global.h"
 #include "stm32f10x.h"
+#include "Global.h"
 #include "CmdPrc.h"
 #include "GloVar.h"
 #include <absacc.h>
@@ -39,9 +40,10 @@ uint8_t	TXItSta1,TXItSta2;
 uint8_t	RXItSta1,RXItSta2;
 
 uint16_t	SPI2RxCnt,SPI1RxCnt;
-uint8_t NetConnectRxAdr[SI4431_ADR_WIDTH] = {0xA1,0x5C,0x00,0x01};	//广播接收地址
+si4431adrtype NetConnectRxAdr;	//广播接收地址
 uint8_t TX_ADDRESS_Si4431[SI4431_ADR_WIDTH]= {0x18,0x42,0x31,0x10};	//本地地址
-uint8_t RX_ADDRESS_Si4431[SI4431_ADR_WIDTH]= {0x33,0x43,0x10,0x28};	//接收地址
+si4431adrtype RX_ADDRESS_Si4431 ;	//接收地址
+
 
 uint8_t MOD1_TXADR[SI4431_ADR_WIDTH]= {0x21,0xA1,0x0A,0x01};	//本地地址
 uint8_t MOD1_RXADR[SI4431_ADR_WIDTH]= {0x21,0xA1,0x0A,0x01};	//本地地址

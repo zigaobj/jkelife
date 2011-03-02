@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include "stm32f10x.h"
 #include "platform_config.h"
+#include "Global.h"
 #include "Si4431Api.h"
 #include "Si4431App.h"
-#include "Global.h"
+
 #include "CmdPrc.h"
 #include "UsartCom.h"
 #include "SPICom.h"
@@ -255,7 +256,7 @@ uint8_t NewConnect(uint8_t * pNewAdr)
 uint8_t HeartBeat(uint8_t * pHeartBeatAdr)
 {	uint8_t TmpTabCnt,CmpFlag;
 	uint8_t * pTmpTab;
-	RUN_LED_TURN();	//新收到数据IR灯跳转一次
+//	RUN_LED_TURN();	//新收到数据IR灯跳转一次
 	if(0 != pJKNetAdr_Tab->JKNetAdrTabCnt){	//无从模块组网则不用检查心跳包地址
 		for(TmpTabCnt = 0; TmpTabCnt < JKNETADRTABLEN; TmpTabCnt++){	//遍历从模块地址
 			pTmpTab = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * TmpTabCnt);
