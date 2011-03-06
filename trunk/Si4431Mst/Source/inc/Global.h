@@ -76,29 +76,7 @@ typedef	struct _RUN_TIME_TYPE_
 
 typedef uint32_t timems_t;	//定义记录毫秒类型的变量类型
 
-extern volatile RUN_TIME_TYPE GlobalRunTime;	//记录系统上电后的运行时间
-extern volatile timems_t StartTimeMs1,EndTimeMs1,StartTimeMs2,EndTimeMs2,StartTimeMs3,EndTimeMs3;
 
-
-
-extern u8 TxNoReply[] ;
-extern u8 RxNotMatch[];
-extern u8 RxMatch[];
-
-extern u8 StrError[] ;
-extern u8 TestStr[] ;
-extern u8 TestWord[];
-
-extern u8 MSGRP_OK[];
-extern u8 MSGRP_ERR[];
-
-
-extern volatile TestStatus TransferStatus1 , TransferStatus2;
-extern volatile TestStatus TransferStatus3 , TransferStatus4;
-extern volatile SysWorkStatus WorkSta1;
-extern volatile SysWorkStatus WorkStaPre1;
-extern volatile SysWorkStatus WorkSta2;
-extern volatile SysWorkStatus WorkStaPre2;
 
 //extern volatile STA24L01 Mst24L01Sta,Slv24L01Sta;
 
