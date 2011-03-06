@@ -37,7 +37,7 @@ void SysInit_Config(void)
 
   TIM3_Config();	//系统时钟，提供10us的最小计时单元
 
- // TIM2_Config();
+	TIM2_Config();
 
   VarInit();	//系统变量，状态初始化
 
@@ -195,7 +195,7 @@ void VarInit(void)
 	
 	for(i = 0; i < JKNETADRTABLEN; i++){
 		pJKNetAdr_Tab->TabFlag[i] = 0;
-		pJKNetAdr_Tab->JKNetNumTab[i] = 0;
+//		pJKNetAdr_Tab->JKNetNumTab[i] = 0;
 	}	
 	
 	pReplyBuf = &ReplyBuf;	//接收命令应答处理缓冲区
@@ -259,7 +259,7 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;	  
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;	
-  NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
 }

@@ -1,41 +1,7 @@
 #include "stm32f10x.h"
 #include "Global.h"
-
-
-/* Private variables ---------------------------------------------------------*/ 
-volatile RUN_TIME_TYPE GlobalRunTime;	//记录系统上电后的运行时间
-volatile timems_t StartTimeMs1,EndTimeMs1,StartTimeMs2,EndTimeMs2,StartTimeMs3,EndTimeMs3;
-
-//uint8_t SPI1_ParseBuf[SPI1PARSEBUFLEN];				//SPIy_Buffer_Rx
-
-uint8_t TxIdx = 0, RxIdx = 0, k = 0;
-volatile TestStatus TransferStatus1 = FAILED, TransferStatus2 = FAILED;
-volatile TestStatus TransferStatus3 = FAILED, TransferStatus4 = FAILED;
-volatile SysWorkStatus WorkSta1 = STA_SLEEP;			//整个系统的工作状态
-volatile SysWorkStatus WorkStaPre1 = STA_SLEEP;		//整个系统的前一个工作状态
-volatile SysWorkStatus WorkSta2 = STA_SLEEP;		//整个系统的工作状态
-volatile SysWorkStatus WorkStaPre2 = STA_SLEEP;		//整个系统的前一个工作状态
-
-//volatile STA24L01 Mst24L01Sta = TXSTATUS,Slv24L01Sta = RXSTATUS;
-
-__IO uint32_t TimingDelay;
-
-uint8_t TestStr[] = "USART1TEST\r\n";
-uint8_t TxNoReply[] = "TxNoReply\r\n";
-uint8_t RxNotMatch[] = "RxNotMatch\r\n";
-uint8_t RxMatch[] = "RxMatch\r\n";
-
-uint8_t TestWord[] = "A";
-
-uint8_t StrError[] = "Error!";
-
-uint8_t MSGRP_OK[] = "OK\0";
-uint8_t MSGRP_ERR[] = "ER\0";
-/* Private functions ---------------------------------------------------------*/
-
-
-
-
+#include "GloVar.h"
+/* Global functions ---------------------------------------------------------*/
 
 /**
   * @brief  Inserts a delay time.

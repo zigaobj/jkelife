@@ -14,12 +14,15 @@
 
 u8 SPI1_RW(u8 Data)
 {
-	SPI_I2S_SendData(SPI1 , Data);
+/* Write in the DR register the data to be sent */
+	while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_TXE) == RESET);	
+	SPI1->DR = Data;
+//	SPI_I2S_SendData(SPI1 , Data);
 //	DelayUs_Soft(100);
 	// Wait for SPI1 data reception 
 	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-	
-	Data = SPI_I2S_ReceiveData(SPI1);
+	Data = SPI1->DR;
+//	Data = SPI_I2S_ReceiveData(SPI1);
 	return(Data);           		  // return read uchar
 }
 
@@ -128,11 +131,11 @@ u16 SPI2_RWWord(u16 Reg)
 //=============================================================================================
 void Si4431TX_Init(void)
 { u8 TmpRegVal;                  
+	
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)寄存器软复位
- 	
-
+ 	DelayUs_Soft(100);
 	while ( GPIO_ReadOutputDataBit(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == Bit_SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
-//	DelayCom(2);
+//	
 	SPI1_Read(InterruptStatus1);	//(03h)清中断
 	SPI1_Read(InterruptStatus2);	//(04h)
 
@@ -244,21 +247,21 @@ void Si4431TX_IdleMod(void)
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
-void Si4431TX_TransmitMod(u8 * pTxHeader)
-{	u8 iLoop,TxHeaderAdr;
+void Si4431TX_TransmitMod(si4431adrtype TxHeader)
+{	u8 iLoop;				//,TxHeaderAdr
 		
 	Si4431TX_IdleMod();        	//设置空闲状态
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
 	
-	TxHeaderAdr = TransmitHeader3;			//发送帧头
-  
+//	TxHeaderAdr = ;			//发送帧头
+//  TxHeaderAdr
 	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){		
-		SPI1_RWReg((REG_WRITE | TxHeaderAdr + iLoop),* (pTxHeader+iLoop));		//(3Ah-3Dh)设置发送地址头，高位对齐	
+		SPI1_RWReg((REG_WRITE | (TransmitHeader0 - iLoop)),TxHeader.HexAdr.Bit8[iLoop]);		//(3Ah-3Dh)//由于STM32是小端模式，Bit8[0]是低位地址
 	}
 
-	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 30);  //(7Dh)tx almost empty 门限
+	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -270,22 +273,24 @@ void Si4431TX_TransmitMod(u8 * pTxHeader)
 
 //=============================================================================================
 //说明:Si4431发射模块设置接收模式
-//输入:pRxCheckHeader接收校对地址头	
+//输入:sta:TRUE表示更新接收地址，FALSE表示不更新接收地址 ；RxCheckHeader接收校对地址头	
 //输出:void
 //调用:SPI1_RWReg();SPI1_Read();
 //修改:2011-01-15			KEN			初定
 //=============================================================================================
-void Si4431TX_ReceiveMod(si4431adrtype RxCheckHeader)
-{	u8 iLoop,RxCheckHeaderAdr;
+void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
+{	u8 iLoop;		 //,RxCheckHeaderAdr
 	Si4431TX_IdleMod();
-	SPI1_RWReg((REG_WRITE | RXFIFOControl), 30);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), 26);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-	RxCheckHeaderAdr = CheckHeader0;			//接收校对地址头
-	
-	for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
-		SPI1_RWReg((REG_WRITE | (RxCheckHeaderAdr - iLoop)),RxCheckHeader.HexAdr.Bit8[iLoop]);	//由于STM32是小端模式，Bit8[0]是低位地址		
+//	RxCheckHeaderAdr = CheckHeader0;			//接收校对地址头
+//	RxCheckHeaderAdr
+	if(sta){
+		for(iLoop=0; iLoop < TXHEADERRATE; iLoop++){										 //设置接收校对地址头	
+			SPI1_RWReg((REG_WRITE | (CheckHeader0 - iLoop)),RxCheckHeader.HexAdr.Bit8[iLoop]);	//由于STM32是小端模式，Bit8[0]是低位地址		
+		}
 	}
   	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
 

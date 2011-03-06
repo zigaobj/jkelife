@@ -47,14 +47,13 @@ uint8_t	SPI1_ParseBuf[SPI1PARSEBUFLEN];	//SPI1接收缓冲区
 uint8_t	SPI1ByteNum;		 //在协议0时串口按接收到的命令字节总数来结束一条命令的接收
 uint8_t	SPI2_ParseBuf[SPI2PARSEBUFLEN];//串口1接收缓冲区
 
-
 //CMD_BODY_TypeDef Cmd_Body[CMD_RXLIST_LMT];	//命令数据体
 CMDSPI_BUF_TypeDef		CmdSpiTxBuf;										//命令发送缓冲区
 CMDSPI_BUF_TypeDef	*	pCmdSpiTxBuf;								//指向命令发送缓冲区
 CMDSPI_BUF_TypeDef		CmdSpiRxBuf;										//命令接收缓冲区
 CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
-
-
+CMDSPI_BODY_TypeDef  ReplyBuf;								//应答缓冲区
+CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区
 //CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
 //CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
 /*
@@ -80,13 +79,7 @@ CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
 //union SEN_DAT	SenDat;
 //union SEN_DAT * pSenDat = &SenDat;
 
-//CMD_BODY_TypeDef Cmd_Body[CMD_RXLIST_LMT];	//命令数据体
-CMDSPI_BUF_TypeDef		CmdSpiTxBuf;										//命令发送缓冲区
-CMDSPI_BUF_TypeDef	*	pCmdSpiTxBuf;								//指向命令发送缓冲区
-CMDSPI_BUF_TypeDef		CmdSpiRxBuf;										//命令接收缓冲区
-CMDSPI_BUF_TypeDef	*	pCmdSpiRxBuf;								//指向命令接收缓冲区
-CMDSPI_BODY_TypeDef  ReplyBuf;								//应答缓冲区
-CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区
+
 
 //CMD_BODY_TypeDef Cmd_Body[CMD_LISTLMT];	//命令数据体
 //CMD_BUF_TypeDef CmdBuf ;	//命理处理缓冲区
@@ -116,21 +109,6 @@ CMDSPI_BODY_TypeDef * pReplyBuf;								//应答缓冲区
 void SPI1Rx_Parse(void)
 { //uint8_t i,j,k;
   uint8_t LoopStart,LoopEnd;
-//  static uint8_t strCNT[]  = "CNT";             
-//  static uint8_t LOG[] = "$log,ES";		   //  7
-//  static uint8_t SET[] = "$set,ES";		   //  7
-/*	if(1 == SPI1NewFlg){	//SPI1收到新数据
-		for(i=0;i<TX_PLOAD_WIDTH_24L01;i++){
-			SPI1_ParseBuf[SPI1index] = SPI1_RxBuf[i];
-			if(0x0A == SPI1_ParseBuf[SPI1index] ){		
-				if(0x0D == SPI1_ParseBuf[SPI1index-1] ){
-					SPI1OkFlag ++;		//收到0x0D 0x0A认为是一条完整的命令		
-				}
-			}
-			SPI1index++;
-		}
-		SPI1NewFlg = 0;	
-	}	*/
 	if(0 != SPI1OkFlag ){								
 		for(LoopStart = 0; LoopStart < SPI1index; LoopStart++){
 			if(SPI1_ParseBuf[LoopStart]=='#'){		//找到命令头了	
@@ -138,50 +116,12 @@ void SPI1Rx_Parse(void)
 					if(SPI1_ParseBuf[LoopEnd]=='\n'){	//找到命令结尾
 						SPI1OkFlag--;	//每处理一条命令，接收命令计数器自减
 						SPI1Pindex = LoopEnd + 1;
-						CmdSpiApply(Spi1_Cmd_RxPort , &SPI1_ParseBuf[LoopStart] ,(LoopEnd-LoopStart+1));	//建立索引命令
+						CmdSpiRxApply(&SPI1_ParseBuf[LoopStart] ,(LoopEnd-LoopStart+1));	//建立索引命令
 						break;
 					}
 				}
 			}
 		}	
-			/*	
-				comnum = Hash(SPI1_ParseBuf+LoopStart+1 , RFCMDHASHLEN);	//计算命令Hash头
-				switch (comnum){	//命令散转
-					case (RFCMD_CNT):	//CNT握手命令，接收从模块地址  "#CNT,00000\r\n";
-						if(STA_NETCONNECT == WorkSta1){		//只有当系统在组网模式才执行
-							if(! NewConnect(SPI1_ParseBuf+LoopStart+5 )){
-								Usart_SendString_End(USART1 ,StrError);		//从模块地址空间已满
-							}
-						}	
-					break;
-
-
-					
-					case (RFCMD_HRB):	//心跳包	"#HRB,00000\r\n";
-						if(STA_DATA == WorkSta2){	//只有当系统在数据接收阶段才执行							
-							if(! HeartBeat(SPI1_ParseBuf+LoopStart+5 )){	//检查心跳包里包含的从模块地址
-							//	Usart_SendString_End(USART1 ,StrError);		//从模块地址空间已满
-							}
-						//	else{
-						//		SPI1OkFlag = 0;	//或SPI1OkFlag--
-						//	}													
-						}
-
-					break;
-					case (RFCMD_TMP):	//温度采集	"#TMP,0,00000\r\n";
-						if(STA_DATA == WorkSta2){	//只有当系统在数据接收阶段才执行							
-						//	Usart_SendString(USART1 ,SPI1_ParseBuf + LoopStart ,LoopEnd - LoopStart);	//直接往上位机发送												
-						}
-
-					break;
-					
-
-					default:
-					//	Usart_SendString_End(USART1 ,StrError);		//接收命令有误，无法解析
-					break;
-							
-				}
-			*/	
 		//清空缓冲区				
 		for (LoopStart = 0; LoopStart < SPI1PARSEBUFLEN; LoopStart++){
 			SPI1_ParseBuf[LoopStart] = 0;	
@@ -350,18 +290,16 @@ void SPI2Rx_Parse(void)
 
                                 
 //---------------------------------------------------------------------------
-//说明：Spi建立命令索引函数，寻找空的索引空间
-//参数：port:通讯接口类型 ；* cmddata:数据空间首地址；cmdlen:数据长度
+//说明：SpiTx建立命令索引函数，寻找空的索引空间
+//参数：sta:TRUE表示是主动发送的命令，需要重发机制，FALSE表示是回复命令，不需要重发；* cmddata:数据空间首地址；cmdlen:数据长度
 //返回：命令建立情况	
 //---------------------------------------------------------------------------
-u8 CmdSpiApply(CMD_PORT_TPYE port ,u8 * cmddata ,u16 cmdlen)		
+u8 CmdSpiTxApply(bool sta ,u8 * cmddata ,u16 cmdlen)		
 {
 	u8	i = 0,j = 0;
-//	CMD_BUF_TypeDef * pCmdBufApp = NULL;
-	switch(port){
-		case (Spi1_Cmd_TxPort):										//建立待发送命令索引
+										//建立待发送命令索引
 			i = pCmdSpiTxBuf->CmdCurrentList ;			//获得此前命令索引位置
-			while(1 == CmdSpiTxBuf.CmdListFlag[i]){	//寻找空的从模块地址空间
+			while(0 != CmdSpiTxBuf.CmdListFlag[i]){	//寻找发送命令索引
 				i++;
 				if(CMDSPI_TXLIST_LMT == i){
 					i = 0;
@@ -372,15 +310,32 @@ u8 CmdSpiApply(CMD_PORT_TPYE port ,u8 * cmddata ,u16 cmdlen)
 			}
 			pCmdSpiTxBuf->CmdCurrentList	=	i ;	 //当前命令索引位置
 			pCmdSpiTxBuf->pCmd_Body_Current = & (pCmdSpiTxBuf->Cmd_Body[i]);	//获得命令索引首地址
-			
+
 			for(j = 0; j < cmdlen ; j++){
 				pCmdSpiTxBuf->pCmd_Body_Current->all[j] = cmddata[j];
 			}
-			pCmdSpiTxBuf->CmdListFlag[pCmdSpiTxBuf->CmdCurrentList]	= 1;	//当前命令建立成功		
+			pCmdSpiTxBuf->pCmd_Body_Current->part.TotalLength = cmdlen;		//记录命令长度
+			pCmdSpiTxBuf->pCmd_Body_Current->part.HeaderHash	= Hash(pCmdSpiTxBuf->pCmd_Body_Current->part.Header , CMDSPI_HEADER_LEN);	//计算命令hash头			
+			if(sta){
+				pCmdSpiTxBuf->CmdListFlag[pCmdSpiTxBuf->CmdCurrentList]	= CMD_MAXRESEND_NUM;	//当前命令为主动发送命令，需要重发		
+			}
+			else{
+				pCmdSpiTxBuf->CmdListFlag[pCmdSpiTxBuf->CmdCurrentList]	= CMD_REPLYSEND_NUM;	//当前命令为回复命令不需要重发		
+			}
 			pCmdSpiTxBuf->CmdListNum += 1;																//待处理命令数+1
 			
-		break;
-		case (Spi1_Cmd_RxPort):										//建立处理命令索引
+	return 1;//建立命令索引成功
+	
+}
+//---------------------------------------------------------------------------
+//说明：SpiRx建立命令索引函数，寻找空的索引空间
+//参数：* cmddata:数据空间首地址；cmdlen:数据长度
+//返回：命令建立情况	
+//---------------------------------------------------------------------------
+u8 CmdSpiRxApply(u8 * cmddata ,u16 cmdlen)		
+{
+	u8	i = 0,j = 0;
+										//建立处理命令索引
 			i = pCmdSpiRxBuf->CmdCurrentList ;			//获得此前命令索引位置
 			while(1 == CmdSpiRxBuf.CmdListFlag[i]){	//寻找空的从模块地址空间
 				i++;
@@ -397,64 +352,27 @@ u8 CmdSpiApply(CMD_PORT_TPYE port ,u8 * cmddata ,u16 cmdlen)
 			for(j = 0; j < cmdlen ; j++){
 				pCmdSpiRxBuf->pCmd_Body_Current->all[j] = cmddata[j];
 			}
+			pCmdSpiRxBuf->pCmd_Body_Current->part.HeaderHash	= Hash(pCmdSpiRxBuf->pCmd_Body_Current->part.Header , CMDSPI_HEADER_LEN);	//计算命令hash头
+			pCmdSpiRxBuf->pCmd_Body_Current->part.TotalLength = cmdlen;		//记录命令长度
 			pCmdSpiRxBuf->CmdListFlag[pCmdSpiRxBuf->CmdCurrentList]	= 1;	//当前命令建立成功		
 			pCmdSpiRxBuf->CmdListNum += 1;																//待处理命令数+1
-					
-		break;
-		default :
-		break;
-	}
 
 	return 1;//建立命令索引成功
-	/*
-		loopi = pCmdBuf->CmdCurrentList ;
-	
-		while(1 == CmdBuf.CmdListFlag[loopi]){	//寻找空的从模块地址空间
-			loopi++;
-			if(CMD_RXLIST_LMT == loopi){
-				loopi = 0;
-			}
-			else if(loopi == pCmdBuf->CmdCurrentList){
-				return NULL;		//返回空地址
-			}
-		}
-		pCmdBuf->CmdCurrentList	=	loopi ;
-		pCmdBuf->pCmd_Body_Current = & (pCmdBuf->Cmd_Body[loopi]);
-		return (pCmdBuf);		//返回所建立的命令首地址
-	*/
-
-	/*
-	if(CmdProc.CMD_LIST.CmdNum<CMD_LMT) {
-		// 循环列表 寻找空Buffer CmdIndex最终指向空的buffer
-		while(CmdProc.CMD_LIST.pListFlag[CmdProc.CMD_LIST.CmdIndex]) {	//ken:找到有空的索引buffer为止
-			CmdProc.CMD_LIST.CmdIndex++;
-			if(CmdProc.CMD_LIST.CmdIndex>=CMD_LMT) {
-				CmdProc.CMD_LIST.CmdIndex = 0;
-			}
-
-			LoopCnt++;
-			if(LoopCnt>CMD_LMT) {
-				return NULL;
-			}
-		}
-
-		// 
-		pRxBuf = CmdProc.CMD_LIST.pCmdBuf+CmdProc.CMD_LIST.CmdIndex;	//ken:获得所建立的命令首地址
-		pRxBuf->part.CmdFlagPos = CmdProc.CMD_LIST.CmdIndex;			// 记录当前命令对应的FLAG位置 和pCmdPos其实是一样的
-																		// pCmdPos		用于外部程序
-																		// CmdFlagPos 	让命令串随身携带
-		if(pCmdPos) {
-			(*pCmdPos) = CmdProc.CMD_LIST.CmdIndex;						//ken:获得所建立的当前串口接收的命令对应的索引号
-		}
-
-		CmdProc.CMD_LIST.pListFlag[CmdProc.CMD_LIST.CmdIndex] &= 0xff00;//ken:清低8位
-		CmdProc.CMD_LIST.pListFlag[CmdProc.CMD_LIST.CmdIndex] |= 'W';	//ken:标志着当前命令正在建立
-//		CmdProc.CMD_LIST.CmdNum ++;		//ken:命令计数器
-	}
-	*/
 	
 }
 
+//--------------------------------------------------------------------------- 	
+// 回复内容组合函数
+// ken:会算出发送字符串长度	
+u16 CmdSpiReplyAppend(CMDSPI_BODY_TypeDef *pRplyStr)
+{	u16	nRplyStrLen = 0;
+
+	while(pRplyStr->all[nRplyStrLen] != '\0'){nRplyStrLen++;}	//寻找结尾
+	//插入长度					
+	pRplyStr->all[nRplyStrLen++] = '\r';
+	pRplyStr->all[nRplyStrLen++] = '\n';	
+	return nRplyStrLen;
+}
 
 
 //---------------------------------------------------------------------------
@@ -520,67 +438,8 @@ CMD_BODY_TypeDef * CmdPrase(u8 ListNum)		//ken:建立命令索引函数
 //返回：命令待处理区空间地址	
 //---------------------------------------------------------------------------
 
-void CmdExecute(void)		//执行散转函数
-{	u16	HeadHash,i,j;
-//	timems_t CmdExecutePassTime;
-//	void ( *pExeFunc)(CMD_BODY_TypeDef *); 
-//	u16 StrLen,StrIndex;		//StrCnt,,EP2StrLen
-
-/*	
-	if(EP2index != 0){	
-		//SetEPRxStatus(ENDP2, EP_RX_NAK);		//等待处理EP2RxBuf中的命令
-		for(EP2Pindex = 0; EP2Pindex < EP2index ; EP2Pindex++){
-			if(EP2RxBuf[EP2Pindex] == '$'){	//收到命令头'$'
-				if(CmdApply()){				//寻找空的命令处理索引空间地址
-					EP2RxOkFg	=	1;								//EP2收到数据
-					StrIndex = 0;							
-				}				
-			}
-			if(EP2RxOkFg) {									//找到空的命令处理空间	
-				if(StrIndex <= CMD_BUF_LEN){	//命令内容												
-					pCmdBuf->pCmd_Body_Current->all[StrIndex++] = EP2RxBuf[EP2Pindex];
-					
-					if(StrIndex == CMD_LEN_CNT){	//获得命令长度
-						StrLen = MyStrToNum(pCmdBuf->pCmd_Body_Current->part.CmdTotalLen , CMD_TOTAL_LEN);	//获得命令长度			
-						if(0 == StrLen){			//长度不对
-							CmdOver(FALSE);			//命令接收失败
-							EP2RxOkFg = 0;			
-							StrIndex = 0;
-						//	EP2_TxStr(MsgReplyUNK, MyStrLen(MsgReplyUNK));	//向端点2发送MsgReplyUNK
-						}
-					}
-					if((StrLen != 0)&&(StrLen == StrIndex)){
-						
-						if('\n' == EP2RxBuf[EP2Pindex]){
-							CmdOver(TRUE);			//命令接收成功
-							EP2RxOkFg = 0;			//接收成功，继续解析下一条命令
-							StrIndex = 0;	
-						}
-						else{
-							CmdOver(FALSE);			//命令接收失败
-							EP2RxOkFg = 0;	//接收成功，继续解析下一条命令
-							StrIndex = 0;
-						//	EP2_TxStr(MsgReplyUNK, MyStrLen(MsgReplyUNK));	//向端点2发送MsgReplyUNK
-						}
-					}	
-//					else{//长度与0x0D 0x0A不匹配
-//						EP2RxOkFg = 0;	
-//						EP2_TxStr(MsgReplyUNK, MyStrLen(MsgReplyUNK));	//向端点2发送MsgReplyUNK						
-//					}	
-				}		
-				else{		//超过存放命令待处理缓冲区大小
-					CmdOver(FALSE);			//命令接收失败
-					EP2RxOkFg = 0;			//长度不对
-					StrIndex = 0;					
-					//	EP2_TxStr(MsgReplyUNK, MyStrLen(MsgReplyUNK));	//向端点2发送MsgReplyUNK
-				}
-			}		
-		}
-		EP2Pindex = 0;
-		EP2index = 0;
-
-	}
-*/	
+void CmdSpiExecute(void)		//执行散转函数
+{	u16	HeadHash,i,j;	
 	if(0 != pCmdSpiRxBuf->CmdListNum){			
 //		StartTimeMs2 = ReadRunTime();
 	 for(j = 0;j < pCmdSpiRxBuf->CmdListNum; j++){	//处理命令
@@ -598,11 +457,10 @@ void CmdExecute(void)		//执行散转函数
 		pCmdSpiRxBuf->CmdPrcList = i;
 		pCmdSpiRxBuf->pCmd_Prc_Current = & (pCmdSpiRxBuf->Cmd_Body[i]);									//指向当前待处理命令
 	
-	
-		HeadHash = Hash(pCmdSpiRxBuf->pCmd_Prc_Current->part.Header , CMDSPI_HEADER_LEN);	//计算命令hash头
+		HeadHash = pCmdSpiRxBuf->pCmd_Prc_Current->part.HeaderHash;	//获得Hash头
+//		HeadHash = Hash(pCmdSpiRxBuf->pCmd_Prc_Current->part.Header , CMDSPI_HEADER_LEN);	//计算命令hash头
 		//检验异或校验位
-		
-			
+							
 		switch(HeadHash){		// 提取令串头特征值并判断
 			case CMDSPI_HASH_NETCNT:	CmdFuncNETCNT(pCmdSpiRxBuf->pCmd_Prc_Current);	break;	//ken:JMP命令
 //			case CMD_HASH_STT:	CmdFuncSTT(pCmdBuf->pCmd_Prc_Current);			break;
@@ -648,182 +506,53 @@ void CmdExecute(void)		//执行散转函数
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
 //=============================================================================================
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
-{			
-	longword32	NewAdr;
-	u16 RpStrLen;	 
-	uint8_t loopi,loopj,NetFlag;//TmpSta;
-	uint8_t strNETAPL[32] = "#NETAPL\0";	//发送至从模块
-
-
-//	uint8_t strACN[14] = "#ACN,0,00000\r\n";		//发送给上位机
-//	u8	OrgSlvAdd[5] = {0};
-//	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
-	
-	NewAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);
+{	si4431adrtype	NewAdr;	 //	u16 RpStrLen;	 
+	uint8_t loopi,loopj,NetFlag = 0;//TmpSta;
+	pReplyBuf = pCmdData;
+	pReplyBuf->part.Dot0 = '\0';
+		
+	NewAdr.HexAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);	//获得组网模块地址	
+	MyHexToStr(NewAdr.StrAdr ,NewAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
 	
 	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){		//首先与已组网地址比较
 		if(1 == pJKNetAdr_Tab->TabFlag[loopi]){	
-		 	if(pJKNetAdr_Tab->JKNetNumTab[loopi] == NewAdr.All32){
+		 	if(pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 == NewAdr.HexAdr.All32){				
 				NetFlag = 1;																					//此模块已组网
 				pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//重置心跳包个数				
 				break;
 			}
 		}			
 	}  
-if(0 == NetFlag){		//新模块未组网
-	if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){		//超过从模块地址保存空间了
-  //	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
-  	return 0;	//此模块以组网
-	}
-  else{
-		for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
-			if(0 == pJKNetAdr_Tab->TabFlag[loopi]){
-			 	pJKNetAdr_Tab->TabFlag[loopi] = 0x01;	//找到空从模块地址空间
-				pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
-				break;
-			}			
+	if(0 == NetFlag){		//新模块未组网
+		if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){		//超过从模块地址保存空间了
+	  //	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
+	  	return 0;	//没地址空间再组网
 		}
-//	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
-	pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 = NewAdr.All32;	//记录新组网地址
-	MyHexToStr(pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr ,pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 , CMDSPI_ADR_WIDTH)	;
-/*	
-	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (SI4431_ADR_WIDTH * loopi);	//指向空的从模块地址空间
-	for(loopj = 0; loopj < SI4431_ADR_WIDTH; loopj++){
-		pJKNetAdr_Tab->pJKNetAdrTabCnt[loopj] = NewAdr.Bit8[loopj];
-	}*/
-	
-
-	//为新连接的从模块设置组网新地址，保存到空的接收地址列表
-//	pJKNetAdr_Tab->pJKNetAdrTabCnt[0] = pCmdData->part.SourceAdr[1];
-//	pJKNetAdr_Tab->pJKNetAdrTabCnt[1] = pCmdData->part.SourceAdr[2];
-//	pJKNetAdr_Tab->pJKNetAdrTabCnt[2] = pCmdData->part.SourceAdr[3];
-//	pJKNetAdr_Tab->pJKNetAdrTabCnt[4] = pCmdData->part.SourceAdr[4];;	//根据组网顺序添加的字段
-
-//	Si4431AdrCover(pCmdData->part.SourceAdr ,pJKNetAdr_Tab->pJKNetAdrTabCnt ,TRUE);		//八字节ASCII地址转hex四字节地址
-
-	MsgInsrt(pReplyBuf->all , strNETAPL , MyStrLen(strNETAPL) , TRUE);	//插入命令头
-	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入源地址
-	MsgInsrt(pReplyBuf->all , pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入目标地址
-
-
-/*	
-	for(loopj = 0 ;loopj < SI4431_ADR_WIDTH ; loopj++){
-		OrgSlvAdd[loopj]	= * (pNewAdr+loopj);	//原来的从模块的Rx地址
-//		pJKNetAdr_Tab->pJKNetAdrTabCnt[loopj] = * (pNewAdr+loopj);	//将新连接的从模块地址保存到空的接收地址列表
-//		strACN[loopj + 7] = * (pNewAdr+loopj);	//从模块的Rx地址
+	  else{		//有新模块组网
+			for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
+				if(0 == pJKNetAdr_Tab->TabFlag[loopi]){
+				 	pJKNetAdr_Tab->TabFlag[loopi] = 0x01;	//找到空从模块地址空间
+					pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
+					pJKNetAdr_Tab->JKNetAdrTabCnt++;	//从模块地址计数器加1
+					break;
+				}			
+			}
+		//	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
+			pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 = NewAdr.HexAdr.All32;	//记录新组网地址
+			MyHexToStr(pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr ,pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
+		}
 	}
-		
-	pJKNetAdr_Tab->JKNetAdrTabCnt++;	//从模块地址计数器加1
-	//组网成功，向从模块发送新的TX地址(即主模块RX_P1~P5的RX地址)
-	//组网后在主模块上对应的的从模块接收通道地址命名规范 :(需要符合24L01规范)
-	//主模块2 3 4 5字段地址 + 根据组网顺序添加的字段
-//	SetSPI1_TXMode(OrgSlvAdd);	//向新组网的模块发送组网新地址。
-	
-//	DelayCom(50000);
-//	TmpSta = SPI1_Read(TX_ADDR_24L01);	//测试模块地址设置是否正确
-//	TmpSta = SPI1_Read(RX_ADDR_P0_24L01);	//测试模块地址设置是否正确
+	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入源地址
+	MsgInsrt(pReplyBuf->all , NewAdr.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入目标地址
+	MsgInsrt(pReplyBuf->all , MSGRP_OK , MyStrLen(MSGRP_OK) , TRUE);	//插入OK
 
-
-
-	strNTA[5] = OrgSlvAdd[0];
-	strNTA[6] = OrgSlvAdd[1];
-	strNTA[7] = OrgSlvAdd[2];
-	strNTA[8] = OrgSlvAdd[3];
-	strNTA[9] = OrgSlvAdd[4];		//原模块地址
-
-	strNTA[11] = MOD1_RXADR[1];
-	strNTA[12] = MOD1_RXADR[2];
-	strNTA[13] = MOD1_RXADR[3];
-	strNTA[14] = loopi;					//根据组网顺序添加的字段
-
- 	*/
+	CmdSpiReplyAppend(pReplyBuf);	//回复命令结尾
 	
 	NET_LED_TURN();							//有模块组网成功
-	CmdSpiApply(Spi1_Cmd_TxPort ,pReplyBuf->all ,MyStrLen(pReplyBuf->all));				//将命令存到待处理缓冲区
+	CmdSpiTxApply(FALSE ,pReplyBuf->all ,MyStrLen(pReplyBuf->all));				//将命令存到待处理缓冲区
 	return 1;	//已记录新组网模块地址
-	}
- }
-return 0;	//此模块以组网
-		/*
-		for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){	
-			nRF24L01_SPI1_TxPacket(strNTA);		//NTA发送新的从节点Tx地址
-
-			StartTimeMs2 = ReadRunTime();
-			while(!(SPI1Sta & MASK_TX_STA)){	//等待TX_DS或MAX_RT中断
-				EndTimeMs2 = ReadRunTime();
-				if( 50 < CheckTimeInterval(StartTimeMs2 , EndTimeMs2)){	//发送新节点地址超时
-					break;
-				}	
-			}
-			#ifdef DEBUGJK
-//			SPI1Sta = MAX_RT;	//测试用
-			#endif			
-			if(SPI1Sta & TX_DS){	//组网命令发送成功，进入接收模式，等待主模块发送新地址
-//				Usart_SendString(USART1 ,strACN , 14);		//ACN组网命令接收成功，发接新收到的从节点Rx地址及组网编号到串口1。
-			//	SPI2_PWR_OFF();
-			//	DelayUs(500);
-				NET_LED_TURN();		//有模块组网成功
-				DataReceive();
-			//	WorkSta2 = STA_DATA;					
-//				SPI2_CE_L;	//StandBy I模式
-				
-				Init_NRF24L01_SPI2();
-				NetConnect(TRUE);				//设置为组网模式
-				return 1;				
-			}
-			else if(SPI1Sta & MAX_RT){		//发送失败，等待重发
-				RandomDelayUs();
-				if(loopj == CMD_MAXRESEND-1){	//若到达最大重发次数，表明命令发送失败
-//					Usart_SendString_End(USART1 , "CMDNTANoReply\r\n");
-					//ACN组网命令接收成功，发接新收到的从节点Rx地址及组网编号到串口1。
-					pJKNetAdr_Tab->TabFlag[loopi] = 0x00;	//如果新组网地址发送不成功，不保存此模块地址记录，认为组网不成功
-					return 0;
-				}
-			}			
-		}	
-		*/
-/*	if(JKNETADRTABLEN > pJKNetAdr_Tab->JKNetAdrTabCnt){	//超过JKNETADRTABLEN个地址不在存储
-		pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0 + (TX_ADR_WIDTH*pJKNetAdr_Tab->JKNetAdrTabCnt);	//指向下一个空的从模块地址空间
-  	}	*/
-
-  
-		
-	
-/*	pCmdBuf->pReplyBuf = pCmdSTTBody;
- 
- 	if(CmdCheck(pCmdSTTBody)){	//检验长度	
-		pCmdBuf->pReplyBuf->part.Dot3 = '\0';
-		//检验长度及异或位正确
-		if('L' == pCmdSTTBody->part.CmdFuncType){
-			goto ERROR;			
-		}
-		else if('S' == pCmdSTTBody->part.CmdFuncType){
-			//分拣命令体部分。
-			MsgCopy(pSttDat->all, pCmdSTTBody->part.Others, sizeof(pSttDat->all));
-			SounderState.SwitchRefresh = 1;
-			//	if('1' == pCmdBuf->pReplyBuf->part.Others[0] ){	//开启测量
-			if('1' == pSttDat->bit.State ){	//开启测量	
-				SounderState.OnOff         = ON;
-			} 
-			else{	//关闭测量
-				SounderState.OnOff         = OFF;
-			}
-			MsgInsrt(pCmdBuf->pReplyBuf->all, MSGRP_OK, MyStrLen(MSGRP_OK) ,TRUE);		
-		}
-		else{
-			goto ERROR;
-		}	
-	}
-  else{	//检验长度及异或位错误
-	 	pCmdBuf->pReplyBuf->part.Dot3 = '\0';	
-ERROR:		
-		MsgInsrt(pCmdBuf->pReplyBuf->all, MSGRP_ERR, MyStrLen(MSGRP_ERR) ,TRUE);	 	
- 	}
-	RpStrLen = ReplyAppend(pCmdBuf->pReplyBuf);
-	EP2_TxStr(pCmdBuf->pReplyBuf->all , RpStrLen);	//向端点2发送回复命令
-	pCmdBuf->pReplyBuf = NULL;
-	*/			
 }
+
 
 //======================================no  more==========================================//
 

@@ -41,7 +41,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern __IO uint32_t TimingDelay; // 延时时间，注意定义为全局变量
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -167,10 +167,10 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 		TXItSta2 = SPI1_Read(InterruptStatus2);
 
-//	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
-//	//	NET_LED_TURN();
-//		__NOP();
-//	}
+	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
+		
+		__NOP();
+	}
 		if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满		
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	

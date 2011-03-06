@@ -40,9 +40,9 @@
 #define CMDSPI_TAIL_LEN			5
 #define CMDSPI_LEN_CNT				12			//命令有效数据开始位置
 
-#define CMDSPI_OTHERS_START 	6
-#define CMDSPI_OTHERS_LEN		19
-#define CMDSPI_BUF_LEN				270			//命令缓冲区长度
+#define CMDSPI_OTHERS_START 	26
+#define CMDSPI_OTHERS_LEN			64
+#define CMDSPI_BUF_LEN				100			//命令缓冲区长度
 #define CMDSPI_TXLIST_LMT		5				//待发送的命令最大数
 #define CMDSPI_RXLIST_LMT		5				//待处理的命令最大数
 
@@ -69,7 +69,8 @@ typedef union _CMDSPI_BODY_TypeDef{
 //		u8	CmdTotalLen[CMD_TOTAL_LEN];	//整条命令长度，包括从$到\n
 //		u8	Dot3;												//命令头后第4个','号
 		u8	Others[CMDSPI_OTHERS_LEN];				//命令参数体
-		u8	CmdType;											//命令类型：1表示接收待处理命令，2表示待发送命令
+//		u8	CmdType;											//命令类型：1表示接收待处理命令，2表示待发送命令
+		u16	HeaderHash;										//发射头的Hash值
 		u16	TotalLength;									//命令长度
 	}part;
 	
@@ -111,7 +112,7 @@ struct CMD_END{
 
 
 
-u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
+
 
 
 extern uint8_t   SPI1OkFlag;	//收到一条完整的命令则自加1，数值表示当前待处理的命令数。
@@ -133,11 +134,17 @@ extern uint8_t  txLog[TXLOGLEN];
 
 extern uint8_t  SPI1ByteNum;
 
-void SPI1Rx_Parse(void);
-void SPI2Rx_Parse(void);
 //---------------------------------------------------------------//
 
+void SPI1Rx_Parse(void);
+void SPI2Rx_Parse(void);
 
+u16 CmdSpiReplyAppend(CMDSPI_BODY_TypeDef *pRplyStr);
+u8 CmdSpiTxApply(bool sta ,u8 * cmddata ,u16 cmdlen);
+u8 CmdSpiRxApply(u8 * cmddata ,u16 cmdlen);
+
+u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
+void CmdSpiExecute(void);
 /*
 extern void Uart0_Tx_End(uint8_t *string);
 extern void Uart0_Tx(uint8_t *string, uint16_t snum);

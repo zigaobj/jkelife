@@ -34,7 +34,8 @@
 
 
 
-#define CMD_MAXRESEND			5				//命令重发最大次数
+#define CMD_MAXRESEND_NUM			5				//命令重发最大次数
+#define CMD_REPLYSEND_NUM			0xff		//回复命令，不需要重发
 #define NETCNT_TIMEOUT		1000		//组网退网状态超时为10S 测试时设置为1S
 #define DATARECEIVE_SPAN	200			//Data接收数据阶段，接收通道Rx_P1~5切换时间间隔
 
@@ -46,6 +47,29 @@ extern uint8_t	SPI2FIFOSta,SPI2Sta1,SPI2Sta2;	//SPI2负责接收的24L01的FIFO与STATU
 extern uint8_t	TXItSta1,TXItSta2;
 extern uint8_t	RXItSta1,RXItSta2;
 
+extern volatile RUN_TIME_TYPE GlobalRunTime;	//记录系统上电后的运行时间
+extern volatile timems_t StartTimeMs1,EndTimeMs1,StartTimeMs2,EndTimeMs2,StartTimeMs3,EndTimeMs3;
+
+extern __IO uint32_t TimingDelay; // 延时时间，注意定义为全局变量
+
+extern u8 TxNoReply[] ;
+extern u8 RxNotMatch[];
+extern u8 RxMatch[];
+
+extern u8 StrError[] ;
+extern u8 TestStr[] ;
+extern u8 TestWord[];
+
+extern u8 MSGRP_OK[];
+extern u8 MSGRP_ERR[];
+
+
+extern volatile TestStatus TransferStatus1 , TransferStatus2;
+extern volatile TestStatus TransferStatus3 , TransferStatus4;
+extern volatile SysWorkStatus WorkSta1;
+extern volatile SysWorkStatus WorkStaPre1;
+extern volatile SysWorkStatus WorkSta2;
+extern volatile SysWorkStatus WorkStaPre2;
 
 extern uint16_t	SPI2RxCnt,SPI1RxCnt;
 extern si4431adrtype NetConnectRxAdr;		//广播接收地址
@@ -112,8 +136,8 @@ typedef struct	_JKNetAdrTab_TypeDef
 	uint8_t TabFlag[JKNETADRTABLEN];			//记录地址空间使用情况索引,0x00:未使用或断开连接了，0x01:正常组网，从TabFlag[1]开始记录 
 	uint8_t HeartBeatSta[JKNETADRTABLEN];		//从HeartBeatSta[1]开始保存从模块心跳包个数，监听连接状态
 //	uint8_t RxPnSequence[JKNetAdrTABLEN];		//接收通道次序
-	uint8_t JKNetAdrIndex;		//接收模块地址计数
-	uint8_t * pCmdTxBuf[JKNETADRTABLEN];		//指向组网后的从模块待发送命令空间
+//	uint8_t JKNetAdrIndex;		//接收模块地址计数
+//	uint8_t * pCmdTxBuf[JKNETADRTABLEN];		//指向组网后的从模块待发送命令空间
 	uint8_t JKNetAdrTab0[SI4431_ADR_WIDTH];	//JKNetAdrTab0[]不存从模块地址，
 	uint8_t JKNetAdrTab1[SI4431_ADR_WIDTH];	//从JKNetAdrTab1[]开始存储从模块地址
 	uint8_t JKNetAdrTab2[SI4431_ADR_WIDTH];
@@ -121,7 +145,7 @@ typedef struct	_JKNetAdrTab_TypeDef
 	uint8_t JKNetAdrTab4[SI4431_ADR_WIDTH];
 	uint8_t JKNetAdrTab5[SI4431_ADR_WIDTH];
 //	uint8_t JKNetAdrAll[JKNETADRTABLEN][SI4431_ADR_WIDTH];
-	u32	JKNetNumTab[JKNETADRTABLEN];				//用32位数记录地址
+//	u32	JKNetNumTab[JKNETADRTABLEN];				//用32位数记录地址
 	si4431adrtype JKNetAdrTab[JKNETADRTABLEN];
 }JKNetAdrTab_TypeDef;	//记录组网从模块的地址
 

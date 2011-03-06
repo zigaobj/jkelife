@@ -65,9 +65,10 @@ int main(void)
 //  DelayUs(10);
 //	Usart_SendString_End(USART1 ,TestStr );	//将收到的数据往串口1发送
 //  DelayUs(10);
-    
+  DelayMs_Soft(100); 
+	 
   Si4431TX_Init();
-  DelayMs_Soft(100);
+  
 //  Si4431RX_Init();
 
 	
@@ -112,7 +113,7 @@ int main(void)
   {	
 		SysRun();		
 		SPI1Rx_Parse();
-		CmdExecute();
+		CmdSpiExecute();
 //	Usart1_Rx_Parse();
 //	SPI1Rx_Parse();
 
