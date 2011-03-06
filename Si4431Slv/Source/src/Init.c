@@ -115,7 +115,7 @@ void GPIO_Configuration(void)
 }
 
 
-
+/*
 void VarInit(void)
 {	u8 i;
 	
@@ -171,9 +171,75 @@ void VarInit(void)
 	}
 	
 	srand((unsigned) MOD3_TXADR[4]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
+}*/
+
+void VarInit(void)
+{	u8 i;	
+	RX_ADDRESS_Si4431.HexAdr.All32 = 0x33431028 ;	
+	MyHexToStr(RX_ADDRESS_Si4431.StrAdr ,RX_ADDRESS_Si4431.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;	
+	NetConnectRxAdr.HexAdr.All32 = 0xA15C0001;
+	MyHexToStr(NetConnectRxAdr.StrAdr ,NetConnectRxAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;
+
+	WorkStaPre1	= STA_SLEEP;
+	WorkSta1		= STA_SLEEP;
+	WorkSta2		= STA_SLEEP;
+	WorkStaPre2 = STA_SLEEP;	
+//	GlobalRunTime = 0;
+
+	sta = 0;   //状态标志
+	TXItSta1 = 0;
+	TXItSta2 = 0;
+	RXItSta1 = 0;
+	RXItSta2 = 0;
+	SPI2RxCnt = 0;
+
+	for(i = 0;i < SPI1PARSEBUFLEN;i++){
+		SPI1_ParseBuf[i] = 0;	
+	}
+	SPI1index = 0;
+	SPI1Pindex = 0;
+
+	pCmdSpiTxBuf =&CmdSpiTxBuf;	//指向命理处理缓冲区
+	pCmdSpiRxBuf =&CmdSpiRxBuf;	//指向命理处理缓冲区
+
+//	pRxAdr_Tab = &RxAdr_Tab;	
+	for(i = 0;i < CMDSPI_RXLIST_LMT;i++){
+		pCmdSpiTxBuf->CmdListFlag[i] = 0;
+		pCmdSpiRxBuf->CmdListFlag[i] = 0;
+	}
+	pCmdSpiTxBuf->pCmd_Prc_Current = 	pCmdSpiRxBuf->Cmd_Body;
+	pCmdSpiTxBuf->pCmd_Body_Current = pCmdSpiRxBuf->Cmd_Body;
+
+	pCmdSpiTxBuf->CmdListNum = 0;
+	pCmdSpiRxBuf->CmdListNum = 0;
+	pCmdSpiTxBuf->CmdCurrentList = 0;
+	pCmdSpiRxBuf->CmdCurrentList = 0;
+
+	pJKNetAdr_Tab = &JKNetAdr_Tab;
+	pJKNetAdr_Tab->JKNetAdrTabCnt = 0;
+//	pJKNetAdr_Tab->pJKNetAdrTabCnt = pJKNetAdr_Tab->JKNetAdrTab0;	//将pRxAdrTabCnt指向空的接收地址表格空间。
+	
+	for(i = 0; i < JKNETADRTABLEN; i++){
+		pJKNetAdr_Tab->TabFlag[i] = 0;
+//		pJKNetAdr_Tab->JKNetNumTab[i] = 0;
+	}	
+	
+	pReplyBuf = &ReplyBuf;	//接收命令应答处理缓冲区
+//测试	pRxAdr_Tab->TabFlag[0]	=0x10;
+/*
+	for(i = 0;i < SI4431_ADR_WIDTH;i++){
+		pRxAdr_Tab->RxAdrTab0[i] = i;
+		pRxAdr_Tab->RxAdrTab1[i] = i;
+		pRxAdr_Tab->RxAdrTab2[i] = i;
+		pRxAdr_Tab->RxAdrTab3[i] = i;
+		pRxAdr_Tab->RxAdrTab4[i] = i;
+		pRxAdr_Tab->RxAdrTab5[i] = i;	
+	}
+*/
+
+
+	srand((unsigned) RX_ADDRESS_Si4431.HexAdr.Bit8[3]);	//随机函数的种子函数，可以在变值的地方调用，提高随机性
 }
-
-
 
 //--------------------------------SPI configuration ----------------------------------
 //SPI1接发射的24L01，SPI2接接收的24L01，都为主设备
