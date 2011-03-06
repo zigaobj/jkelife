@@ -65,7 +65,7 @@ void main(void)
 
 	SysInit_Config();	//œµÕ≥≈‰÷√
 	
-	DelayMs_Soft(1000);
+	DelayMs_Soft(100);
 	
 	Si4431TX_Init();
 	
@@ -91,7 +91,7 @@ void main(void)
 		SysRun();
 		
 		SPI1Rx_Parse();
-
+		CmdSpiExecute();
   }
 
 }

@@ -101,6 +101,18 @@
 typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 //typedef enum {FALSE = 0, TRUE = !FALSE} TestStatus;
 
+typedef	union _LONGWORD32_
+{
+	u32 All32;			
+	u8 Bit8[4];			
+}longword32;
+
+typedef	struct _SI4431ADRTYPE_
+{
+	longword32 HexAdr;			
+	u8 StrAdr[8];			
+}si4431adrtype;
+
 typedef enum
 { Bit_RESET = 0,
   Bit_SET
@@ -158,14 +170,21 @@ void DelayUs(volatile u32 usTime);
 void Delay (u16 nCount);
 void DelayUs_Soft(u16 time);
 void DelayMs_Soft(u16 time);
-//#define	_MsfInsrt(T, S)		MsgInsrt(T, S, sizeof(S))
 
 TestStatus Buffercmp(u8* pBuffer1, u8* pBuffer2, u16 BufferLength);
 u16 Hash(u8 *pStr, u8 len);
-void MsgInsrt(u8 *pTarget, u8 *pSource, u16 MsgLen);
 u16 MyStrLen(u8 str[]);
 
 timems_t ReadRunTime(void);
 timems_t CheckTimeInterval(timems_t StartTime,timems_t EndTime);
+void MsgCopy(u8 * pTarget, u8 * pSource, u16 MsgLen);
+void MsgInsrt(u8 * pTarget, u8 * pSource, u16 MsgLen ,u8 AddDotFg);
+u16 MyStrLen(u8 str[]);
+//u16 ReplyAppend(CMD_BODY_TypeDef *pRplyStr);
 
+u32 MyStrToNum(u8 *pStr, u8	NumLen);
+u8 MyNumToStr(u8 *pStr,u32 Num , u16 NumLen);
+u8 MyLongToStr(u8 *pTarget ,u32 * pLSource , u16 NumLen);
+u32 MyStrToHex(u8 *pStr, u8	NumLen)	;
+u8 MyHexToStr(u8 *pStr,u32 Num , u16 NumLen);
 #endif

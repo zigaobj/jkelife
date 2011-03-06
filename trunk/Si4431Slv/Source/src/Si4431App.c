@@ -8,7 +8,7 @@
 //#include "UsartCom.h"
 #include "Si4431Api.h"
 #include "Si4431App.h"
-
+#include "SPICom.h"
 #include <stdlib.h>
 
 //#include <time.h>
@@ -31,8 +31,8 @@ const u8 FreHopBuf[80] = {\
 //CMD_BUF_TypeDef	CmdBuf[CMD_NUMLMT] = {0};	
 //u8	CmdListFlag[CMD_NUMLMT] = {0};	
 //保存各接收模块的地址。
-RxAdrTab_TypeDef * pRxAdr_Tab;
-RxAdrTab_TypeDef RxAdr_Tab;
+//RxAdrTab_TypeDef * pRxAdr_Tab;
+//RxAdrTab_TypeDef RxAdr_Tab;
 
 //=============================================================================================
 //说明:跳频函数
@@ -79,15 +79,16 @@ void RandomDelayUs(void)
 //*函数：void SetSPI1_BroadCast(void)
 //*功能：将SPI1连接的24L01设置为广播地址，且接收模式 
 //****************************************************************************************************/
-
 void NetConnect(bool Sta)
 {  
 	if(TRUE == Sta){	//组网		
-		Si4431TX_TransmitMod(NetConnectRxAdr);					//组网发射地址
+	//	Si4431TX_TransmitMod(NetConnectRxAdr);					//组网发射地址
+		CmdSpiTxApply(TRUE ,StrTest ,MyStrLen(StrTest));				//将命令存到待处理缓冲区
+
 		WorkStaPre1 = STA_NETCONNECT;
 	}
   else{	//退出组网状态 	
-		Si4431TX_ReceiveMod(RX_ADDRESS_Si4431);						//	无效的接收地址	
+		Si4431TX_ReceiveMod(TRUE ,RX_ADDRESS_Si4431);						//	无效的接收地址	
 		WorkStaPre1 = STA_STANDBY;
 //  IRDA_LED_OFF();
 	}
@@ -153,7 +154,7 @@ u8 NewConnect(u8 * pNewAdr)
 
 }
 */
-
+/*
 u8 NetApply(u8 * pNewAdr)
 {	u8 loopi,loopj;
 	
@@ -170,11 +171,12 @@ u8 NetApply(u8 * pNewAdr)
 //  TIM2_TimeBaseInit(TIM2_PRESCALER_1024, 15624);	//正好两秒
 // TIM2_Cmd(ENABLE);
 
-}
+}*/
 //=============================================================================================
 //说明:监听网络上各模块发送的心跳包，监听到的心跳包个数用队列存储，
 //参数:函数名返回1找到从模块并记录心跳，返回0表示未找到从模块地址
 //=============================================================================================
+/*
 u8 HeartBeat(u8 * pHeartBeatAdr)
 {	u8 TmpTabCnt,CmpFlag;
 	u8 * pTmpTab;
@@ -191,13 +193,14 @@ u8 HeartBeat(u8 * pHeartBeatAdr)
 	}
 	return 0;
 }
-
+*/
 
 
 //=============================================================================================
 //说明:检查网络上各模块连接状态，如果超时没检测到心跳包，则认为断网了
 //参数:函数名返回断开连接的从模块个数
 //=============================================================================================
+/*
 void CheckConnect(void)
 {	u8 TmpTabCnt,TmpDelCount;
 	u8 strMod[] =	"Miss Mod000!\r\n"; 
@@ -209,11 +212,11 @@ void CheckConnect(void)
 					pRxAdr_Tab->HeartBeatSta[TmpTabCnt]--;	//	
 				}
 				else{	//认为有从模块离网了
-				/*	Usart_SendString_End(USART1 ,"Miss Mod");		//往串口发模块号		 
-					Usart_SendByte(USART1 ,TmpTabCnt/100 + 0x30);
-					Usart_SendByte(USART1 ,TmpTabCnt%100/10 + 0x30);
-					Usart_SendByte(USART1 ,TmpTabCnt%100%10 + 0x30);
-					Usart_SendByte(USART1 ,"!\r\n");	*/
+				//	Usart_SendString_End(USART1 ,"Miss Mod");		//往串口发模块号		 
+				//	Usart_SendByte(USART1 ,TmpTabCnt/100 + 0x30);
+				//	Usart_SendByte(USART1 ,TmpTabCnt%100/10 + 0x30);
+				//	Usart_SendByte(USART1 ,TmpTabCnt%100%10 + 0x30);
+				//	Usart_SendByte(USART1 ,"!\r\n");	
 					strMod[8] = TmpTabCnt/100 + 0x30;
 					strMod[9] = TmpTabCnt%100/10 + 0x30;
 					strMod[10] = TmpTabCnt%100%10 + 0x30;
@@ -228,7 +231,7 @@ void CheckConnect(void)
 	for(TmpDelCount = TmpTabCnt ;TmpDelCount < pRxAdr_Tab->RxAdrTabCnt; TmpDelCount++ ){
 			
 	}
-
+*/
 /*	if(i==0) preDepth[channel][++i] = iDepth; //第一个水深值直接赋值
 	else
 	{
@@ -247,13 +250,14 @@ void CheckConnect(void)
 		}
 		i++;
 	}
-	*/
+	
 }
-
+*/
 //=============================================================================================
 //说明:同步函数，用于发送同步时基
 //参数:
 //=============================================================================================
+/*
 void Synchronize(void)	//同步命令，包含时钟信息，
 {
 	u8 strSYN[32] = "#SYN,00\r\n";	//16位TIM3->CNT高位在前
@@ -271,12 +275,13 @@ void Synchronize(void)	//同步命令，包含时钟信息，
 	}
 		WorkStaPre1 = STA_SYNCHRONIZE;
 
-}
+}	*/
 
 //*********************************************************************************************************
 //*功能：发送组网连接命令
 //*参数: stacnt表示是组网1还是断网0
 //*********************************************************************************************************/
+/*
 void SPI2_CMDCNT(u8 stacnt)
 {
 	u8 strCNT[32] = "#CNT,00000\r\n";
@@ -294,11 +299,12 @@ void SPI2_CMDCNT(u8 stacnt)
 	}
  
 }
-
+*/
 //*********************************************************************************************************
 //*功能：广播阶段，向所有组网的从节点发送广播信息
 //*参数: 
 //*********************************************************************************************************/
+/*
 void Broadcast(u8 * TxStr)
 {u8 Loopi;
 	for(Loopi = 1 ; Loopi < RXADRTABLEN ;Loopi++){	//寻找从模块地址空间
@@ -313,63 +319,46 @@ void Broadcast(u8 * TxStr)
 	}		
 
 }
-
+*/
 //*********************************************************************************************************
 //*功能：数据发送，向需要控制的从模块发送命令，将待发命令缓冲区中的命令数据发送至从节点
 //*参数: 
 //*********************************************************************************************************/
 void DataSend(void)
 {
-//	u8 strindex,Temp_TIM3CNT;	,TempSta = 0
+//	uint8_t strindex,Temp_TIM3CNT;	,TempSta = 0
 	u8 loopi,loopj;
-//	uint16_t TmpVal;	
-for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
-	if(0 == pCmdBuf->CmdListNum){
-		break;
-	}
-	for(loopi = 0 ; loopi < CMD_NUMLMT ;loopi++){	//寻找存有待发命令的空间
-		if(0x10 == pCmdBuf->CmdListFlag[loopi]){
-			//找到要发送命令对应的从模块地址
-			pCmdBuf->pCmd_Body = &(Cmd_Body[loopi]);	//找到待发送的命令体
-
-			Si4431TX_TransmitMod(pCmdBuf->pCmd_Body->part.Adr );		//设置SPI1连接的24L01为发射模式，且设置其发射地址为各从模块地址
-			
-			Si4431TX_TxPacket(pCmdBuf->pCmd_Body->all , sizeof(pCmdBuf->pCmd_Body->all));	//向从节点发送命令
-			StartTimeMs2 = ReadRunTime();
-			
-			//再次Si4431发送程序不检查发送是否成功
-/*			while(!(SPI1Sta & MASK_TX_STA)){	//等待TX_DS或MAX_RT中断
-				EndTimeMs2 = ReadRunTime();
-				if( 100 < CheckTimeInterval(StartTimeMs2 , EndTimeMs2)){	//组网超时
-					break;
-				}	
-			}
-			#ifdef DEBUGJK
-//			SPI1Sta = MAX_RT;	//测试用
-			#endif
-			if(SPI1Sta & TX_DS){	//表示发送成功
-				pCmdBuf->CmdListFlag[loopi] = 0;	//清发送命令标志
-				pCmdBuf->CmdListNum--;				//				
-			}
-			else if(SPI1Sta & MAX_RT){	//发送失败，等待重发
-				if(loopj == CMD_MAXRESEND-1){	//若到达最大重发次数，表明命令发送失败
-					
-					pCmdBuf->pCmd_Body->part.Others[0] = '\0';
-					//TmpVal = sizeof(MSGRP_ERR);
-					MsgInsrt( pCmdBuf->pCmd_Body->all , MSGRP_ERR ,MyStrLen(MSGRP_ERR));	//返回#XXX,0,00000,ER\r\n命令
-
-					
-				//	MsgInsrt( pCmdBuf->pCmd_Body->all , MSGRP_ERR , sizeof(MSGRP_ERR));
-					Usart_SendString_End(USART1 ,pCmdBuf->pCmd_Body->all);		//ACN组网命令接收成功，发接新收到的从节点Rx地址及组网编号到串口1。
+	si4431adrtype TxAdr;	
+	if(0 != pCmdSpiTxBuf->CmdListNum){			
+		for(loopi = 0 ; loopi < CMDSPI_TXLIST_LMT ;loopi++){	//寻找存有待发命令的空间
+			if(0 != pCmdSpiTxBuf->CmdListFlag[loopi]){	
+				pCmdSpiTxBuf->pCmd_Prc_Current = &(pCmdSpiTxBuf->Cmd_Body[loopi]);	//找到待发送的命令体
+				TxAdr.HexAdr.All32 =  MyStrToHex (pCmdSpiTxBuf->pCmd_Prc_Current->part.TargetAdr, CMDSPI_ADR_WIDTH);
+		
+				Si4431TX_TransmitMod(TxAdr);		//设置为发射模式，发射地址			
+				Si4431TX_TxPacket(pCmdSpiTxBuf->pCmd_Prc_Current->all , MyStrLen(pCmdSpiTxBuf->pCmd_Prc_Current->all));	//向从节点发送命令
+	
+				if(CMD_REPLYSEND_NUM == pCmdSpiTxBuf->CmdListFlag[loopi]){				//找到要发送命令对应的从模块地址							
+					pCmdSpiTxBuf->CmdListFlag[loopi] = 0;	//回复命令直发一次  
+					pCmdSpiTxBuf->CmdListNum --;						//发送命令计数值减一
 				}
-			}
-			else{
-				Usart_SendString_End(USART1 ,"SPI1_TX_ER\r\n");	
-			}
-			*/
-		}			
+				else{
+					if(1 == pCmdSpiTxBuf->CmdListFlag[loopi]){	//发送命令失败
+						nop();	//需要报告上位机，命令发送不成功 
+						pCmdSpiTxBuf->CmdListFlag[loopi] = 0;	//回复命令直发一次  
+						pCmdSpiTxBuf->CmdListNum --;						//发送命令计数值减一
+					}
+					else{
+						pCmdSpiTxBuf->CmdListFlag[loopi] --;	//每发送一次，减少一次发送计数器值 
+					}
+				}
+			}	
+				//StartTimeMs2 = ReadRunTime();	
+		}
 	}
-}	
+	//发送完毕回到接收状态
+	Si4431TX_ReceiveMod(FALSE , RX_ADDRESS_Si4431);
+		
 }
 
 //=============================================================================================
@@ -379,6 +368,7 @@ for(loopj = 0 ;loopj < CMD_MAXRESEND ;loopj++){
 //调用:Si4431RX_ReceiveMod;SPI2_Read();
 //修改:2011-01-26			KEN			初定
 //=============================================================================================
+/*
 void DataReceive(void)
 {u8 iLoop,Tempi,RxPnCnt = 1;	
 //  if(pRxAdr_Tab->RxAdrTabCnt > RXADRTABLEN){	//如果组网的从模块数量大于RXADRTABLEN，则在DATA阶段需要轮换Rx_P0~P5接收通道的地址
@@ -399,7 +389,7 @@ void DataReceive(void)
 	  pRxAdr_Tab->LoopRxAdrIndex = iLoop;		//记录这次轮询到的组网地址			
 	}
 }
-
+*/
 
 //=============================================================================================
 //说明:状态机函数，负责主模块各个工作状态下的运作
@@ -430,6 +420,7 @@ void SysRun(void)
 	case(STA_BROADCAST):	//广播阶段，向需要控制的从模块发送命令
  //     	Broadcast();		//向各从模块发送控制命令
 		DataSend();
+		WorkSta1 = STA_STANDBY;
 	break;
 
 	case(STA_P2P):			//大量数据点对点传输
@@ -449,7 +440,7 @@ void SysRun(void)
 
   switch(WorkSta2){  
 	case(STA_DATA):			//维持心跳包及普通数据采集阶段	
-		DataReceive();
+	//	DataReceive();
 
 	/*	if(STA_DATA != WorkStaPre2){
 	//	SetSPI1_RXMode(RX_P0_24L01,MOD1_RXADR);	//设置为自身的地址
