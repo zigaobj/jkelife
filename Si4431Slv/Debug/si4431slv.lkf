@@ -50,6 +50,15 @@ crtsi0.sm8
 
 # Object files list - section reserved for STVD
 #<BEGIN OBJECT_FILES>
+Debug\stm8s_clk.o
+Debug\stm8s_exti.o
+Debug\stm8s_gpio.o
+Debug\stm8s_itc.o
+Debug\stm8s_spi.o
+Debug\stm8s_tim1.o
+Debug\stm8s_tim2.o
+Debug\stm8s_tim3.o
+Debug\stm8s_uart1.o
 Debug\main.o
 Debug\global.o
 Debug\glovar.o
@@ -58,13 +67,12 @@ Debug\si4431api.o
 Debug\si4431app.o
 Debug\spicom.o
 Debug\stm8s_it.o
-Debug\usartcom.o
 #<END OBJECT_FILES>
 
 
 # Library list - section reserved for STVD
 #<BEGIN LIBRARY_FILES>
-libis0.sm8
+libisl0.sm8
 libm0.sm8
 #<END LIBRARY_FILES>
 

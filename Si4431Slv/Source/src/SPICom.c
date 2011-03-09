@@ -230,48 +230,9 @@ void CmdSpiExecute(void)		//执行散转函数
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 {	si4431adrtype	NewAdr;	 //	u16 RpStrLen;	 
 	u8 loopi,loopj,NetFlag = 0;//TmpSta;
-	pReplyBuf = pCmdData;
-	pReplyBuf->part.Dot0 = '\0';
-		
-	NewAdr.HexAdr.All32 = MyStrToHex(pCmdData->part.SourceAdr, CMDSPI_ADR_WIDTH);	//获得组网模块地址	
-	MyHexToStr(NewAdr.StrAdr ,NewAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
-	
-	for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){		//首先与已组网地址比较
-		if(1 == pJKNetAdr_Tab->TabFlag[loopi]){	
-		 	if(pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 == NewAdr.HexAdr.All32){				
-				NetFlag = 1;																					//此模块已组网
-				pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//重置心跳包个数				
-				break;
-			}
-		}			
-	}  
-	if(0 == NetFlag){		//新模块未组网
-		if(pJKNetAdr_Tab->JKNetAdrTabCnt > JKNETADRTABLEN){		//超过从模块地址保存空间了
-	  //	Usart_SendString_End(USART1 , "JKNetAdrTab is Full!\r\n");
-	  	return 0;	//没地址空间再组网
-		}
-	  else{		//有新模块组网
-			for(loopi = 0 ; loopi < JKNETADRTABLEN ;loopi++){	//寻找空的从模块地址空间
-				if(0 == pJKNetAdr_Tab->TabFlag[loopi]){
-				 	pJKNetAdr_Tab->TabFlag[loopi] = 0x01;	//找到空从模块地址空间
-					pJKNetAdr_Tab->HeartBeatSta[loopi]	= MAXMISSHEART;		//初始化心跳包个数
-					pJKNetAdr_Tab->JKNetAdrTabCnt++;	//从模块地址计数器加1
-					break;
-				}			
-			}
-		//	pJKNetAdr_Tab->JKNetNumTab[loopi] = NewAdr.All32;	//记录新组网地址
-			pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 = NewAdr.HexAdr.All32;	//记录新组网地址
-			MyHexToStr(pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr ,pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
-		}
-	}
-	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入源地址
-	MsgInsrt(pReplyBuf->all , NewAdr.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入目标地址
-	MsgInsrt(pReplyBuf->all , MSGRP_OK , MyStrLen(MSGRP_OK) , TRUE);	//插入OK
+	//加入删除不再发送组网NETCNT命令
+	GPIO_WriteReverse(LEDS_PORT, Q1_PIN);		
 
-	CmdSpiReplyAppend(pReplyBuf);	//回复命令结尾
-	
-//	NET_LED_TURN();							//有模块组网成功
-	CmdSpiTxApply(FALSE ,pReplyBuf->all ,MyStrLen(pReplyBuf->all));				//将命令存到待处理缓冲区
 	return 1;	//已记录新组网模块地址
 }
 

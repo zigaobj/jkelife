@@ -53,7 +53,7 @@ si4431adrtype RX_ADDRESS_Si4431 ;	//接收地址
 //u8 MOD4_TXADR[TX_ADR_WIDTH]= {0x33,0xA1,0x0D,0xE8};	//本地地址
 //u8 MOD4_RXADR[TX_ADR_WIDTH]= {0x33,0xA1,0x0D,0xE8};	//本地地址
 
-u8 StrTest[64] = "#NETCNT,31100001,A15C0001\r\n";	////#NETCNT,源地址(8字节),目标地址(8字节)\r\n
+u8 StrTest[64] = "#NETCNT,33431028,A15C0001\r\n";	////#NETCNT,源地址(8字节),目标地址(8字节)\r\n
 
 @near u8 Net_TXADR[TX_ADR_WIDTH];	//新组网地址	
 @near u8 Net_RXADR[TX_ADR_WIDTH];	//新组网地址

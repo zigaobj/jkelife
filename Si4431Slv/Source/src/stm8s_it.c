@@ -475,7 +475,7 @@ void TIM2_UPD_OVF_BRK_IRQHandler(void) interrupt 13
 //		if(STA_NETCONNECT == WorkStaPre1){
 //			Si4431TX_TxPacket(StrTest ,sizeof(StrTest));	
 //		}
-		GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
+		
 			
 	}		
 }
@@ -496,10 +496,10 @@ void TIM2_CAP_COM_IRQHandler(void) interrupt 14
 	if(TIM2_GetITStatus(TIM2_IT_CC1) != RESET){	//同步工作状态。接收
 		TIM2_ClearITPendingBit(TIM2_IT_CC1);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 //		TIM2_ClearFlag(TIM2_FLAG_CC1 );
-		if(STA_STANDBY == WorkSta1){	//只有从STA_STANDBY模式才能转入
+	//	if(STA_STANDBY == WorkSta1){	//只有从STA_STANDBY模式才能转入
 			WorkSta1 = STA_SYNCHRONIZE;	//同步工作状态。
 		//	SetSlv_RxMode(Net_RXADR);		//设置为接收模式
-		}
+	//	}
 	}
 	else if(TIM2_GetITStatus(TIM2_IT_CC2) != RESET){	//广播阶段，接收来自主模块的命令与数据 接收
 		TIM2_ClearITPendingBit(TIM2_IT_CC2);	//清除 TIMx 的中断待处理位TIM_IT_Update
@@ -512,9 +512,9 @@ void TIM2_CAP_COM_IRQHandler(void) interrupt 14
 	else if(TIM2_GetITStatus(TIM2_IT_CC3) != RESET){	//数据阶段，发送回复命令及心跳包到主模块 发送
 		TIM2_ClearITPendingBit(TIM2_IT_CC3);	//清除 TIMx 的中断待处理位TIM_IT_Update 
 //		TIM2_ClearFlag(TIM2_FLAG_CC3 );
-		if(STA_BROADCAST == WorkSta1){	//只有从STA_SYNCHRONIZE模式才能转入{
+	//	if(STA_BROADCAST == WorkSta1){	//只有从STA_SYNCHRONIZE模式才能转入{
 			WorkSta1 = STA_DATA ;		//维持心跳普通数据传输阶段
-		}	
+	//	}	
 	}
 
 }
