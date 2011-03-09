@@ -149,7 +149,7 @@ void SysInit_Config(void)
 
 void VarInit(void)
 {	u8 i;	
-	RX_ADDRESS_Si4431.HexAdr.All32 = 0x33431028 ;	
+	RX_ADDRESS_Si4431.HexAdr.All32 = 0x21000001 ;	
 	MyHexToStr(RX_ADDRESS_Si4431.StrAdr ,RX_ADDRESS_Si4431.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;	
 	NetConnectRxAdr.HexAdr.All32 = 0xA15C0001;
 	MyHexToStr(NetConnectRxAdr.StrAdr ,NetConnectRxAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;
