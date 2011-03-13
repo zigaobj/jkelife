@@ -164,10 +164,13 @@ void Si4431TX_Init(void)
 //=============================================================================================
 void Si4431TX_IdleMod(void)
 {
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		// 
+	
   //releaze all IT flags
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
+	
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		// 
+	DelayMs_Soft(50);
 }
 
 //=============================================================================================
@@ -182,7 +185,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 		
 	Si4431TX_IdleMod();        	//设置空闲状态
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x03);       //(08h)清发送接收FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
 	
 //	TxHeaderAdr = ;			//发送帧头
@@ -213,7 +216,7 @@ void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 	Si4431TX_IdleMod();
 	SPI1_RWReg((REG_WRITE | RXFIFOControl), 26);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
 //	RxCheckHeaderAdr = CheckHeader0;			//接收校对地址头
 //	RxCheckHeaderAdr
@@ -222,13 +225,15 @@ void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 			SPI1_RWReg((REG_WRITE | (CheckHeader3 + iLoop)),RxCheckHeader.HexAdr.Bit8[iLoop]);	//由于STM8是大端模式，Bit8[0]是高位地址		
 		}
 	}
-  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
-
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x91);				 //(05h)使能接收FIFO几乎满中断 FIFO上下溢 CRC错误中断
- 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 			//(06h)无效引导码
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
+	
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x91);				 	//(05h)使能接收FIFO几乎满中断 FIFO上下溢 CRC错误中断
+ 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 				//(06h)无效引导码
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
+	
+
 }
 
 //=============================================================================================
@@ -259,19 +264,20 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 {
 	u8 temp8;	
 	Si4431TX_IdleMod();        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x03);       //(08h)清发送接收FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
 	SPI1_RWReg((REG_WRITE | TransmitPacketLength), length);	 				//(3Eh)发射包长度
   for(temp8=0;temp8<length;temp8++){	
 		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);						//(7Fh)
 	}
 	
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x44);							  //(05h)中断使能包发送
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x80);							  //(05h)中断使能包发送
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
+	
 }
 

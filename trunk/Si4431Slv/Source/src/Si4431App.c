@@ -83,7 +83,7 @@ void NetConnect(bool Sta)
 {  
 	if(TRUE == Sta){	//组网		
 	//	Si4431TX_TransmitMod(NetConnectRxAdr);					//组网发射地址
-		CmdSpiTxApply(TRUE ,StrTest ,MyStrLen(StrTest));				//将命令存到待处理缓冲区
+		CmdSpiTxApply(TRUE,StrTest ,MyStrLen(StrTest));				//将命令存到待处理缓冲区   TRUE
 
 		WorkStaPre1 = STA_NETCONNECT;
 	}
@@ -337,7 +337,7 @@ void DataSend(void)
 		
 				Si4431TX_TransmitMod(TxAdr);		//设置为发射模式，发射地址			
 				Si4431TX_TxPacket(pCmdSpiTxBuf->pCmd_Prc_Current->all , MyStrLen(pCmdSpiTxBuf->pCmd_Prc_Current->all));	//向从节点发送命令
-				DelayMs_Soft(150);
+				DelayMs_Soft(100);
 				GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
 				if(CMD_REPLYSEND_NUM == pCmdSpiTxBuf->CmdListFlag[loopi]){				//找到要发送命令对应的从模块地址							
 					pCmdSpiTxBuf->CmdListFlag[loopi] = 0;	//回复命令直发一次  
