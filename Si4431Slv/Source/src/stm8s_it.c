@@ -244,22 +244,22 @@ if ((GPIO_ReadInputData(SPI1_CTL_GPIO) & SPI1_PIN_IRQ) == 0x00)	//判断是否此引脚
 	if( (TXItSta1 & itxffafull) == itxffafull ){	//FIFO几乎满中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x01); 			 //清发射FIFO
  			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+//			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
 	}
 	if( (TXItSta1 & ifferr) == ifferr ){	//FIFO上下溢中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+//			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
 	}
 	if( (TXItSta1 & icrcerror) == icrcerror ){	//CRC错误中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+//			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
 	}	
 	if( (TXItSta2 & ipreainval) == ipreainval ){	//引导码错误中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
- 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
+//			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
 	}		
 	
 	

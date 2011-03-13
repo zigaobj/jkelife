@@ -78,6 +78,9 @@ void main(void)
 
   enableInterrupts();		//开全局中断
 	
+	//发送完毕回到接收状态
+//	Si4431TX_ReceiveMod(TRUE , RX_ADDRESS_Si4431);	
+	
 	WorkSta1 = STA_NETCONNECT;	//上电进入组网状态。
   /* Toggles LEDs */
 	
@@ -88,10 +91,12 @@ void main(void)
 	
 	while (1)
   {
+		
 		SysRun();
 		
 		SPI1Rx_Parse();
 		CmdSpiExecute();
+		
   }
 
 }

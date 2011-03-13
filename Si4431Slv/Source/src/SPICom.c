@@ -232,7 +232,7 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	u8 loopi,loopj,NetFlag = 0;//TmpSta;
 	//加入删除不再发送组网NETCNT命令
 	GPIO_WriteReverse(LEDS_PORT, Q1_PIN);		
-
+	
 	return 1;	//已记录新组网模块地址
 }
 
