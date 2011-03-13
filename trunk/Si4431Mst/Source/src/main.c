@@ -70,36 +70,17 @@ int main(void)
   Si4431TX_Init();
   
 //  Si4431RX_Init();
-
 	
-//	DelayUs_Soft(1000);
-	
+//	DelayUs_Soft(1000);	
 	
 //	Si4431RX_ReceiveMod(MOD3_TXADR);
-
-
-
-//  SetSPI1_BroadCast();
-
-
-//  SetSPI2_RXMode(RX_P0_24L01,MOD1_RXADR);	//设置SPI2连接的24L01为接收模式，设置接收通道0地址
-//  SetSPI1_TXMode(MOD1_RXADR);		//设置SPI1连接的24L01为发射模式，设置发射地址及接收通道0地址
-
-
-//  nRF24L01_SPI1_TxPacket(SPI1_TxBuf);	// 测试发送32字节数据，Transmit Tx buffer data
-//  SPI1Sta = SPI1_Read(STATUS_24L01);
-//  SPI1FIFOSta = SPI1_Read(FIFO_STATUS_24L01);
-
-//  SPI2Sta = SPI2_Read(STATUS_24L01);
-//  SPI2FIFOSta = SPI2_Read(FIFO_STATUS_24L01);  
-//  nRF24L01_SPI2_RxPacket(SPI2_RxBuf);
-//  DelayUs(500);
-//  TmpSta = SPI2_Read(FIFO_STATUS_24L01);
-//  DelayUs(10);	
-//	nRF24L01_SPI2_RxPacket(SPI2_RxBuf);
 			
-	
-  	
+//				Si4431TX_TransmitMod(TX_ADDRESS_Si4431);		//设置为发射模式，发射地址			
+//				
+//				Si4431TX_TxPacket(StrTest , MyStrLen(StrTest));	//向从节点发送命令
+//	
+//  			DelayMs_Soft(100);
+
 //测试 	SPI2_CMDCNT(1);
 	
 //测试	NewConnect(BroadCastRxAdr);
