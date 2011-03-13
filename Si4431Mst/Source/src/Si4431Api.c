@@ -237,7 +237,8 @@ void Si4431TX_IdleMod(void)
 	SPI1_Read(InterruptStatus1);		//(03h)
 	SPI1_Read(InterruptStatus2);		//(04h)
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h) 
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h)
+	DelayMs_Soft(50); 
 }
 
 //=============================================================================================
@@ -251,8 +252,11 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 {	u8 iLoop;				//,TxHeaderAdr
 		
 	Si4431TX_IdleMod();        	//设置空闲状态
+	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
+	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);           //(72h)// frequency deviation setting to 45k = 72*625 													
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x03);       //(08h)清发送接收FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
 	
 //	TxHeaderAdr = ;			//发送帧头
@@ -281,9 +285,13 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 {	u8 iLoop;		 //,RxCheckHeaderAdr
 	Si4431TX_IdleMod();
+	
+	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
+	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);           //(72h)// frequency deviation setting to 45k = 72*625 													
+	
 	SPI1_RWReg((REG_WRITE | RXFIFOControl), 26);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //(08h)清接收FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
 //	RxCheckHeaderAdr = CheckHeader0;			//接收校对地址头
 //	RxCheckHeaderAdr
@@ -292,7 +300,7 @@ void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 			SPI1_RWReg((REG_WRITE | (CheckHeader0 - iLoop)),RxCheckHeader.HexAdr.Bit8[iLoop]);	//由于STM32是小端模式，Bit8[0]是低位地址		
 		}
 	}
-  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
+  SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x91);				 //(05h)使能接收FIFO几乎满中断 FIFO上下溢 CRC错误中断
  	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00); 			//(06h)无效引导码
@@ -329,20 +337,21 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 {
 	u8 temp8;	
 	Si4431TX_IdleMod();        
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x03);       //(08h)清发送FIFO
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         
+//SPI1_RWReg((REG_WRITE | PreambleLength), 32);   					//(34h)引导头长度
 	SPI1_RWReg((REG_WRITE | TransmitPacketLength), length);	 				//(3Eh)发射包长度
   for(temp8=0;temp8<length;temp8++){	
 		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);						//(7Fh)
 	}
-	
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x44);							  //(05h)中断使能包发送
-	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
+	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
+
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x80);							  //(05h)
+//	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
 
-	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
 				
 }
 

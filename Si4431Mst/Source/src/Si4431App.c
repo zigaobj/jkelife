@@ -411,7 +411,7 @@ void DataSend(void)
 		
 				Si4431TX_TransmitMod(TxAdr);		//设置为发射模式，发射地址			
 				Si4431TX_TxPacket(pCmdSpiTxBuf->pCmd_Prc_Current->all , MyStrLen(pCmdSpiTxBuf->pCmd_Prc_Current->all));	//向从节点发送命令
-				DelayMs_Soft(150);
+				DelayMs_Soft(200);
 				if(CMD_REPLYSEND_NUM == pCmdSpiTxBuf->CmdListFlag[loopi]){				//找到要发送命令对应的从模块地址							
 					pCmdSpiTxBuf->CmdListFlag[loopi] = 0;	//回复命令直发一次  
 					pCmdSpiTxBuf->CmdListNum --;						//发送命令计数值减一
@@ -431,7 +431,7 @@ void DataSend(void)
 		}
 	}
 	//发送完毕回到接收状态
-	Si4431TX_ReceiveMod(FALSE , RX_ADDRESS_Si4431);
+//	Si4431TX_ReceiveMod(FALSE , RX_ADDRESS_Si4431);
 		
 }
 

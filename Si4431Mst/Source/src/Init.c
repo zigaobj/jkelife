@@ -153,6 +153,8 @@ void VarInit(void)
 	MyHexToStr(RX_ADDRESS_Si4431.StrAdr ,RX_ADDRESS_Si4431.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;	
 	NetConnectRxAdr.HexAdr.All32 = 0xA15C0001;
 	MyHexToStr(NetConnectRxAdr.StrAdr ,NetConnectRxAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;
+	TX_ADDRESS_Si4431.HexAdr.All32 = 0x33431028 ;	
+	MyHexToStr(TX_ADDRESS_Si4431.StrAdr ,TX_ADDRESS_Si4431.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;	
 
 	WorkStaPre1	= STA_SLEEP;
 	WorkSta1		= STA_SLEEP;
@@ -479,7 +481,7 @@ void TIM3_Config(void)
 //  TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);	//把 TIM_TimeBaseInitStruct 中的每一个参数按缺省值填入 
 
   TIM_DeInit(TIM3);
-  TIM_TimeBaseStructure.TIM_Period = 0x3D09;		//1000ms定时          
+  TIM_TimeBaseStructure.TIM_Period = TIM2_PERIOD;		//1000ms定时   0x3D09       
   TIM_TimeBaseStructure.TIM_Prescaler = 0x1200;		//TIMx 时钟频率除数的预分频值 72/4608 = 0.015625MHz 64US      
   TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;    
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;	////向上计数模式  
