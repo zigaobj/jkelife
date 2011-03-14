@@ -238,7 +238,7 @@ void Si4431TX_IdleMod(void)
 	SPI1_Read(InterruptStatus2);		//(04h)
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h)
-	DelayMs_Soft(50); 
+//	DelayMs_Soft(50); 
 }
 
 //=============================================================================================
@@ -347,7 +347,7 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x09);			//(07h)TX人工接收模式，预备模式
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x80);							  //(05h)
-//	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
+	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
 
 	SPI1_Read(InterruptStatus1);
 	SPI1_Read(InterruptStatus2);
