@@ -214,7 +214,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 {	u8 iLoop;		 //,RxCheckHeaderAdr
 	Si4431TX_IdleMod();
-	SPI1_RWReg((REG_WRITE | RXFIFOControl), 26);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), 29);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
