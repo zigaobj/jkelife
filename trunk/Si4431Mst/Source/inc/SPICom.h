@@ -16,7 +16,8 @@
 /* Define ------------------------------------------------------------*/
 
 #define CMDSPI_HASH_NETCNT	0x065E
-#define CMDSPI_HASH_STT	0x02FC
+#define CMDSPI_HASH_SWHCTL	0x02FC
+
 #define CMDSPI_HASH_RST	0x045D
 #define CMDSPI_HASH_SUV	0x0402
 #define CMDSPI_HASH_SYS	0x0689
@@ -144,7 +145,9 @@ u8 CmdSpiTxApply(bool sta ,u8 * cmddata ,u16 cmdlen);
 u8 CmdSpiRxApply(u8 * cmddata ,u16 cmdlen);
 
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
+u8 CmdFuncSWHCTL(CMDSPI_BODY_TypeDef * pCmdData);
 void CmdSpiExecute(void);
+void CmdSpiSearch(CMDSPI_BODY_TypeDef *pCmdData);
 /*
 extern void Uart0_Tx_End(uint8_t *string);
 extern void Uart0_Tx(uint8_t *string, uint16_t snum);

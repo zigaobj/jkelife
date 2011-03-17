@@ -20,6 +20,9 @@
 #include "Si4431App.h"
 
 #include "GloVar.h"
+
+#include <string.h>
+
 //------------------------------------------------------------------------------------//
 
 //uint8_t SPI1_TxBuf[SPIBUFLEN] = "#NTA,0,12345\r\n";		//SPIy_Buffer_Tx
@@ -439,13 +442,13 @@ CMD_BODY_TypeDef * CmdPrase(u8 ListNum)		//ken:建立命令索引函数
 //---------------------------------------------------------------------------
 
 void CmdSpiExecute(void)		//执行散转函数
-{	u16	HeadHash,i,j;	
+{	u16	HeadHash,i,j = 0;	
 	if(0 != pCmdSpiRxBuf->CmdListNum){			
 //		StartTimeMs2 = ReadRunTime();
 	 for(j = 0;j < pCmdSpiRxBuf->CmdListNum; j++){	//处理命令
 		i = pCmdSpiRxBuf->CmdPrcList ;
 		
-			while(0 == pCmdSpiRxBuf->CmdListFlag[i]){	//寻找待处理命令空间
+			while(0 == pCmdSpiRxBuf->CmdListFlag[i]){		//寻找待处理命令空间
 				i++;
 				if(CMDSPI_RXLIST_LMT == i){
 					i = 0;
@@ -460,9 +463,11 @@ void CmdSpiExecute(void)		//执行散转函数
 		HeadHash = pCmdSpiRxBuf->pCmd_Prc_Current->part.HeaderHash;	//获得Hash头
 //		HeadHash = Hash(pCmdSpiRxBuf->pCmd_Prc_Current->part.Header , CMDSPI_HEADER_LEN);	//计算命令hash头
 		//检验异或校验位
-							
+						
 		switch(HeadHash){		// 提取令串头特征值并判断
 			case CMDSPI_HASH_NETCNT:	CmdFuncNETCNT(pCmdSpiRxBuf->pCmd_Prc_Current);	break;	//ken:JMP命令
+			case CMDSPI_HASH_SWHCTL:	CmdFuncSWHCTL(pCmdSpiRxBuf->pCmd_Prc_Current);	break;	//ken:JMP命令
+
 //			case CMD_HASH_STT:	CmdFuncSTT(pCmdBuf->pCmd_Prc_Current);			break;
 //			case CMD_HASH_RST:	CmdFuncRST(pCmdBuf->pCmd_Prc_Current);			break;
 //			case CMD_HASH_SUV:	CmdFuncSUV(pCmdBuf->pCmd_Prc_Current);			break;
@@ -490,10 +495,11 @@ void CmdSpiExecute(void)		//执行散转函数
 		if(pCmdSpiRxBuf->CmdListNum == CMDSPI_RXLIST_LMT){	//当带执行命令处理完
 //			SetEPRxStatus(ENDP2, EP_RX_VALID);		//重新使能EP2接收
 		}
+//END:		
 		pCmdSpiRxBuf->CmdListNum -= 1;
 		pCmdSpiRxBuf->CmdListFlag[i] = 0;	
 		for(i = 0;i < CMDSPI_BUF_LEN;i++){		//清空命令处理缓冲区
-			pCmdSpiRxBuf->pCmd_Prc_Current->all[j] = 0;
+			pCmdSpiRxBuf->pCmd_Prc_Current->all[i] = 0;
 		}
 //	EndTimeMs2 = ReadRunTime();
 //	CmdExecutePassTime = CheckTimeInterval(StartTimeMs2,EndTimeMs2);
@@ -501,13 +507,32 @@ void CmdSpiExecute(void)		//执行散转函数
  }			
 }
 
+void CmdSpiSearch(CMDSPI_BODY_TypeDef *pCmdData)
+{	u8 j;
+//判断是否回复的命令
+		if(0 != pCmdSpiTxBuf->CmdListNum){
+			for(j = 0 ;j < CMDSPI_RXLIST_LMT ; j++){
+				if(pCmdData->part.HeaderHash == pCmdSpiTxBuf->Cmd_Body[j].part.HeaderHash){ //对比hash
+					if( 0 == memcmp(pCmdData->part.SourceAdr , pCmdSpiTxBuf->Cmd_Body[j].part.TargetAdr, CMDSPI_ADR_WIDTH)){	//对比地址
+						if(0 == memcmp(pCmdData->part.Others , "OK", 2)){	//对内容						
+							pCmdSpiTxBuf->CmdListNum -= 1;
+							pCmdSpiTxBuf->CmdListFlag[j] = 0;	
+							for(j = 0;j < CMDSPI_BUF_LEN;j++){		//清空命令处理缓冲区
+								pCmdSpiTxBuf->Cmd_Body[j].all[j] = 0;
+							}						
+						}
+					}	
+				}
+			}						
+		}	
+}
 //=============================================================================================
 //说明:保存新组网的模块地址，按链表方式保存，先跟现有组网地址比较，不同才组网，每次在上一次保存地址空间后插入
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
 //=============================================================================================
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 {	si4431adrtype	NewAdr;	 //	u16 RpStrLen;	 
-	uint8_t loopi,loopj,NetFlag = 0;//TmpSta;
+	uint8_t loopi,NetFlag = 0;//TmpSta;	 ,loopj
 	pReplyBuf = pCmdData;
 	pReplyBuf->part.Dot0 = '\0';
 		
@@ -553,6 +578,15 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	return 1;	//已记录新组网模块地址
 }
 
+//=============================================================================================
+//说明:保存新组网的模块地址，按链表方式保存，先跟现有组网地址比较，不同才组网，每次在上一次保存地址空间后插入
+//参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
+//=============================================================================================
+u8 CmdFuncSWHCTL(CMDSPI_BODY_TypeDef * pCmdData)
+{
+	 CmdSpiSearch(pCmdData);
+	 return 1;
+}
 
 //======================================no  more==========================================//
 

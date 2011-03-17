@@ -265,7 +265,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 		SPI1_RWReg((REG_WRITE | (TransmitHeader0 - iLoop)),TxHeader.HexAdr.Bit8[iLoop]);		//(3Ah-3Dh)//由于STM32是小端模式，Bit8[0]是低位地址
 	}
 
-	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
+//	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -289,7 +289,7 @@ void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
 	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);           //(72h)// frequency deviation setting to 45k = 72*625 													
 	
-	SPI1_RWReg((REG_WRITE | RXFIFOControl), 26);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), FIFO_THRESHOLD);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
