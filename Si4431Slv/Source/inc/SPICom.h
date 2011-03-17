@@ -23,8 +23,9 @@
 #define CMDSPI_LEN_CNT				12			//命令有效数据开始位置
 
 #define CMDSPI_OTHERS_START 	26
-#define CMDSPI_OTHERS_LEN			64
-#define CMDSPI_BUF_LEN				100			//命令缓冲区长度
+#define CMDSPI_OTHERS_LEN			34
+#define CMDSPI_BODY_LEN		60
+#define CMDSPI_BUF_LEN				80			//命令缓冲区长度
 #define CMDSPI_TXLIST_LMT		3				//待发送的命令最大数
 #define CMDSPI_RXLIST_LMT		3				//待处理的命令最大数
 
@@ -117,7 +118,7 @@ u8 CmdSpiRxApply(u8 * cmddata ,u16 cmdlen);
 
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData);
 void CmdSpiExecute(void);
-
+void CmdSpiSearch(CMDSPI_BODY_TypeDef *pCmdData);
 /*
 extern void Uart0_Tx_End(uint8_t *string);
 extern void Uart0_Tx(uint8_t *string, uint16_t snum);

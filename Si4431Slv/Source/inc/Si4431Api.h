@@ -11,6 +11,8 @@
 
 #define TXHEADERLEN	 32
 #define TXHEADERRATE (TXHEADERLEN/8)
+
+#define FIFO_THRESHOLD 60
 //sbit RF_NSEL_PIN = P0^7;
 
 //sbit SCLK = P3^4;

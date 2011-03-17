@@ -194,7 +194,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 		SPI1_RWReg((REG_WRITE | (TransmitHeader3 + iLoop)),TxHeader.HexAdr.Bit8[iLoop]);		//(3Ah-3Dh)//由于STM8是大端模式，Bit8[0]是高位地址
 	}
 
-	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
+//	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -214,7 +214,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 {	u8 iLoop;		 //,RxCheckHeaderAdr
 	Si4431TX_IdleMod();
-	SPI1_RWReg((REG_WRITE | RXFIFOControl), 29);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI1_RWReg((REG_WRITE | RXFIFOControl), FIFO_THRESHOLD);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 

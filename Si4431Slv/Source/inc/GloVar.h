@@ -32,7 +32,7 @@
 #define CMD_NUMLMT 2			//最多能同时处理的命令个数
 #define NETCNT_TIMEOUT	1000	//组网退网状态超时为10S 测试时设置为1S
 #define DATARECEIVE_SPAN	200	//Data接收数据阶段，接收通道Rx_P1~5切换时间间隔
-#define CMD_BUF_LEN	32
+#define CMD_BUF_LEN	64
 #define CMD_HEADER_LEN 3
 #define CMD_OTHERS_START 6
 #define CMD_OTHERS_LEN	19
@@ -68,7 +68,7 @@ extern const u8 MOD3_RXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD4_RXADR[TX_ADR_WIDTH];	//本地地址
 
-extern u8 StrTest[64];
+extern u8 StrTest[60];
 
 extern @near u8 Net_TXADR[TX_ADR_WIDTH];	//新组网地址	
 extern @near u8 Net_RXADR[TX_ADR_WIDTH];	//新组网地址
@@ -106,7 +106,7 @@ typedef union _CMD_BODY_TypeDef{
 	u8 all[CMD_BUF_LEN];	//ken:保存整个命令数据段
 	struct {
 		u8		CmdStartByte;					//JK命令起始符'#'	
-		u8		Header[CMD_HEADER_LEN];			//命令头，XXX
+		u8		Header[CMD_HEADER_LEN];			//命令头，XXXXXX
 		u8		Dot1;							//命令头后第1个','号
 		u8		NetNum;							//命令
 		u8		Dot2;							//命令头后第2个','号
