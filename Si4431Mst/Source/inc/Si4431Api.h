@@ -13,7 +13,7 @@
 #define TXHEADERRATE (TXHEADERLEN/8)
 //sbit RF_NSEL_PIN = P0^7;
 
-
+#define FIFO_THRESHOLD 60
 
 
 # define LSB 1

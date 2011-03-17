@@ -85,7 +85,7 @@ extern uint8_t MOD3_RXADR[SI4431_ADR_WIDTH];	//本地地址
 extern uint8_t MOD4_TXADR[SI4431_ADR_WIDTH];	//本地地址
 extern uint8_t MOD4_RXADR[SI4431_ADR_WIDTH];	//本地地址
 
-extern u8 StrTest[64];
+extern u8 StrTest[60];
 
 extern uint8_t U1RxCmdFlag;		//收到一条完整的命令则自加1，数值表示当前待处理的命令数。
 extern uint8_t U2RxCmdFlag;
