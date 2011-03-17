@@ -15,7 +15,7 @@
 #include "GloVar.h"
 #include "SPICom.h"	
 #include "Si4431App.h"
-
+#include <string.h>
 //------------------------------------------------------------------------------------//
 
 //@near u8 SPI1_TxBuf[SPIBUFLEN] ;		//SPIy_Buffer_Tx
@@ -223,6 +223,26 @@ void CmdSpiExecute(void)		//执行散转函数
  }			
 }
 
+void CmdSpiSearch(CMDSPI_BODY_TypeDef *pCmdData)
+{	u8 j;
+//判断是否回复的命令
+		if(0 != pCmdSpiTxBuf->CmdListNum){
+			for(j = 0 ;j < CMDSPI_RXLIST_LMT ; j++){
+				if(pCmdData->part.HeaderHash == pCmdSpiTxBuf->Cmd_Body[j].part.HeaderHash){ //对比hash
+					if( 0 == memcmp(pCmdData->part.SourceAdr , pCmdSpiTxBuf->Cmd_Body[j].part.TargetAdr, CMDSPI_ADR_WIDTH)){	//对比地址
+						if(0 == memcmp(pCmdData->part.Others , "OK", 2)){	//对内容						
+							pCmdSpiTxBuf->CmdListNum -= 1;
+							pCmdSpiTxBuf->CmdListFlag[j] = 0;	
+							for(j = 0;j < CMDSPI_BUF_LEN;j++){		//清空命令处理缓冲区
+								pCmdSpiTxBuf->Cmd_Body[j].all[j] = 0;
+							}						
+						}
+					}	
+				}
+			}						
+		}	
+}
+
 //=============================================================================================
 //说明:保存新组网的模块地址，按链表方式保存，先跟现有组网地址比较，不同才组网，每次在上一次保存地址空间后插入
 //参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
@@ -232,7 +252,7 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 	u8 loopi,loopj,NetFlag = 0;//TmpSta;
 	//加入删除不再发送组网NETCNT命令
 	GPIO_WriteReverse(LEDS_PORT, Q1_PIN);		
-	
+	CmdSpiSearch(pCmdData);
 	return 1;	//已记录新组网模块地址
 }
 
