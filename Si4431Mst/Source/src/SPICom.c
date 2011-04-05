@@ -567,10 +567,12 @@ u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
 			MyHexToStr(pJKNetAdr_Tab->JKNetAdrTab[loopi].StrAdr ,pJKNetAdr_Tab->JKNetAdrTab[loopi].HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
 		}
 	}
-	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入源地址
-	MsgInsrt(pReplyBuf->all , NewAdr.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入目标地址
+	//回复命令
+	MsgInsrt(pReplyBuf->all , NetConnectRxAdr.StrAdr , CMDSPI_ADR_WIDTH , TRUE);		//插入源地址，还是以NetConnectRxAdr地址回复
+	MsgInsrt(pReplyBuf->all , NewAdr.StrAdr , CMDSPI_ADR_WIDTH , TRUE);							//插入目标地址
 	MsgInsrt(pReplyBuf->all , MSGRP_OK , MyStrLen(MSGRP_OK) , TRUE);	//插入OK
-
+	MsgInsrt(pReplyBuf->all , RX_ADDRESS_Si4431.StrAdr , CMDSPI_ADR_WIDTH , TRUE);	//插入主模块接收地址
+	
 	CmdSpiReplyAppend(pReplyBuf);	//回复命令结尾
 	
 	NET_LED_TURN();							//有模块组网成功

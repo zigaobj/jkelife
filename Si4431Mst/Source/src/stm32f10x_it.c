@@ -167,10 +167,10 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 		TXItSta1 = SPI1_Read(InterruptStatus1);	// 读取状态寄存其来判断数据接收状况
 		TXItSta2 = SPI1_Read(InterruptStatus2);
 
-	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
-		
-		__NOP();
-	}
+//	if( (TXItSta1 & ipksent) == ipksent ){	//包发射完成中断
+//		
+//		__NOP();
+//	}
 		if( (TXItSta1 & itxffafull) == itxffafull ){	//发射几乎满		
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x01);       //(08h)清发送FIFO
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);         	
@@ -181,7 +181,7 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 //	}
 
 		if( (TXItSta1 & irxffafull) == irxffafull ){	//FIFO几乎满中断
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h)
+			//SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);		//(07h)
 			RX_PacketLen = SPI1_Read (ReceivedPacketLength );	//(4Bh)接收包长度
 			for(i = SPI1index ;i < RX_PacketLen ;i++){
 				SPI1_ParseBuf[i] = SPI1_Read(FIFOAccess);	//(7Fh)接收FIFO有效数据包
@@ -197,7 +197,7 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 			SPI1index += RX_PacketLen;	
 //			IRDA_LED_TURN();
 			
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x03);       //(08h)清接收FIFO
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x02);       //(08h)清接收FIFO
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2),0x00);  	
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 5);			 //(07h)RX人工接收模式，预备模式		
 		}	
@@ -209,9 +209,9 @@ void EXTI0_IRQHandler(void)	//EXTI0线对应的中断，连接TX的Si4431的IRQ脚
 		if( (TXItSta1 & icrcerror) == icrcerror ){	//CRC错误中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);			 //RX人工接收模式，预备模式				
 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //清接收FIFO
+			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x02); 			 //清接收FIFO
  			SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
-			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
+		//	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x05);			 //RX人工接收模式，预备模式	
 		}	
 		if( (TXItSta2 & ipreainval) == ipreainval ){	//引导码错误中断
 			SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x01);			 //RX人工接收模式，预备模式				
@@ -472,7 +472,7 @@ void TIM2_IRQHandler(void)
 //  	GPIO_WriteBit(GPIOC, GPIO_Pin_9|GPIO_Pin_8|GPIO_Pin_7|GPIO_Pin_6,Bit_RESET);	//复位管脚
 //	RUN_LED_TURN();
 //	CheckConnect();	//一个周期检查一次从模块组网状态
-	RUN_LED_TURN();
+	IRDA_LED_TURN();
 //	SPI2_Read(EN_AA_24L01);
 //	SPI2_Read(EN_RXADDR_24L01);
 //	SPI2_Read(FIFO_STATUS_24L01);	
