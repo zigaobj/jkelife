@@ -337,7 +337,7 @@ void DataSend(void)
 		
 				Si4431TX_TransmitMod(TxAdr);		//设置为发射模式，发射地址			
 				Si4431TX_TxPacket(pCmdSpiTxBuf->pCmd_Prc_Current->all , FIFO_THRESHOLD);	//向从节点发送命令
-				DelayMs_Soft(100);
+				DelayMs_Soft(200);
 				GPIO_WriteReverse(LEDS_PORT, LED0_PIN);
 				if(CMD_REPLYSEND_NUM == pCmdSpiTxBuf->CmdListFlag[loopi]){				//找到要发送命令对应的从模块地址							
 					pCmdSpiTxBuf->CmdListFlag[loopi] = 0;	//回复命令直发一次  

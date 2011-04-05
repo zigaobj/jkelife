@@ -244,15 +244,21 @@ void CmdSpiSearch(CMDSPI_BODY_TypeDef *pCmdData)
 }
 
 //=============================================================================================
-//说明:保存新组网的模块地址，按链表方式保存，先跟现有组网地址比较，不同才组网，每次在上一次保存地址空间后插入
-//参数:pNewAdr指向新组网地址，AdrLen地址长度，成功插入地址函数名返回1，否则返回0表示地址空间已满。
+//说明:收到组网确认命令
+//参数:
 //=============================================================================================
 u8 CmdFuncNETCNT(CMDSPI_BODY_TypeDef * pCmdData)
-{	si4431adrtype	NewAdr;	 //	u16 RpStrLen;	 
-	u8 loopi,loopj,NetFlag = 0;//TmpSta;
-	//加入删除不再发送组网NETCNT命令
-	GPIO_WriteReverse(LEDS_PORT, Q1_PIN);		
+{		 
+//	u8 loopi,loopj,NetFlag = 0;//TmpSta;
+	
+	NetMasterRxAdr.HexAdr.All32 = MyStrToHex(&pCmdData->part.Others[3], CMDSPI_ADR_WIDTH);	//获得组网模块地址	
+	MyHexToStr(NetMasterRxAdr.StrAdr ,NetMasterRxAdr.HexAdr.All32 , CMDSPI_ADR_WIDTH)	;			
+			
+	
+	
 	CmdSpiSearch(pCmdData);
+	//加入删除不再发送组网NETCNT命令
+	GPIO_WriteReverse(LEDS_PORT, Q1_PIN);
 	return 1;	//已记录新组网模块地址
 }
 
