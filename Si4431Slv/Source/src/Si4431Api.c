@@ -1,6 +1,7 @@
 
 #include "stm8s_conf.h"
 #include "Global.h"
+#include "GloVar.h"
 #include "Si4431Api.h"
 
 //****************************************************************************************************
@@ -63,12 +64,12 @@ u16 SPI1_RWWord(u16 Reg)
 void Si4431TX_Init(void)
 { u8 TmpRegVal;                  
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), 0x80);	//(07h)寄存器软复位
-	TmpRegVal = SPI1_Read(CrystalOscillatorLoadCapacitance);						//读寄存器，检查是否设置正确 	
-	
+//	TmpRegVal = SPI1_Read(CrystalOscillatorLoadCapacitance);						//读寄存器，检查是否设置正确 	
+	DelayUs_Soft(200);
 	while ( GPIO_ReadInputPin(SPI1_CTL_GPIO, SPI1_PIN_IRQ) == SET);	//wait for chip ready interrupt from the radio (while the nIRQ pin is high) 
 //	DelayCom(2);
-	SPI1_Read(InterruptStatus1);	//(03h)清中断
-	SPI1_Read(InterruptStatus2);	//(04h)
+	TXItSta1 = SPI1_Read(InterruptStatus1);	//(03h)清中断
+	TXItSta2 = SPI1_Read(InterruptStatus2);	//(04h)
 
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);			//(06h)关闭所有中断
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl1), RF22_PWRSTATE_READY);	//(07h)空闲模式
@@ -101,26 +102,26 @@ void Si4431TX_Init(void)
 //	SPI1_RWReg((REG_WRITE | TXDataRate0), 0xa9); 
 	
 	//数据包结构
-	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8D); 					//(30h)enable packet handler使能包处理, msb first, enable crc,
+	SPI1_RWReg((REG_WRITE | DataAccessControl), 0x8C); 					//(30h)enable packet handler使能包处理, msb first, enable crc,
 	SPI1_RWReg((REG_WRITE | HeaderControl1), 0xFF);						//(32h)校验checkhead3-0 4位接收地址address enable for headere byte 0, 1,2,3, receive header check for byte 0, 1,2,3
 	SPI1_RWReg((REG_WRITE | HeaderControl2), 0x46); 					//(33h)header 3, 2, 1,0 used for head length, fixed packet length, synchronize word length 3, 2,
 	
-	SPI1_RWReg((REG_WRITE | PreambleLength), 32);   					//(34h)引导头长度 // 64 nibble = 32byte preamble
+	SPI1_RWReg((REG_WRITE | PreambleLength), 64);   					//(34h)引导头长度 // 64 nibble = 32byte preamble
 	SPI1_RWReg((REG_WRITE | PreambleDetectionControl), 0x20); 			//(35h)need to detect 20bit preamble
 	SPI1_RWReg((REG_WRITE | SyncWord3), 0xA1);							//(36h)// synchronize word						//(36h)同步头
 	SPI1_RWReg((REG_WRITE | SyncWord2), 0x28);							//(37h)						
 	SPI1_RWReg((REG_WRITE | SyncWord1), 0xFC);							//(38h)
 	SPI1_RWReg((REG_WRITE | SyncWord0), 0x6D);							//(39h)
 
-	SPI1_RWReg((REG_WRITE | 0x3a), 's');  // tx header
-	SPI1_RWReg((REG_WRITE | 0x3b), 'o');
+	SPI1_RWReg((REG_WRITE | 0x3a), 'k');  // tx header
+	SPI1_RWReg((REG_WRITE | 0x3b), 'e');
 	SPI1_RWReg((REG_WRITE | 0x3c), 'n');
-	SPI1_RWReg((REG_WRITE | 0x3d), 'g');
+	SPI1_RWReg((REG_WRITE | 0x3d), 'c');
 	SPI1_RWReg((REG_WRITE | 0x3e), 17);  // total tx 17 byte
-	SPI1_RWReg((REG_WRITE | 0x3f), 's'); // check hearder
-	SPI1_RWReg((REG_WRITE | 0x40), 'o');
+	SPI1_RWReg((REG_WRITE | 0x3f), 'k'); // check hearder
+	SPI1_RWReg((REG_WRITE | 0x40), 'e');
 	SPI1_RWReg((REG_WRITE | 0x41), 'n');
-	SPI1_RWReg((REG_WRITE | 0x42), 'g');
+	SPI1_RWReg((REG_WRITE | 0x42), 'c');
 	SPI1_RWReg((REG_WRITE | 0x43), 0xff);  // all the bit to be checked
 	SPI1_RWReg((REG_WRITE | 0x44), 0xff);  // all the bit to be checked
 	SPI1_RWReg((REG_WRITE | 0x45), 0xff);  // all the bit to be checked
@@ -194,7 +195,7 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 		SPI1_RWReg((REG_WRITE | (TransmitHeader3 + iLoop)),TxHeader.HexAdr.Bit8[iLoop]);		//(3Ah-3Dh)//由于STM8是大端模式，Bit8[0]是高位地址
 	}
 
-//	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 26);  //(7Dh)tx almost empty 门限
+	SPI1_RWReg((REG_WRITE | TXFIFOControl2), 0);  //(7Dh)tx almost empty 门限
 
 //  TmpVal = SPI1_Read(TransmitHeader3);
 //	TmpVal = SPI1_Read(TransmitHeader0);
@@ -214,7 +215,11 @@ void Si4431TX_TransmitMod(si4431adrtype TxHeader)
 void Si4431TX_ReceiveMod(bool sta ,si4431adrtype RxCheckHeader )
 {	u8 iLoop;		 //,RxCheckHeaderAdr
 	Si4431TX_IdleMod();
-	SPI1_RWReg((REG_WRITE | RXFIFOControl), FIFO_THRESHOLD);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
+	SPI1_RWReg((REG_WRITE | ModulationModeControl2), 0x22); 			//(71H)// Gfsk, fd[8] =0, no invert for Tx/Rx data, fifo mode, txclk -->gpio
+	SPI1_RWReg((REG_WRITE | FrequencyDeviation), 0x48);           //(72h)// frequency deviation setting to 45k = 72*625 													
+
+
+SPI1_RWReg((REG_WRITE | RXFIFOControl), FIFO_THRESHOLD - 1);							 //(7Eh)threshold for rx almost full, interrupt when 1 byte received
 
 	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x03); 			 //(08h)清发送接收FIFO
  	SPI1_RWReg((REG_WRITE | OperatingFunctionControl2), 0x00); 
@@ -271,7 +276,7 @@ void Si4431TX_TxPacket(unsigned char * packet, unsigned char length)
 		SPI1_RWReg((REG_WRITE | FIFOAccess),packet[temp8]);						//(7Fh)
 	}
 	
-	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x80);							  //(05h)中断使能包发送
+	SPI1_RWReg((REG_WRITE | InterruptEnable1), 0x80);							  //(05h)FIFO溢出中断 包发送中断
 	SPI1_RWReg((REG_WRITE | InterruptEnable2), 0x00);
 
 	SPI1_Read(InterruptStatus1);

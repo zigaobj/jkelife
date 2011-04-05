@@ -56,8 +56,10 @@ extern u16	SPI2RxCnt,SPI1RxCnt;
 extern u8 TX_ADDRESS_Si4431[TX_ADR_WIDTH];	//本地地址
 //extern u8 RX_ADDRESS_Si4431[RX_ADR_WIDTH];	//接收地址
 
-extern si4431adrtype NetConnectRxAdr;	//广播接收地址
-extern si4431adrtype RX_ADDRESS_Si4431 ;	//接收地址
+extern si4431adrtype	NetConnectRxAdr;	//广播接收地址
+extern si4431adrtype	RX_ADDRESS_Si4431 ;	//接收地址
+extern si4431adrtype	NetMasterRxAdr;	 			//组网成功后的主模块地址
+
 
 extern u8 MOD1_TXADR[TX_ADR_WIDTH];	//本地地址
 extern u8 MOD1_RXADR[TX_ADR_WIDTH];	//本地地址
